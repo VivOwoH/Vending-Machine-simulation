@@ -1,6 +1,6 @@
 package com.example.a2;
 
-public class System{
+public class Facade {
 
     /*
         Method trys to add a new user to the database. Returns true if successful, false otherwise.

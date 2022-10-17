@@ -1,6 +1,6 @@
 package com.example.a2;
 
 public interface Role{
-    public void modify(System system);
-    public void getReport(System system);
+    public void modify(Facade facade);
+    public void getReport(Facade facade);
 }

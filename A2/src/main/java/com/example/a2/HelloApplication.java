@@ -16,7 +16,7 @@ public class HelloApplication extends Application {
 
     @Override
     public void start(Stage stage) throws IOException {
-        System system = new System(); //use this for logic
+        Facade facade = new Facade(); //use this for logic
 
         this.stage = stage;
         loginWindow = new LoginWindow();
@@ -32,7 +32,7 @@ public class HelloApplication extends Application {
     }
 
     public static void main(String[] args) {
-        System system = new System(); //use this for logic
+        Facade facade = new Facade(); //use this for logic
         DBManage.createDB();
         DBManage.addUser("admin", "admin", "Owner");
         DBManage.addProduct(10.4, "apple", "fruit");
