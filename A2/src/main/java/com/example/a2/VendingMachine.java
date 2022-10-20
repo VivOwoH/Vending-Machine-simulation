@@ -4,6 +4,9 @@ import java.util.*;
 
 import com.example.a2.products.Product;
 
+import javax.swing.ImageIcon;
+import javax.swing.JOptionPane;
+
 public class VendingMachine {
     private List<Product> productInventory;
     private List<Currency> currencyInventory;
@@ -19,7 +22,8 @@ public class VendingMachine {
 
     private Timer idleTimer;
     private TimerTask cancelTransactionTask;
-    private long idleLimit = 120000;
+    private long idleLimit = 2000;//120000;
+    // private Alert alert;
 
     static {
         Map<String, ArrayList<String>> aMap = new HashMap<>();
@@ -51,10 +55,14 @@ public class VendingMachine {
         updateProductInventory();
 
         idleTimer = new Timer("idle timer");
+        // alert = new Alert(AlertType.INFORMATION);
         cancelTransactionTask = new TimerTask() {
             public void run() {
                 clearCart();
-                System.out.println("TIMES UP!");
+
+                ImageIcon icon = new ImageIcon(getClass().getResource("/alert.png"));
+                icon = new ImageIcon(icon.getImage().getScaledInstance(50, 50,  java.awt.Image.SCALE_SMOOTH));
+                JOptionPane.showMessageDialog(null, "No activity for too long. Transaction cancelled.", "Alert", JOptionPane.INFORMATION_MESSAGE, icon);
             }
         };
     }
@@ -82,7 +90,6 @@ public class VendingMachine {
     }
 
     public void triggerTimer() {
-        System.out.println("trigger timer");
         if (!cart.isEmpty()) {
             idleTimer.cancel();
         }
