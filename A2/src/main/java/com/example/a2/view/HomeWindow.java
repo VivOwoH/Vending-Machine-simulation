@@ -1,5 +1,7 @@
 package com.example.a2.view;
 
+import java.util.HashMap;
+
 import com.example.a2.DBManage;
 import com.example.a2.Sys;
 import com.example.a2.products.Drinks;
@@ -48,8 +50,12 @@ public class HomeWindow implements Window {
 
     private Sys sys;
 
+    private ControlHandler controlHandler;
+    private HashMap<String, Button> productButtons;
+
     public HomeWindow(Sys system) {
         this.sys = system;
+        controlHandler = new ControlHandler(sys);
 
         pane = new Pane();
         scene = new Scene(pane, width, height);
@@ -100,6 +106,8 @@ public class HomeWindow implements Window {
         currHBox.setSpacing(10);
         int hcount = 0;
 
+        productButtons = new HashMap<>();
+
         for (Product product : sys.getVendingMachine().getProductInventroy()) {
             if (product instanceof Drinks) {
                 VBox productBox = new VBox();
@@ -109,13 +117,14 @@ public class HomeWindow implements Window {
                 view.setFitWidth(50);
                 Button button = new Button();
                 button.setGraphic(view);
-                button.setStyle("-fx-border-color: transparent;-fx-background-color: transparent;");
+                // button.setStyle("-fx-border-color: transparent;-fx-background-color: transparent;");
 
                 productBox.getChildren().add(button);
                 Text productText = new Text(String.format("%s \n%.2f",
                 product.getName(), product.getCost()));
                 // productText.setTextAlignment(TextAlignment.CENTER);
                 productBox.getChildren().add(productText);
+                productButtons.put(product.getName(), button);
 
                 currHBox.getChildren().add(productBox);
             }
@@ -130,6 +139,7 @@ public class HomeWindow implements Window {
         }
         box.getChildren().add(currHBox);
 
+        controlHandler.productBtnHnadle(productButtons);
         scrollPane.setContent(box);
     }
 
