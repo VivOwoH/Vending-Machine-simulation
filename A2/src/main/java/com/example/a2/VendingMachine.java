@@ -22,7 +22,7 @@ public class VendingMachine {
 
     private Timer idleTimer;
     private TimerTask cancelTransactionTask;
-    private long idleLimit = 2000;//120000;
+    private long idleLimit = 120000;
     // private Alert alert;
 
     static {
