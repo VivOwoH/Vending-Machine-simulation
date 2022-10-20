@@ -17,6 +17,10 @@ public class VendingMachine {
                                         "mentos", "sourpatch", "skittles"};
     public static Map<String, ArrayList<String>> productMap = null;
 
+    private Timer idleTimer;
+    private TimerTask cancelTransactionTask;
+    private long idleLimit = 120000;
+
     static {
         Map<String, ArrayList<String>> aMap = new HashMap<>();
         for(int i = 0; i < 4; i++){
@@ -45,6 +49,14 @@ public class VendingMachine {
     public VendingMachine(DBManage database) {
         this.database = database;
         updateProductInventory();
+
+        idleTimer = new Timer("idle timer");
+        cancelTransactionTask = new TimerTask() {
+            public void run() {
+                clearCart();
+                System.out.println("TIMES UP!");
+            }
+        };
     }
 
     public void updateProductInventory() {
@@ -69,6 +81,14 @@ public class VendingMachine {
         return resultSet;
     }
 
+    public void triggerTimer() {
+        System.out.println("trigger timer");
+        if (!cart.isEmpty()) {
+            idleTimer.cancel();
+        }
+        idleTimer.schedule(cancelTransactionTask, idleLimit);
+    }
+
     // ---------------------------
     // -------- Cart -------------
     // ---------------------------
@@ -76,6 +96,10 @@ public class VendingMachine {
     // Button(prodID) + input qty -> addToCart
     public void addToCart(int prodID, int qty) {
         this.cart.put(prodID, qty);
+    }
+
+    public void clearCart() {
+        this.cart.clear();
     }
 
     // ---------------------------
