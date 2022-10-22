@@ -4,6 +4,9 @@ import java.util.HashMap;
 
 import com.example.a2.DBManage;
 import com.example.a2.Sys;
+import com.example.a2.products.Chips;
+import com.example.a2.products.Candies;
+import com.example.a2.products.Chocolates;
 import com.example.a2.products.Drinks;
 import com.example.a2.products.Product;
 
@@ -109,25 +112,35 @@ public class HomeWindow implements Window {
         productButtons = new HashMap<>();
 
         for (Product product : sys.getVendingMachine().getProductInventroy()) {
+
+            VBox productBox = new VBox();
+            ImageView view = new ImageView();
+
             if (product instanceof Drinks) {
-                VBox productBox = new VBox();
-                
-                ImageView view = new ImageView(new Image(getClass().getResource("/drink.png").toString()));
-                view.setFitHeight(50);
-                view.setFitWidth(50);
-                Button button = new Button();
-                button.setGraphic(view);
-                // button.setStyle("-fx-border-color: transparent;-fx-background-color: transparent;");
-
-                productBox.getChildren().add(button);
-                Text productText = new Text(String.format("%s \n%.2f",
-                product.getName(), product.getCost()));
-                // productText.setTextAlignment(TextAlignment.CENTER);
-                productBox.getChildren().add(productText);
-                productButtons.put(product.getName(), button);
-
-                currHBox.getChildren().add(productBox);
+                view.setImage(new Image(getClass().getResource("/drink.png").toString()));
+            } else if (product instanceof Chocolates) {
+                view.setImage(new Image(getClass().getResource("/chocolate.png").toString()));
+            } else if (product instanceof Chips) {
+                view.setImage(new Image(getClass().getResource("/chocolate.png").toString()));
+            } else if (product instanceof Candies) {
+                view.setImage(new Image(getClass().getResource("/chocolate.png").toString()));
             }
+
+            view.setFitHeight(50);
+            view.setFitWidth(50);
+            Button button = new Button();
+            button.setGraphic(view);
+            // button.setStyle("-fx-border-color: transparent;-fx-background-color: transparent;");
+
+            productBox.getChildren().add(button);
+            Text productText = new Text(String.format("%s \n%.2f",
+            product.getName(), product.getCost()));
+            // productText.setTextAlignment(TextAlignment.CENTER);
+            productBox.getChildren().add(productText);
+            productButtons.put(product.getName(), button);
+
+            currHBox.getChildren().add(productBox);
+
             hcount++;
 
             if (hcount == 5) {
