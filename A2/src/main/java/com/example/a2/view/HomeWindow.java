@@ -3,6 +3,7 @@ package com.example.a2.view;
 import java.util.HashMap;
 
 import com.example.a2.DBManage;
+import com.example.a2.HelloApplication;
 import com.example.a2.Sys;
 import com.example.a2.products.Chips;
 import com.example.a2.products.Candies;
@@ -52,13 +53,17 @@ public class HomeWindow implements Window {
     private ComboBox comboBox;
 
     private Sys sys;
+    private HelloApplication app;
 
     private ControlHandler controlHandler;
     private HashMap<Integer, Button> productButtons;
 
-    public HomeWindow(Sys system) {
+    private Button adminButton;
+
+    public HomeWindow(HelloApplication app, Sys system) {
         this.sys = system;
         controlHandler = new ControlHandler(sys);
+        this.app = app;
 
         pane = new Pane();
         scene = new Scene(pane, width, height);
@@ -82,7 +87,7 @@ public class HomeWindow implements Window {
         pane.getChildren().add(prodQty);
         pane.getChildren().add(itemQty);
         pane.getChildren().add(text);
-        
+
         cfgProductPane(); // need to cfg everything in the scrollpane b4 adding to renderqueue
         pane.getChildren().add(scrollPane);
 
@@ -93,6 +98,13 @@ public class HomeWindow implements Window {
         checkout.setStyle(
                 "-fx-background-color: #e6cc00;");
         pane.getChildren().add(checkout);
+
+        //change to admin
+        adminButton = new Button("Admin");
+        adminButton.setTranslateX(420);
+        adminButton.setTranslateY(135);
+        pane.getChildren().add(adminButton);
+        controlHandler.adminWindowHandler(app, adminButton);
     }
 
     public void cfgProductPane() {

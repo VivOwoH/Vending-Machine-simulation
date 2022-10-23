@@ -3,6 +3,7 @@ package com.example.a2.view;
 import java.util.HashMap;
 import java.util.Map.Entry;
 
+import com.example.a2.HelloApplication;
 import com.example.a2.Sys;
 import com.example.a2.VendingMachine;
 
@@ -37,5 +38,15 @@ public class ControlHandler {
                 }
             });
         }
+    }
+
+    public void adminWindowHandler(HelloApplication app, Button b) {
+        b.setOnAction(new EventHandler<ActionEvent>() {
+            @Override
+            public void handle(ActionEvent event) {
+                AdminWindow adminWindow = app.getAdminWinodw();
+                app.setScene(adminWindow.getScene());
+            }
+        });
     }
 }
