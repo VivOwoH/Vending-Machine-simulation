@@ -55,7 +55,9 @@ public class VendingMachine {
         updateProductInventory();
 
         idleTimer = new Timer("idle timer");
-        // alert = new Alert(AlertType.INFORMATION);
+    }
+
+    private void makeTimerTask() {
         cancelTransactionTask = new TimerTask() {
             public void run() {
                 clearCart();
@@ -93,6 +95,7 @@ public class VendingMachine {
         if (!cart.isEmpty()) {
             idleTimer.cancel();
         }
+        makeTimerTask();
         idleTimer.schedule(cancelTransactionTask, idleLimit);
     }
 
