@@ -54,7 +54,7 @@ public class HomeWindow implements Window {
     private Sys sys;
 
     private ControlHandler controlHandler;
-    private HashMap<String, Button> productButtons;
+    private HashMap<Integer, Button> productButtons;
 
     public HomeWindow(Sys system) {
         this.sys = system;
@@ -73,9 +73,6 @@ public class HomeWindow implements Window {
         bg = new Background(bImg);
         pane.setBackground(bg);
 
-        cfgProductPane(); // need to cfg everything in the scrollpane b4 adding to renderqueue
-        pane.getChildren().add(scrollPane);
-
         cfgCategoryDropbox();
         pane.getChildren().add(comboBox);
 
@@ -85,6 +82,9 @@ public class HomeWindow implements Window {
         pane.getChildren().add(prodQty);
         pane.getChildren().add(itemQty);
         pane.getChildren().add(text);
+        
+        cfgProductPane(); // need to cfg everything in the scrollpane b4 adding to renderqueue
+        pane.getChildren().add(scrollPane);
 
         // checkout button
         checkout = new Button("Checkout");
@@ -121,9 +121,9 @@ public class HomeWindow implements Window {
             } else if (product instanceof Chocolates) {
                 view.setImage(new Image(getClass().getResource("/chocolate.png").toString()));
             } else if (product instanceof Chips) {
-                view.setImage(new Image(getClass().getResource("/chocolate.png").toString()));
+                view.setImage(new Image(getClass().getResource("/chips.png").toString()));
             } else if (product instanceof Candies) {
-                view.setImage(new Image(getClass().getResource("/chocolate.png").toString()));
+                view.setImage(new Image(getClass().getResource("/candy.png").toString()));
             }
 
             view.setFitHeight(50);
@@ -137,7 +137,7 @@ public class HomeWindow implements Window {
             product.getName(), product.getCost()));
             // productText.setTextAlignment(TextAlignment.CENTER);
             productBox.getChildren().add(productText);
-            productButtons.put(product.getName(), button);
+            productButtons.put(product.getCode(), button);
 
             currHBox.getChildren().add(productBox);
 
@@ -152,7 +152,7 @@ public class HomeWindow implements Window {
         }
         box.getChildren().add(currHBox);
 
-        controlHandler.productBtnHnadle(productButtons);
+        controlHandler.productBtnHnadle(productButtons, itemCode);
         scrollPane.setContent(box);
     }
 
