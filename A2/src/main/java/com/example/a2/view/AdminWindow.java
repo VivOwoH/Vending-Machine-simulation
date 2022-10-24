@@ -19,6 +19,7 @@ public class AdminWindow implements Window{
     private int height = 700;
 
     private Sys system;
+    private ControlHandler controlHandler;
 
     private Text updateText;
     private TextField idField;
@@ -31,6 +32,7 @@ public class AdminWindow implements Window{
         pane = new Pane();
         scene = new Scene(pane, width, height);
         this.system = system;
+        this.controlHandler = new ControlHandler(system);
     
         //product update
         updateText = new Text("Update Product Information");
@@ -55,9 +57,11 @@ public class AdminWindow implements Window{
         submitChange = new Button("Submit");
         submitChange.setTranslateX(10);
         submitChange.setTranslateY(100);
+    
+        controlHandler.handleUpdateProduct(submitChange, idField, changeField, combobox);
 
         // test backend logic
-        system.getVendingMachine().updateProduct(100, "testing", "Name");
+        // system.getVendingMachine().updateProduct(100, "testing", "Name");
 
         pane.getChildren().addAll(updateText, idField, changeField, combobox, submitChange);
     }

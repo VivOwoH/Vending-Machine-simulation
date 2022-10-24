@@ -20,7 +20,7 @@ public class ControlHandler {
         vendingMachine = sys.getVendingMachine();
     }
     
-    public void productBtnHnadle(HashMap<Integer, Button> buttons, TextField itemCode) {
+    public void productBtnHandle(HashMap<Integer, Button> buttons, TextField itemCode) {
         for (Button b : buttons.values()){
             b.setOnAction(new EventHandler<ActionEvent>() {
                 @Override
@@ -46,6 +46,21 @@ public class ControlHandler {
             public void handle(ActionEvent event) {
                 AdminWindow adminWindow = app.getAdminWinodw();
                 app.setScene(adminWindow.getScene());
+            }
+        });
+    }
+
+    public void updateProductHandler(AdminWindow homeWindow, Button submitButton, TextField pid, TextField val, ComboBox field) {
+        submitButton.setOnAction(new EventHandler<ActionEvent>() {
+            @Override
+            public void handle(ActionEvent event) {
+                int productId = Integer.parseInt(pid.getText());
+                String newValue = val.getText();
+
+                vendingMachine.updateProduct(productId, newValue, field.getValue());
+
+                //TODO update on homeWindow
+                
             }
         });
     }

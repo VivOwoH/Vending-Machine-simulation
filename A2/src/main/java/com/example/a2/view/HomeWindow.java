@@ -90,6 +90,7 @@ public class HomeWindow implements Window {
 
         cfgProductPane(); // need to cfg everything in the scrollpane b4 adding to renderqueue
         pane.getChildren().add(scrollPane);
+        controlHandler.productBtnHandle(productButtons, itemCode);
 
         // checkout button
         checkout = new Button("Checkout");
@@ -164,7 +165,6 @@ public class HomeWindow implements Window {
         }
         box.getChildren().add(currHBox);
 
-        controlHandler.productBtnHnadle(productButtons, itemCode);
         scrollPane.setContent(box);
     }
 
