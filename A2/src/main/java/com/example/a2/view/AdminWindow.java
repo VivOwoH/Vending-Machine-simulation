@@ -57,7 +57,7 @@ public class AdminWindow implements Window{
         submitChange.setTranslateY(100);
 
         // test backend logic
-        system.getVendingMachine().updateProduct(1, "testing", "Name");
+        system.getVendingMachine().updateProduct(100, "testing", "Name");
 
         pane.getChildren().addAll(updateText, idField, changeField, combobox, submitChange);
     }
