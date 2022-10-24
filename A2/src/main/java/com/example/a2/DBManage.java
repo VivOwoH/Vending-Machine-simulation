@@ -15,7 +15,7 @@ import java.util.Date;
 public class DBManage {
 
     public Connection connection = null;
-    public String url = "jdbc:sqlite:src\\main\\data\\";
+    public String url = "jdbc:sqlite:src/main/data/";
     public String fileName;
 
     public DBManage(String fileName){
