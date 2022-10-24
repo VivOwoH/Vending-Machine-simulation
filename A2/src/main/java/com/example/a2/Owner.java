@@ -1,7 +1,6 @@
 package com.example.a2;
 
 public class Owner implements Role{
-<<<<<<< HEAD
     public void modify(Sys system){
 
     };

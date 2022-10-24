@@ -63,14 +63,21 @@ public class HomeWindow implements Window {
         //janky test
         HashMap<Double, Integer> map =  sys.getVendingMachine().changeCalc(17.95);
 
-        System.out.println("----CHANGE NEED ----");
-        for(Double key : map.keySet()){
-            System.out.printf("%s %s\n", key, map.get(key));
-        }
 
         ArrayList<HashMap<Double, Integer>> result = sys.getVendingMachine().requestChange(map);
         HashMap<Double, Integer> change = result.get(0);
         HashMap<Double, Integer> actualChange = result.get(1);
+
+        System.out.println("----CHANGE LEFT ----");
+        for(Double key : change.keySet()){
+            System.out.printf("%s : %s \n", key, change.get(key));
+        }
+        System.out.println("----CHANGE GIVEN----");
+        for(Double key : actualChange.keySet()){
+            System.out.printf("%s : %s \n", key, actualChange.get(key));
+        }
+
+        sys.getVendingMachine().fillGap(result);
 
         System.out.println("----CHANGE LEFT ----");
         for(Double key : change.keySet()){

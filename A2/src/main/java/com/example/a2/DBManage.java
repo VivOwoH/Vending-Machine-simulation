@@ -458,7 +458,7 @@ public class DBManage {
      * @param new_amount - new amount for denomination
      */
     public void updateCurrency(Double denomination, int new_amount) {
-        float insert_denomination = denomination.floatValue();
+        String insert_denomination = String.valueOf(denomination);
         try {
             connection = DriverManager.getConnection(url);
             Statement statement = connection.createStatement();
@@ -468,7 +468,7 @@ public class DBManage {
             PreparedStatement preparedStatement =
                     connection.prepareStatement(insertStatement);
             preparedStatement.setInt(1, new_amount);
-            preparedStatement.setFloat(2, insert_denomination);
+            preparedStatement.setString(2, insert_denomination);
             preparedStatement.executeUpdate();
 
         } catch (Exception e) {

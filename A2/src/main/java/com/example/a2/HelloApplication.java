@@ -42,7 +42,6 @@ public class HelloApplication extends Application {
     }
 
     public static void main(String[] args) {
-<<<<<<< HEAD
 //         DBManage.addUser("admin", "admin", "Owner");
 //         DBManage.addProduct(10.4, "cola", "Drinks");
 //         DBManage.addTransaction(1,true,2);
