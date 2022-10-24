@@ -21,7 +21,7 @@ public class ControlHandler {
         vendingMachine = sys.getVendingMachine();
     }
     
-    public void productBtnHandle(HashMap<Integer, Button> buttons, TextField itemCode) {
+    public void productBtnHandle(HomeWindow home, HashMap<Integer, Button> buttons, TextField itemCode) {
         for (Button b : buttons.values()){
             b.setOnAction(new EventHandler<ActionEvent>() {
                 @Override
@@ -35,7 +35,9 @@ public class ControlHandler {
                             itemCode.setText(entry.getKey().toString());
                         }
                     }
-                    
+
+                    //clear cancel transaction text
+                    home.clearCancelText();
                 }
             });
         }
@@ -62,6 +64,16 @@ public class ControlHandler {
 
                 //TODO update on homeWindow
                 
+            }
+        });
+    }
+
+    public void cancelTransactionHandle(HomeWindow home, Button cancelButton) {
+        cancelButton.setOnAction(new EventHandler<ActionEvent>() {
+            @Override
+            public void handle(ActionEvent event) {
+                vendingMachine.clearCart();
+                home.confirmCancelled();
             }
         });
     }

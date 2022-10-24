@@ -28,6 +28,7 @@ public class HelloApplication extends Application {
 
         stage.setTitle("Lite Snacks");
         stage.setScene(loginWindow.getScene());
+        stage.setResizable(false);
         stage.show();
     }
 
