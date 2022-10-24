@@ -4,6 +4,7 @@ plugins {
     id 'org.openjfx.javafxplugin' version '0.0.13'
     id 'org.beryx.jlink' version '2.25.0'
     id "com.google.osdetector" version "1.7.1"
+    id "jacoco"
 }
 
 group 'com.example'
@@ -53,7 +54,20 @@ dependencies {
 }
 
 test {
+    // Use JUnit Platform for unit tests.
     useJUnitPlatform()
+}
+
+test {
+    finalizedBy jacocoTestReport // report is always generated after tests run
+}
+jacocoTestReport {
+    dependsOn test // tests are required to run before generating the report
+    reports {
+        xml.required = false
+        csv.required = false
+        html.outputLocation = layout.buildDirectory.dir('jacocoHtml')
+    }
 }
 
 jlink {
