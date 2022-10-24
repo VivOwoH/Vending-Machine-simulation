@@ -11,13 +11,15 @@ public class VendingMachine {
     private List<Product> productInventory;
     private List<Currency> currencyInventory;
     private DBManage database;
-    private HashMap<Integer,Integer> cart = new HashMap<>(); // Map<prodID,qty>
-    public final static String[] categories = {"Drinks", "Chocolates", "Chips", "Candies"}; // pre-defined; can't be modified
-    public final static String[] denominations = {"5c", "10c", "20c", "50c", "1d", "2d", "5d", "10d", "20d", "50d", "100d"};
-    public final static String[] products = {"water", "sprite", "coke", "pepsi", "juice",
-                                        "mars", "m&m", "bounty", "snicker",
-                                        "smiths", "pringles", "kettles", "thins",
-                                        "mentos", "sourpatch", "skittles"};
+    private HashMap<Integer, Integer> cart = new HashMap<>(); // Map<prodID,qty>
+    public final static String[] categories = { "Drinks", "Chocolates", "Chips", "Candies" }; // pre-defined; can't be
+                                                                                              // modified
+    public final static String[] denominations = { "5c", "10c", "20c", "50c", "1d", "2d", "5d", "10d", "20d", "50d",
+            "100d" };
+    public final static String[] products = { "water", "sprite", "coke", "pepsi", "juice",
+            "mars", "m&m", "bounty", "snicker",
+            "smiths", "pringles", "kettles", "thins",
+            "mentos", "sourpatch", "skittles" };
     public static Map<String, ArrayList<String>> productMap = null;
 
     private Timer idleTimer;
@@ -27,22 +29,22 @@ public class VendingMachine {
 
     static {
         Map<String, ArrayList<String>> aMap = new HashMap<>();
-        for(int i = 0; i < 4; i++){
+        for (int i = 0; i < 4; i++) {
             aMap.put(categories[i], new ArrayList<String>());
         }
-        for(int i = 0; i < 5; i++){
+        for (int i = 0; i < 5; i++) {
             ArrayList<String> current = aMap.get(categories[0]);
             current.add(products[i]);
         }
-        for(int i = 5; i < 9; i++){
+        for (int i = 5; i < 9; i++) {
             ArrayList<String> current = aMap.get(categories[1]);
             current.add(products[i]);
         }
-        for(int i = 9; i < 13; i++){
+        for (int i = 9; i < 13; i++) {
             ArrayList<String> current = aMap.get(categories[2]);
             current.add(products[i]);
         }
-        for(int i = 13; i < 16; i++){
+        for (int i = 13; i < 16; i++) {
             ArrayList<String> current = aMap.get(categories[3]);
             current.add(products[i]);
         }
@@ -63,14 +65,31 @@ public class VendingMachine {
                 clearCart();
 
                 ImageIcon icon = new ImageIcon(getClass().getResource("/alert.png"));
-                icon = new ImageIcon(icon.getImage().getScaledInstance(50, 50,  java.awt.Image.SCALE_SMOOTH));
-                JOptionPane.showMessageDialog(null, "No activity for too long. Transaction cancelled.", "Alert", JOptionPane.INFORMATION_MESSAGE, icon);
+                icon = new ImageIcon(icon.getImage().getScaledInstance(50, 50, java.awt.Image.SCALE_SMOOTH));
+                JOptionPane.showMessageDialog(null, "No activity for too long. Transaction cancelled.", "Alert",
+                        JOptionPane.INFORMATION_MESSAGE, icon);
             }
         };
     }
 
     public void updateProductInventory() {
         this.productInventory = database.getProducts();
+    }
+
+    private List<Integer> listAllProductID() {
+        List<Integer> result = new ArrayList<Integer>();
+        for (Product product : this.productInventory) {
+            result.add(product.getCode());
+        }
+        return result;
+    }
+
+    private List<String> listAllProductName() {
+        List<String> result = new ArrayList<String>();
+        for (Product product : this.productInventory) {
+            result.add(product.getName());
+        }
+        return result;
     }
 
     public Product findProductByID(int prodID) {
@@ -81,11 +100,34 @@ public class VendingMachine {
         return null;
     }
 
-    public void updateProduct(int prodID, String newValue, String field) {
+    public String updateProduct(int prodID, String newValue, String field) {
+        this.updateProductInventory(); // refresh inventory just in case
+
         // "Name", "Code", "Category", "Quantity", "Price"
         Product selectedProduct = this.findProductByID(prodID);
-        int tmpProdID = prodID;
+
         try {
+            // ------------------ Defense ---------------------------
+            if (selectedProduct == null) // no product of this code OR invalid code
+                throw new IllegalArgumentException("Product not found");
+
+            if (newValue == null || field == null) // null input
+                throw new IllegalArgumentException("Invalid input");
+
+            if ((field.equals("Code") || field.equals("Quantity") ||
+                    field.equals("Price")) && Integer.parseInt(newValue) < 0)
+                throw new IllegalArgumentException("Negative input not allowed");
+
+            if (field.equals("Quantity") && Integer.parseInt(newValue) > 15)
+                throw new IllegalArgumentException("Maximum 15 for each product");
+
+            if (field.equals("Code") && listAllProductID().contains(Integer.parseInt(newValue)))
+                throw new IllegalArgumentException("Conflicting code");
+
+            if (field.equals("Name") && listAllProductName().contains(newValue))
+                throw new IllegalArgumentException("Conflicting name");
+
+            // ------------------ Update ---------------------------
             switch (field) {
                 case "Name":
                     selectedProduct.setName(newValue);
@@ -105,19 +147,18 @@ public class VendingMachine {
                 default:
                     System.out.println("Error, invalid field.");
             }
-            // if product ID changed, we remove this entry, then re-add it with specified code
-            // TODO: add another addProduct method in DBManager for specified code (maybe need to swap 2 products'codes too)
-            if (tmpProdID != selectedProduct.getCode()) { 
-                database.removeProduct(selectedProduct.getCode());
-                database.addProduct(selectedProduct.getCost(), 
-                        selectedProduct.getName(), selectedProduct.getCategoryStr());
-            } else {
-                database.updateProduct(selectedProduct.getCost(), selectedProduct.getName(),
+
+            database.updateProduct(selectedProduct.getCost(), selectedProduct.getName(),
                     selectedProduct.getQty(), selectedProduct.getCategoryStr(), selectedProduct.getCode());
-            }
-        } catch (Exception e) {
-            System.out.println(e.getMessage());
+        } catch (NumberFormatException e) {
+            String err = "Update product: input of wrong format";
+            System.out.println(err);
+            return err;
+        } catch (IllegalArgumentException e) {
+            System.out.println("Update product: " + e.getMessage());
+            return e.getMessage();
         }
+        return null;
     }
 
     public List<Product> ShowProductCategorized(String category) {
@@ -141,7 +182,7 @@ public class VendingMachine {
     // ---------------------------
     // -------- Cart -------------
     // ---------------------------
-    
+
     // Button(prodID) + input qty -> addToCart
     public void addToCart(int prodID, int qty) {
         this.cart.put(prodID, qty);
@@ -167,7 +208,7 @@ public class VendingMachine {
         return this.currencyInventory;
     }
 
-    public HashMap<Integer,Integer> getCart() {
+    public HashMap<Integer, Integer> getCart() {
         return this.cart;
     }
 }
