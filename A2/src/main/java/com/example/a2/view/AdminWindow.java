@@ -58,7 +58,7 @@ public class AdminWindow implements Window{
         submitChange.setTranslateX(10);
         submitChange.setTranslateY(100);
     
-        controlHandler.handleUpdateProduct(submitChange, idField, changeField, combobox);
+        controlHandler.updateProductHandler(this, submitChange, idField, changeField, combobox);
 
         // test backend logic
         // system.getVendingMachine().updateProduct(100, "testing", "Name");

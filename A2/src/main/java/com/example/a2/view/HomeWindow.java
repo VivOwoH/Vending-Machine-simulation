@@ -51,6 +51,7 @@ public class HomeWindow implements Window {
     private Text recentTxt;
     private Text allTxt;
     private ComboBox comboBox;
+    private Button cancelButton;
 
     private Sys sys;
     private HelloApplication app;
@@ -99,6 +100,12 @@ public class HomeWindow implements Window {
         checkout.setStyle(
                 "-fx-background-color: #e6cc00;");
         pane.getChildren().add(checkout);
+
+        // cancel Transaction
+        cancelButton = new Button("Cancel");
+        cancelButton.setTranslateX(415);
+        cancelButton.setTranslateY(420);
+        pane.getChildren().add(cancelButton);
 
         //change to admin
         adminButton = new Button("Admin");

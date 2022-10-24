@@ -10,6 +10,7 @@ import com.example.a2.VendingMachine;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.scene.control.Button;
+import javafx.scene.control.ComboBox;
 import javafx.scene.control.TextField;
 import javafx.scene.text.Text;
 
@@ -57,7 +58,7 @@ public class ControlHandler {
                 int productId = Integer.parseInt(pid.getText());
                 String newValue = val.getText();
 
-                vendingMachine.updateProduct(productId, newValue, field.getValue());
+                vendingMachine.updateProduct(productId, newValue, field.getValue().toString());
 
                 //TODO update on homeWindow
                 
