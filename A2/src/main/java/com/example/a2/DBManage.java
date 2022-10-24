@@ -44,7 +44,7 @@ public class DBManage {
                     "Category TEXT)");
             // currency Table
             statement.executeUpdate("CREATE TABLE IF NOT EXISTS Currencies " +
-                    "(amount FLOAT PRIMARY KEY, " +
+                    "(amount STRING PRIMARY KEY, " +
                     "quantity INTEGER DEFAULT (5))");
             // transactions Table
             statement.executeUpdate("CREATE TABLE IF NOT EXISTS Transactions " +
@@ -59,7 +59,7 @@ public class DBManage {
             //populate currecies
             for(String denomination : VendingMachine.denominations){
                 String toExecute = "INSERT INTO Currencies(amount, quantity) "+
-                        "VALUES(\"" + denomination + "\", 5);";
+                        "VALUES( \""+ denomination + "\", 5);";
                 statement.executeUpdate(toExecute);
             }
             //populate products
@@ -83,6 +83,44 @@ public class DBManage {
                 java.lang.System.err.println(e.getMessage());
             }
         }
+    }
+
+    public Integer getCurrencyQuantity(Double denom){
+        Integer resultAmount = 0;
+        String denomination = denom.toString();
+
+        try {
+            connection = DriverManager.getConnection(url);
+            Statement statement = connection.createStatement();
+            statement.setQueryTimeout(30);
+
+            String insertStatement = "SELECT quantity FROM Currencies WHERE (? = Currencies.Amount)";
+            PreparedStatement preparedStatement =
+                    connection.prepareStatement(insertStatement);
+            preparedStatement.setString(1, denomination);
+            ResultSet result = preparedStatement.executeQuery();
+
+            if(result.isClosed()){
+                return null;
+            }
+
+            resultAmount = result.getInt("quantity");
+
+        } catch (Exception e) {
+            java.lang.System.out.println("_________________________ERROR at addUser_________________________");
+            java.lang.System.err.println(e.getMessage());
+        } finally {
+            try {
+                if (connection != null) {
+                    connection.close();
+                }
+            } catch (SQLException e) {
+                // connection close failed.
+                java.lang.System.err.println(e.getMessage());
+            }
+        }
+
+        return resultAmount;
     }
 
     public String getUser(String userName){
@@ -412,6 +450,40 @@ public class DBManage {
             }
         }
         return products;
+    }
+
+    /**
+     * Function updates the amount associated with a denomination of currency
+     * @param denomination - desired denomination to update
+     * @param new_amount - new amount for denomination
+     */
+    public void updateCurrency(Double denomination, int new_amount) {
+        float insert_denomination = denomination.floatValue();
+        try {
+            connection = DriverManager.getConnection(url);
+            Statement statement = connection.createStatement();
+            statement.setQueryTimeout(30);
+
+            String insertStatement = "UPDATE Currencies SET quantity = ? WHERE amount = ?";
+            PreparedStatement preparedStatement =
+                    connection.prepareStatement(insertStatement);
+            preparedStatement.setInt(1, new_amount);
+            preparedStatement.setFloat(2, insert_denomination);
+            preparedStatement.executeUpdate();
+
+        } catch (Exception e) {
+            java.lang.System.out.println("_________________________ERROR at removeProduct_________________________");
+            java.lang.System.err.println(e.getMessage());
+        } finally {
+            try {
+                if (connection != null) {
+                    connection.close();
+                }
+            } catch (SQLException e) {
+                // connection close failed.
+                java.lang.System.err.println(e.getMessage());
+            }
+        }
     }
 
     // get 5 most recent products

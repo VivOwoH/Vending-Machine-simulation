@@ -1,5 +1,6 @@
 package com.example.a2;
 
+import java.math.BigDecimal;
 import java.util.*;
 
 import com.example.a2.products.Product;
@@ -13,7 +14,7 @@ public class VendingMachine {
     private DBManage database;
     private HashMap<Integer,Integer> cart = new HashMap<>(); // Map<prodID,qty>
     public final static String[] categories = {"Drinks", "Chocolates", "Chips", "Candies"}; // pre-defined; can't be modified
-    public final static String[] denominations = {"0.05", "0.1", "0.2", "0.5", "1", "2", "5", "10", "20", "50", "100"};
+    public final static String[] denominations = {"100", "50", "20", "10", "5", "2", "1", "0.5", "0.2", "0.1", "0.05"};
     public final static String[] products = {"water", "sprite", "coke", "pepsi", "juice",
                                         "mars", "m&m", "bounty", "snicker",
                                         "smiths", "pringles", "kettles", "thins",
@@ -107,6 +108,64 @@ public class VendingMachine {
 
     public void clearCart() {
         this.cart.clear();
+    }
+
+    // ---------------------------
+    // -------- Money ------------
+    // ---------------------------
+
+    public HashMap<Double, Integer> changeCalc(double amount){
+        HashMap<Double, Integer> result = new HashMap<>();
+
+        for(String stringRep:this.denominations) {
+            double denomination = Double.parseDouble(stringRep);
+            System.out.printf("%s %s\n", denomination, amount);
+                if (!(amount % denomination == amount)) {
+                    double without_remainder = amount - (amount % denomination);
+                    double amount_denom = without_remainder / denomination;
+                    result.put(denomination, (int) amount_denom);
+
+                    amount = amount - (amount_denom * denomination);
+                    if(amount > 0 && amount < 0.05){ //rounding error
+                        amount = 0.05;
+                    }
+                }
+        }
+
+        return result;
+    }
+
+    /**
+     * Asks database for change according to optimal config calculated via changeCalc function.
+     * Updates the amount of change left to cover and the change given accordingly.
+     * @param change
+     * @return updated change left and change given HashMaps
+     */
+    public ArrayList<HashMap<Double, Integer>> requestChange(HashMap<Double, Integer> change){
+        HashMap<Double, Integer> actualChange = new HashMap<>();
+        ArrayList<HashMap<Double, Integer>> result = new ArrayList<>();
+        result.add(change);
+        result.add(actualChange);
+
+        for(Double key : change.keySet()) {
+            //find the denomination in SQL
+            int quantity = database.getCurrencyQuantity(key);
+
+            if (quantity >= change.get(key)) {
+                Integer difference = quantity - change.get(key);
+                database.updateCurrency(key, difference);
+                actualChange.put(key, change.get(key));
+                change.put(key, 0);
+            }
+	        else { //need to make up the leftover notes
+                database.updateCurrency(key, 0);
+                Integer difference = change.get(key) - quantity;
+                change.put(key, difference);
+                actualChange.put(key, quantity);
+            }
+        }
+
+        return result;
     }
 
     // ---------------------------
