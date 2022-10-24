@@ -1,5 +1,6 @@
 package com.example.a2;
 
+import java.io.File;
 import java.sql.*;
 import java.util.ArrayList;
 
@@ -15,7 +16,7 @@ import java.util.Date;
 public class DBManage {
 
     public Connection connection = null;
-    public String url = "jdbc:sqlite:src\\main\\data\\";
+    public String url = "jdbc:sqlite:src/main/data/";
     public String fileName;
 
     public DBManage(String fileName){
@@ -84,6 +85,15 @@ public class DBManage {
                 // connection close failed.
                 java.lang.System.err.println(e.getMessage());
             }
+        }
+    }
+
+    public void deleteDB() {
+        File myObj = new File("src/main/data/" + fileName);
+        if (myObj.delete()) {
+            System.out.println("Deleted the file: " + myObj.getName());
+        } else {
+            System.out.println("Failed to delete the file.");
         }
     }
 
