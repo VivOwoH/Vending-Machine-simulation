@@ -81,6 +81,45 @@ public class VendingMachine {
         return null;
     }
 
+    public void updateProduct(int prodID, String newValue, String field) {
+        // "Name", "Code", "Category", "Quantity", "Price"
+        Product selectedProduct = this.findProductByID(prodID);
+        int tmpProdID = prodID;
+        try {
+            switch (field) {
+                case "Name":
+                    selectedProduct.setName(newValue);
+                    break;
+                case "Code":
+                    selectedProduct.setCode(Integer.parseInt(newValue));
+                    break;
+                case "Category":
+                    selectedProduct.setCategoryStr(newValue);
+                    break;
+                case "Quantity":
+                    selectedProduct.setQty(Integer.parseInt(newValue));
+                    break;
+                case "Price":
+                    selectedProduct.setCost(Double.parseDouble(newValue));
+                    break;
+                default:
+                    System.out.println("Error, invalid field.");
+            }
+            // if product ID changed, we remove this entry, then re-add it with specified code
+            // TODO: add another addProduct method in DBManager for specified code (maybe need to swap 2 products'codes too)
+            if (tmpProdID != selectedProduct.getCode()) { 
+                database.removeProduct(selectedProduct.getCode());
+                database.addProduct(selectedProduct.getCost(), 
+                        selectedProduct.getName(), selectedProduct.getCategoryStr());
+            } else {
+                database.updateProduct(selectedProduct.getCost(), selectedProduct.getName(),
+                    selectedProduct.getQty(), selectedProduct.getCategoryStr(), selectedProduct.getCode());
+            }
+        } catch (Exception e) {
+            System.out.println(e.getMessage());
+        }
+    }
+
     public List<Product> ShowProductCategorized(String category) {
         List<Product> resultSet = new ArrayList<Product>();
         for (Product product : this.productInventory) {

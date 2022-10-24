@@ -1,6 +1,7 @@
 package com.example.a2.view;
 
 import com.example.a2.Sys;
+import com.example.a2.VendingMachine;
 
 import javafx.collections.FXCollections;
 import javafx.scene.Scene;
@@ -54,6 +55,9 @@ public class AdminWindow implements Window{
         submitChange = new Button("Submit");
         submitChange.setTranslateX(10);
         submitChange.setTranslateY(100);
+
+        // test backend logic
+        system.getVendingMachine().updateProduct(1, "testing", "Name");
 
         pane.getChildren().addAll(updateText, idField, changeField, combobox, submitChange);
     }

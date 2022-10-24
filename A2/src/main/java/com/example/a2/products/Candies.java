@@ -12,4 +12,8 @@ public class Candies extends Product {
     public String getCategoryStr() {
         return this.category;
     }
+
+    public void setCategoryStr(String category) {
+        this.category = category;
+    }
 }
