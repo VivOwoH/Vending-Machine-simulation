@@ -1,5 +1,6 @@
 package com.example.a2;
 
+import java.io.File;
 import java.sql.*;
 import java.util.ArrayList;
 
@@ -82,6 +83,15 @@ public class DBManage {
                 // connection close failed.
                 java.lang.System.err.println(e.getMessage());
             }
+        }
+    }
+
+    public void deleteDB() {
+        File myObj = new File("src/main/data/" + fileName);
+        if (myObj.delete()) {
+            System.out.println("Deleted the file: " + myObj.getName());
+        } else {
+            System.out.println("Failed to delete the file.");
         }
     }
 
