@@ -14,6 +14,23 @@ public abstract class Product {
     }
 
     public abstract String getCategoryStr();
+    public abstract void setCategoryStr(String category);
+
+    public void setCode(int code) {
+        this.code = code;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public void setCost(double cost) {
+        this.cost = cost;
+    }
+
+    public void setQty(int qty) {
+        this.qty = qty;
+    }
 
     public int getCode() {
         return this.code;

@@ -1,6 +1,7 @@
 package com.example.a2;
 
 import com.example.a2.view.LoginWindow;
+import com.example.a2.view.AdminWindow;
 import com.example.a2.view.HomeWindow;
 
 import javafx.application.Application;
@@ -13,6 +14,7 @@ import java.util.ArrayList;
 public class HelloApplication extends Application {
     private LoginWindow loginWindow;
     private HomeWindow homeWindow;
+    private AdminWindow adminWindow;
     private Stage stage;
 
     @Override
@@ -21,7 +23,8 @@ public class HelloApplication extends Application {
 
         this.stage = stage;
         loginWindow = new LoginWindow(this, system);
-        homeWindow = new HomeWindow(system);
+        adminWindow = new AdminWindow(system);
+        homeWindow = new HomeWindow(this, system);
 
         stage.setTitle("Lite Snacks");
         stage.setScene(loginWindow.getScene());
@@ -39,6 +42,10 @@ public class HelloApplication extends Application {
 
     public LoginWindow getLoginWindow() {
         return this.loginWindow;
+    }
+
+    public AdminWindow getAdminWinodw() {
+        return this.adminWindow;
     }
 
     public static void main(String[] args) {

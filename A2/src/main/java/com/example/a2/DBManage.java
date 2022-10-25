@@ -1,5 +1,6 @@
 package com.example.a2;
 
+import java.io.File;
 import java.sql.*;
 import java.util.ArrayList;
 
@@ -15,7 +16,7 @@ import java.util.Date;
 public class DBManage {
 
     public Connection connection = null;
-    public String url = "jdbc:sqlite:src\\main\\data\\";
+    public String url = "jdbc:sqlite:src/main/data/";
     public String fileName;
 
     public DBManage(String fileName){
@@ -71,6 +72,8 @@ public class DBManage {
             }
 
         } catch (Exception e) {
+            if (e.getMessage().contains("UNIQUE"))
+                return;
             java.lang.System.out.println("_________________________ERROR at createDB_________________________");
             java.lang.System.err.println(e.getMessage());
         } finally {
@@ -82,6 +85,15 @@ public class DBManage {
                 // connection close failed.
                 java.lang.System.err.println(e.getMessage());
             }
+        }
+    }
+
+    public void deleteDB() {
+        File myObj = new File("src/main/data/" + fileName);
+        if (myObj.delete()) {
+            System.out.println("Deleted the file: " + myObj.getName());
+        } else {
+            System.out.println("Failed to delete the file.");
         }
     }
 
@@ -181,7 +193,7 @@ public class DBManage {
     }
 
     // add product to database
-    public void addProduct(double cost, String name, String category){
+    public String addProduct(double cost, String name, String category){
         try {
             connection = DriverManager.getConnection(url);
             Statement statement = connection.createStatement();
@@ -195,7 +207,12 @@ public class DBManage {
             preparedStatement.setString(3, category);
             preparedStatement.executeUpdate();
 
+            return "Product added";
+
         } catch (Exception e) {
+            if (e.getMessage().contains("UNIQUE")) {
+                return "Product already in DB.";
+            }
             java.lang.System.out.println("_________________________ERROR at addProduct_________________________");
             java.lang.System.err.println(e.getMessage());
         } finally {
@@ -208,6 +225,46 @@ public class DBManage {
                 java.lang.System.err.println(e.getMessage());
             }
         }
+        return null;
+    }
+
+    public String updateProduct(double cost, String name, int qty, String category, int prodID) {
+        try {
+            connection = DriverManager.getConnection(url);
+            Statement statement = connection.createStatement();
+            statement.setQueryTimeout(30);
+
+            String insertStatement = "UPDATE Products SET cost=?,name=?,quantity=?,Category=? WHERE prodID=?";
+            PreparedStatement preparedStatement =
+                    connection.prepareStatement(insertStatement);
+            preparedStatement.setDouble(1, cost);
+            preparedStatement.setString(2, name);
+            preparedStatement.setInt(3, qty);
+            preparedStatement.setString(4, category);
+            preparedStatement.setInt(5, prodID);
+            preparedStatement.executeUpdate();
+ 
+            return "Product updated";
+
+        } catch (Exception e) {
+            if (e.getMessage().contains("UNIQUE")) {
+                String err = "Product violates UNIQUE constraint.";
+                System.out.println(err);
+                return err;
+            }
+            java.lang.System.out.println("_________________________ERROR at addProduct_________________________");
+            java.lang.System.err.println(e.getMessage());
+        } finally {
+            try {
+                if (connection != null) {
+                    connection.close();
+                }
+            } catch (SQLException e) {
+                // connection close failed.
+                java.lang.System.err.println(e.getMessage());
+            }
+        }
+        return null;
     }
 
     // remove product from database using their ID

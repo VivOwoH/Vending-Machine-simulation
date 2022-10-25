@@ -3,6 +3,7 @@ package com.example.a2.view;
 import java.util.HashMap;
 
 import com.example.a2.DBManage;
+import com.example.a2.HelloApplication;
 import com.example.a2.Sys;
 import com.example.a2.products.Chips;
 import com.example.a2.products.Candies;
@@ -52,13 +53,17 @@ public class HomeWindow implements Window {
     private ComboBox comboBox;
 
     private Sys sys;
+    private HelloApplication app;
 
     private ControlHandler controlHandler;
-    private HashMap<String, Button> productButtons;
+    private HashMap<Integer, Button> productButtons;
 
-    public HomeWindow(Sys system) {
+    private Button adminButton;
+
+    public HomeWindow(HelloApplication app, Sys system) {
         this.sys = system;
         controlHandler = new ControlHandler(sys);
+        this.app = app;
 
         pane = new Pane();
         scene = new Scene(pane, width, height);
@@ -73,9 +78,6 @@ public class HomeWindow implements Window {
         bg = new Background(bImg);
         pane.setBackground(bg);
 
-        cfgProductPane(); // need to cfg everything in the scrollpane b4 adding to renderqueue
-        pane.getChildren().add(scrollPane);
-
         cfgCategoryDropbox();
         pane.getChildren().add(comboBox);
 
@@ -86,6 +88,9 @@ public class HomeWindow implements Window {
         pane.getChildren().add(itemQty);
         pane.getChildren().add(text);
 
+        cfgProductPane(); // need to cfg everything in the scrollpane b4 adding to renderqueue
+        pane.getChildren().add(scrollPane);
+
         // checkout button
         checkout = new Button("Checkout");
         checkout.setTranslateX(415);
@@ -93,6 +98,13 @@ public class HomeWindow implements Window {
         checkout.setStyle(
                 "-fx-background-color: #e6cc00;");
         pane.getChildren().add(checkout);
+
+        //change to admin
+        adminButton = new Button("Admin");
+        adminButton.setTranslateX(420);
+        adminButton.setTranslateY(135);
+        pane.getChildren().add(adminButton);
+        controlHandler.adminWindowHandler(app, adminButton);
     }
 
     public void cfgProductPane() {
@@ -121,9 +133,9 @@ public class HomeWindow implements Window {
             } else if (product instanceof Chocolates) {
                 view.setImage(new Image(getClass().getResource("/chocolate.png").toString()));
             } else if (product instanceof Chips) {
-                view.setImage(new Image(getClass().getResource("/chocolate.png").toString()));
+                view.setImage(new Image(getClass().getResource("/chips.png").toString()));
             } else if (product instanceof Candies) {
-                view.setImage(new Image(getClass().getResource("/chocolate.png").toString()));
+                view.setImage(new Image(getClass().getResource("/candy.png").toString()));
             }
 
             view.setFitHeight(50);
@@ -137,7 +149,7 @@ public class HomeWindow implements Window {
             product.getName(), product.getCost()));
             // productText.setTextAlignment(TextAlignment.CENTER);
             productBox.getChildren().add(productText);
-            productButtons.put(product.getName(), button);
+            productButtons.put(product.getCode(), button);
 
             currHBox.getChildren().add(productBox);
 
@@ -152,7 +164,7 @@ public class HomeWindow implements Window {
         }
         box.getChildren().add(currHBox);
 
-        controlHandler.productBtnHnadle(productButtons);
+        controlHandler.productBtnHnadle(productButtons, itemCode);
         scrollPane.setContent(box);
     }
 
