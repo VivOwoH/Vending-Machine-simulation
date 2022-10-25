@@ -1,6 +1,5 @@
 package com.example.a2;
 
-import java.math.BigDecimal;
 import java.util.*;
 
 import com.example.a2.products.Product;
@@ -114,24 +113,25 @@ public class VendingMachine {
     // -------- Money ------------
     // ---------------------------
 
-    public HashMap<Double, Integer> changeCalc(double amount){
+    public HashMap<Double, Integer> changeCalc(double amount, Double aDouble){
         HashMap<Double, Integer> result = new HashMap<>();
 
         for(String stringRep:this.denominations) {
             double denomination = Double.parseDouble(stringRep);
+            if(denomination < aDouble) {
                 if (!(amount % denomination == amount)) {
                     double without_remainder = amount - (amount % denomination);
                     double amount_denom = without_remainder / denomination;
                     result.put(denomination, (int) amount_denom);
 
                     amount = amount - (amount_denom * denomination);
-                    if(amount > 0 && amount < 0.05){ //rounding error
+                    if (amount > 0 && amount < 0.05) { //rounding error
                         amount = 0.05;
                     }
-                }
-                else{
+                } else {
                     result.put(denomination, 0);
                 }
+            }
         }
 
         return result;
@@ -192,11 +192,33 @@ public class VendingMachine {
         }
         Collections.sort(denominations, Collections.reverseOrder());
 
+        int original_amount = 0;
+
+        if(left.containsKey(0.05)){
+            original_amount = left.get(0.05);
+        }
+
         for(int i = 0; i < denominations.size(); i++){
             //still change left to try
             if(left.containsKey(denominations.get(i)) && left.get(denominations.get(i)) != 0){
                 Double toCover = denominations.get(i) * left.get(denominations.get(i));
 
+                if(denominations.get(i) == 0.05){ //last one
+                    int quantity = database.getCurrencyQuantity(denominations.get(i));
+                    int needed = left.get(denominations.get(i)) + original_amount;
+                    if(quantity < needed){
+                        int difference = needed - quantity;
+                        left.put(denominations.get(i), difference);
+                        database.updateCurrency(denominations.get(i), 0);
+                    }
+                    else{
+                        int difference = quantity - needed;
+                        left.put(denominations.get(i), 0);
+                        database.updateCurrency(denominations.get(i), difference);
+                    }
+
+                    break;
+                }
 //                use these denominations to fill
                 for(int j = i + 1; j < denominations.size(); j++){
                         double roundCover = toCover * 100;
@@ -219,20 +241,16 @@ public class VendingMachine {
                         else { //need to make up the leftover notes
                             database.updateCurrency(denominations.get(j), 0);
                             Integer difference = possibleQuantity - quantity;
-                            toCover = toCover - (difference * denominations.get(j));
+
+                            toCover = (double) Math.round(toCover - (difference * denominations.get(j)) * 100)/100;
+                            toCover = Math.abs(toCover);
                             given.put(denominations.get(j), quantity + given.get(denominations.get(j)));
-
-                            if(denominations.get(j) - 0.05 < 0.00002){
-                                left.put(denominations.get(j), possibleQuantity + left.get(denominations.get(j)));
-                            }
-
                             left.put(denominations.get(i), 0);
-                    }
+                        }
 
-                        if(possibleQuantity * denominations.get(j) < toCover){
-                            double difference = toCover - possibleQuantity * denominations.get(j);
+                        if(toCover != 0 && denominations.get(j) != 0.05){
                             //now need to break up difference into smaller denominations
-                            HashMap<Double, Integer> remaining = changeCalc(difference * denominations.get(j));
+                            HashMap<Double, Integer> remaining = changeCalc(toCover, denominations.get(j));
 
                             for (Double key : remaining.keySet()) {
                                 int add = 0;
@@ -245,11 +263,25 @@ public class VendingMachine {
                                 left.put(key, add + remaining.get(key));
                             }
                         }
+                        else if(toCover != 0){ //can't cover this
+                            int amount = (int) (toCover / 0.05);
+                            left.put(denominations.get(j), amount);
+                        }
                 }
             }
         }
 
         return changes;
+    }
+
+    public ArrayList<HashMap<Double, Integer>> makeCashPurchase(double cost, double input){
+        double change = input - cost;
+        if(change < 0){
+            System.out.println("Not enough money");
+            return null;
+        }
+        ArrayList<HashMap<Double, Integer>> result = fillGap(requestChange(changeCalc(change, 100.1)));
+        return result;
     }
 
     // ---------------------------

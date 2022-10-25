@@ -3,8 +3,8 @@ package com.example.a2.view;
 import java.util.ArrayList;
 import java.util.HashMap;
 
-import com.example.a2.DBManage;
 import com.example.a2.Sys;
+import com.example.a2.VendingMachine;
 import com.example.a2.products.Chips;
 import com.example.a2.products.Candies;
 import com.example.a2.products.Chocolates;
@@ -59,34 +59,6 @@ public class HomeWindow implements Window {
 
     public HomeWindow(Sys system) {
         this.sys = system;
-
-        //janky test
-        HashMap<Double, Integer> map =  sys.getVendingMachine().changeCalc(17.95);
-
-
-        ArrayList<HashMap<Double, Integer>> result = sys.getVendingMachine().requestChange(map);
-        HashMap<Double, Integer> change = result.get(0);
-        HashMap<Double, Integer> actualChange = result.get(1);
-
-        System.out.println("----CHANGE LEFT ----");
-        for(Double key : change.keySet()){
-            System.out.printf("%s : %s \n", key, change.get(key));
-        }
-        System.out.println("----CHANGE GIVEN----");
-        for(Double key : actualChange.keySet()){
-            System.out.printf("%s : %s \n", key, actualChange.get(key));
-        }
-
-        sys.getVendingMachine().fillGap(result);
-
-        System.out.println("----CHANGE LEFT ----");
-        for(Double key : change.keySet()){
-            System.out.printf("%s : %s \n", key, change.get(key));
-        }
-        System.out.println("----CHANGE GIVEN----");
-        for(Double key : actualChange.keySet()){
-            System.out.printf("%s : %s \n", key, actualChange.get(key));
-        }
 
         controlHandler = new ControlHandler(sys);
         pane = new Pane();
