@@ -11,7 +11,6 @@ public class VendingMachine {
     private List<Product> productInventory;
     private List<Currency> currencyInventory;
     private DBManage database;
-
     private HashMap<Integer, Integer> cart = new HashMap<>(); // Map<prodID,qty>
     public final static String[] categories = { "Drinks", "Chocolates", "Chips", "Candies" }; // pre-defined; can't be
                                                                                               // modified
@@ -191,6 +190,181 @@ public class VendingMachine {
 
     public void clearCart() {
         this.cart.clear();
+    }
+
+    // ---------------------------
+    // -------- Money ------------
+    // ---------------------------
+
+    public HashMap<Double, Integer> changeCalc(double amount, Double aDouble){
+        HashMap<Double, Integer> result = new HashMap<>();
+
+        for(String stringRep:this.denominations) {
+            double denomination = Double.parseDouble(stringRep);
+            if(denomination < aDouble) {
+                if (!(amount % denomination == amount)) {
+                    double without_remainder = amount - (amount % denomination);
+                    double amount_denom = without_remainder / denomination;
+                    result.put(denomination, (int) amount_denom);
+
+                    amount = amount - (amount_denom * denomination);
+                    if (amount > 0 && amount < 0.05) { //rounding error
+                        amount = 0.05;
+                    }
+                } else {
+                    result.put(denomination, 0);
+                }
+            }
+        }
+
+        return result;
+    }
+
+    /**
+     * Asks database for change according to optimal config calculated via changeCalc function.
+     * Updates the amount of change left to cover and the change given accordingly.
+     * @param change
+     * @return updated change left and change given HashMaps
+     */
+    public ArrayList<HashMap<Double, Integer>> requestChange(HashMap<Double, Integer> change){
+        HashMap<Double, Integer> actualChange = new HashMap<>();
+        ArrayList<HashMap<Double, Integer>> result = new ArrayList<>();
+        result.add(change);
+        result.add(actualChange);
+
+        for(Double key : change.keySet()) {
+            //find the denomination in SQL
+            int quantity = database.getCurrencyQuantity(key);
+
+            if (quantity >= change.get(key)) {
+                Integer difference = quantity - change.get(key);
+                database.updateCurrency(key, difference);
+                actualChange.put(key, change.get(key));
+                change.put(key, 0);
+            }
+	        else { //need to make up the leftover notes
+                database.updateCurrency(key, 0);
+                Integer difference = change.get(key) - quantity;
+                change.put(key, difference);
+                actualChange.put(key, quantity);
+            }
+        }
+
+        return result;
+    }
+
+    /**
+     *Function uses the output from requestChange as the input. It then attempts to use other denominations
+     * to fill the change still needed. Thus it assumes that every denomination still not covered has no equivalent
+     * denominations left in the database and must use the next smallest denomination to fill.
+     * @param changes - result from requestChange is 2 maps with info on the change still left to fill and the change given
+     *                so far.
+     * @return updated result which has tried to fill the change still left to give.
+     */
+    public ArrayList<HashMap<Double, Integer>> fillGap(ArrayList<HashMap<Double, Integer>> changes) {
+        System.out.println("-----FILLING----");
+
+        HashMap<Double, Integer> left = changes.get(0);
+        HashMap<Double, Integer> given = changes.get(1);
+        ArrayList<Double> denominations = new ArrayList<>();
+
+        //sort iterable for easy iteration
+        for(String denomination : VendingMachine.denominations){
+            Double key = Double.parseDouble(denomination);
+            denominations.add(key);
+        }
+        Collections.sort(denominations, Collections.reverseOrder());
+
+        int original_amount = 0;
+
+        if(left.containsKey(0.05)){
+            original_amount = left.get(0.05);
+        }
+
+        for(int i = 0; i < denominations.size(); i++){
+            //still change left to try
+            if(left.containsKey(denominations.get(i)) && left.get(denominations.get(i)) != 0){
+                Double toCover = denominations.get(i) * left.get(denominations.get(i));
+
+                if(denominations.get(i) == 0.05){ //last one
+                    int quantity = database.getCurrencyQuantity(denominations.get(i));
+                    int needed = left.get(denominations.get(i)) + original_amount;
+                    if(quantity < needed){
+                        int difference = needed - quantity;
+                        left.put(denominations.get(i), difference);
+                        database.updateCurrency(denominations.get(i), 0);
+                    }
+                    else{
+                        int difference = quantity - needed;
+                        left.put(denominations.get(i), 0);
+                        database.updateCurrency(denominations.get(i), difference);
+                    }
+
+                    break;
+                }
+//                use these denominations to fill
+                for(int j = i + 1; j < denominations.size(); j++){
+                        double roundCover = toCover * 100;
+                        double roundDenom = denominations.get(j) * 100;
+                        double possiblyCovered = roundCover - (roundCover % roundDenom);
+                        double roundPossibleCover = (double) Math.round(possiblyCovered) / 100;
+
+                        int quantity = database.getCurrencyQuantity(denominations.get(j));
+                        int possibleQuantity = (int) (roundPossibleCover/denominations.get(j)); //how much we need to complete order
+
+                        if (quantity >= possibleQuantity) {
+                            Integer difference = quantity - possibleQuantity;
+                            database.updateCurrency(denominations.get(j), difference);
+
+                            given.put(denominations.get(j), possibleQuantity + given.get(denominations.get(j)));
+                            left.put(denominations.get(i), 0);
+
+                            break;
+                        }
+                        else { //need to make up the leftover notes
+                            database.updateCurrency(denominations.get(j), 0);
+                            Integer difference = possibleQuantity - quantity;
+
+                            toCover = (double) Math.round(toCover - (difference * denominations.get(j)) * 100)/100;
+                            toCover = Math.abs(toCover);
+                            given.put(denominations.get(j), quantity + given.get(denominations.get(j)));
+                            left.put(denominations.get(i), 0);
+                        }
+
+                        if(toCover != 0 && denominations.get(j) != 0.05){
+                            //now need to break up difference into smaller denominations
+                            HashMap<Double, Integer> remaining = changeCalc(toCover, denominations.get(j));
+
+                            for (Double key : remaining.keySet()) {
+                                int add = 0;
+                                if (left.containsKey(key)) {
+                                    add = left.get(key);
+                                } else {
+                                    add = 0;
+                                }
+
+                                left.put(key, add + remaining.get(key));
+                            }
+                        }
+                        else if(toCover != 0){ //can't cover this
+                            int amount = (int) (toCover / 0.05);
+                            left.put(denominations.get(j), amount);
+                        }
+                }
+            }
+        }
+
+        return changes;
+    }
+
+    public ArrayList<HashMap<Double, Integer>> makeCashPurchase(double cost, double input){
+        double change = input - cost;
+        if(change < 0){
+            System.out.println("Not enough money");
+            return null;
+        }
+        ArrayList<HashMap<Double, Integer>> result = fillGap(requestChange(changeCalc(change, 100.1)));
+        return result;
     }
 
     // ---------------------------
