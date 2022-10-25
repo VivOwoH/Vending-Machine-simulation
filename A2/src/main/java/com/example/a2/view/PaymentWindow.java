@@ -6,6 +6,10 @@ import com.example.a2.HelloApplication;
 import com.example.a2.Sys;
 import com.example.a2.VendingMachine;
 
+import javafx.collections.FXCollections;
+import javafx.scene.Scene;
+import javafx.scene.control.Button;
+import javafx.scene.control.ComboBox;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.scene.Scene;
@@ -37,6 +41,8 @@ public class PaymentWindow implements Window {
     private Text totalText;
     private TextField inputMoney;
     private Button continueShopping;
+    private ComboBox methodBox;
+    private String methods[] = {"Cash", "Card"};
 
     public PaymentWindow(HelloApplication app, Sys system, ControlHandler controlHandler) {
         this.controlHandler = controlHandler;
@@ -59,6 +65,15 @@ public class PaymentWindow implements Window {
                 "-fx-background-color: #e6cc00;");
         pane.getChildren().add(continueShopping);
         controlHandler.toHomeWindowHandle(continueShopping);
+
+        // mode pick
+        methodBox = new ComboBox(FXCollections.observableArrayList(methods));
+        methodBox.setTranslateX(10);
+        methodBox.setTranslateY(70);
+        methodBox.setPromptText("Select payment method");
+        pane.getChildren().add(methodBox);
+        controlHandler.methodBoxHandle(methodBox);
+
     }
 
     @Override
@@ -74,13 +89,15 @@ public class PaymentWindow implements Window {
         totalText.setTranslateY(50);
         pane.getChildren().add(totalText);
 
-        if (method == Method.CASH) {
+        if (methodBox.getValue() == "Cash") {
             inputMoney = new TextField();
-            // inputMoney.translateX
+            inputMoney.setTranslateX(10);
+            inputMoney.setTranslateY(100);
+            inputMoney.setPromptText("insert cash/coins");
             pane.getChildren().add(inputMoney);
 
         } else {
-
+            inputMoney.setVisible(false);
         }
 
     }
