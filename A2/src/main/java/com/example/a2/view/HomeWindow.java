@@ -3,11 +3,8 @@ package com.example.a2.view;
 import java.util.ArrayList;
 import java.util.HashMap;
 
-<<<<<<< HEAD
 import com.example.a2.DBManage;
 import com.example.a2.HelloApplication;
-=======
->>>>>>> noah_branch
 import com.example.a2.Sys;
 import com.example.a2.VendingMachine;
 import com.example.a2.products.Chips;
