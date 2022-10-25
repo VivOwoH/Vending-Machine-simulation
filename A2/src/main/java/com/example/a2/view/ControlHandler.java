@@ -14,11 +14,14 @@ import javafx.scene.control.Button;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.TextField;
 import javafx.scene.text.Text;
+import javafx.scene.Scene;
 
 public class ControlHandler {
     private VendingMachine vendingMachine;
+    private Sys system;
 
     public ControlHandler(Sys sys) {
+        system = sys;
         vendingMachine = sys.getVendingMachine();
     }
   
@@ -39,6 +42,7 @@ public class ControlHandler {
 
                     //clear cancel transaction text
                     home.clearCancelText();
+                    home.clearCannotCheckoutText();
                 }
             });
         }
@@ -56,12 +60,12 @@ public class ControlHandler {
         }
     }
 
-    public void adminWindowHandler(HelloApplication app, Button b) {
+    public void adminWindowHandler(Button b) {
         b.setOnAction(new EventHandler<ActionEvent>() {
             @Override
             public void handle(ActionEvent event) {
-                AdminWindow adminWindow = app.getAdminWinodw();
-                app.setScene(adminWindow.getScene());
+                AdminWindow adminWindow = system.getAdminWinodw();
+                system.setScene(adminWindow.getScene());
             }
         });
     }
@@ -87,6 +91,23 @@ public class ControlHandler {
             public void handle(ActionEvent event) {
                 vendingMachine.clearCart();
                 home.confirmCancelled();
+            }
+        });
+    }
+
+    public void checkoutHandle(Button checkoutButton) {
+        checkoutButton.setOnAction(new EventHandler<ActionEvent>() {
+            @Override
+            public void handle(ActionEvent event) {
+                if (vendingMachine.getTotalCost() == 0) {
+                    system.getHomeWindow().dontLetCheckout();
+                    return;
+                }
+
+                System.out.println("here");
+                PaymentWindow paymentWindow = system.getPaymentWindow();
+                system.setScene(paymentWindow.getScene());
+                paymentWindow.draw();
             }
         });
     }
