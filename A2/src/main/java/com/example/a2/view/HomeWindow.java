@@ -54,6 +54,8 @@ public class HomeWindow implements Window {
     private Text recentTxt;
     private Text allTxt;
     private ComboBox comboBox;
+    private Button cancelButton;
+    private Text cancelled;
 
     private Sys sys;
     private HelloApplication app;
@@ -94,10 +96,19 @@ public class HomeWindow implements Window {
 
         cfgProductPane(); // need to cfg everything in the scrollpane b4 adding to renderqueue
         pane.getChildren().add(scrollPane);
+        controlHandler.productBtnHandle(this, productButtons, itemCode);
 
         // checkout button
         cfgCheckoutButton();
         pane.getChildren().add(checkout);
+
+        // cancel Transaction
+        cancelButton = new Button("Cancel");
+        cancelButton.setTranslateX(415);
+        cancelButton.setTranslateY(430);
+        cancelButton.setMinWidth(70);
+        pane.getChildren().add(cancelButton);
+        controlHandler.cancelTransactionHandle(this, cancelButton);
 
         //change to admin
         adminButton = new Button("Admin");
@@ -164,7 +175,6 @@ public class HomeWindow implements Window {
         }
         box.getChildren().add(currHBox);
 
-        controlHandler.productBtnHnadle(productButtons, itemCode);
         scrollPane.setContent(box);
     }
 
@@ -266,6 +276,7 @@ public class HomeWindow implements Window {
         itemQty.setOnAction(event);
     }
 
+
     public void cfgCheckoutButton(){
         checkout = new Button("Checkout");
         checkout.setTranslateX(415);
@@ -314,6 +325,21 @@ public class HomeWindow implements Window {
                 }
             }
         });
+
+    public void confirmCancelled() {
+        if (cancelled == null) {
+            cancelled = new Text("Cart cleared.");
+            cancelled.setTranslateX(415);
+            cancelled.setTranslateY(470);
+            pane.getChildren().add(cancelled);
+            return;
+        }
+
+        cancelled.setVisible(true);
+    }
+
+    public void clearCancelText() {
+        cancelled.setVisible(false);
 
     }
 
