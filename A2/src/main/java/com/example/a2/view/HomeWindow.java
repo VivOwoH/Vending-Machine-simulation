@@ -333,7 +333,7 @@ public class HomeWindow implements Window {
                         itemCode.setText("");
                         itemQty.setText("");
                         sys.setCurrentUser(null);
-                        app.setScene(app.getLoginWindow().scene);
+                        app.setScene(app.getloginWindow().scene);
                     }
                 }
             }
