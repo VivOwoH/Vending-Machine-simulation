@@ -1,13 +1,11 @@
 package com.example.a2.view;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Objects;
 
-import com.example.a2.DBManage;
-import com.example.a2.HelloApplication;
-import com.example.a2.Sys;
-import com.example.a2.VendingMachine;
+import com.example.a2.*;
 import com.example.a2.products.Chips;
 import com.example.a2.products.Candies;
 import com.example.a2.products.Chocolates;
@@ -53,10 +51,14 @@ public class HomeWindow implements Window {
     private Button checkout;
     private Text recentTxt;
     private Text allTxt;
+    private Text historyTxt;
     private ComboBox comboBox;
     private Button cancelButton;
     private Text cancelled;
+    private User currentUser;
+    private VBox historyBox;
     private Text cannotCheckout;
+
 
     private Sys sys;
     private HelloApplication app;
@@ -125,9 +127,19 @@ public class HomeWindow implements Window {
         scrollPane.setPrefSize(380, 480);
         scrollPane.relocate(20, 60);
 
+        historyTxt = new Text("Last 5 purchases");
+        historyTxt.setFont(new Font(30));
+
         allTxt = new Text("Products");
         allTxt.setFont(new Font(30));
         VBox box = new VBox();
+        box.getChildren().add(historyTxt);
+
+        // this will be loaded with content when the user logs in
+        historyBox = new VBox();
+        box.getChildren().add(historyBox);
+
+        // product display
         box.getChildren().add(allTxt);
 
         HBox currHBox = new HBox();
@@ -159,7 +171,7 @@ public class HomeWindow implements Window {
 
             productBox.getChildren().add(button);
             Text productText = new Text(String.format("%s \n%.2f",
-            product.getName(), product.getCost()));
+                    product.getName(), product.getCost()));
             // productText.setTextAlignment(TextAlignment.CENTER);
             productBox.getChildren().add(productText);
             productButtons.put(product.getCode(), button);
@@ -187,7 +199,7 @@ public class HomeWindow implements Window {
         comboBox.setTranslateY(20);
 
         comboBox.getItems().add("All");
-        for (String category: sys.getVendingMachine().getCategories()) {
+        for (String category : sys.getVendingMachine().getCategories()) {
             comboBox.getItems().add(category);
         }
 
@@ -198,7 +210,7 @@ public class HomeWindow implements Window {
 
             // reset scrollpane content
             VBox box = new VBox();
-            
+
             if (selectedCategory.equals("All")) {
                 for (Product product : sys.getVendingMachine().getProductInventroy()) {
                     box.getChildren().add(new Text(String.format("%d %s %.2f",
@@ -214,7 +226,7 @@ public class HomeWindow implements Window {
             scrollPane.setContent(box);
 
         });
-        
+
     }
 
     public void cfgPurchaseBox() {
@@ -241,31 +253,28 @@ public class HomeWindow implements Window {
 
         // action event
         EventHandler<ActionEvent> event = new EventHandler<ActionEvent>() {
-            public void handle(ActionEvent e)
-            {
+            public void handle(ActionEvent e) {
                 try {
                     int id = Integer.parseInt(itemCode.getText());
                     int qty = Integer.parseInt(itemQty.getText());
 
                     Product product = sys.getVendingMachine().findProductByID(id);
-                    
+
                     text.setTranslateX(360);
                     text.setTranslateY(575);
 
                     //if product found and quantity in range
                     if (product != null) {
                         int currentQty = product.getQty();
-                        if(qty > 0 && qty <= currentQty){
+                        if (qty > 0 && qty <= currentQty) {
                             text.setText("Item add to cart!");
                             sys.getVendingMachine().addToCart(id, qty);
-                        }
-                        else if (qty > currentQty) {
+                        } else if (qty > currentQty) {
                             text.setText("Stock not available.");
                         } else {
                             text.setText("Invalid quantity.");
                         }
-                    }
-                    else {
+                    } else {
                         text.setText("Product not found.");
                     }
                 } catch (Exception exception) {
@@ -320,13 +329,39 @@ public class HomeWindow implements Window {
                     boolean success = controlHandler.checkoutButtonHandle(sys.getDatabase().getUserID(currentUserName), prodCode, prodQty, sys.getDatabase());
 
                     if (success) {
-                        // reset text fields
+                        // log user out upon successful transaction
                         itemCode.setText("");
                         itemQty.setText("");
+                        sys.setCurrentUser(null);
+                        app.setScene(app.getLoginWindow().scene);
                     }
                 }
             }
         });
+    }
+
+    // run this to set current user in home application after it has been loaded
+    // alongside all component that requires user
+    public void loadUserAfterLogin(User user){
+        currentUser = user;
+        loadHistory();
+    }
+
+    public void loadHistory(){
+        // load the history box
+        ArrayList<Transaction> lastFiveTransactions = sys.getDatabase().getLastFiveTransactionsByUserID(
+                sys.getDatabase().getUserID(currentUser.getUsername()));
+
+        for (Transaction transaction : lastFiveTransactions){
+            int prodID = transaction.getProdID();
+            int quantity = transaction.getQuantity();
+            Date date = transaction.getDate();
+            String text = String.format("you bought %s amount of %s at %s",
+                    prodID, quantity, date);
+            Text historyEntry = new Text(text);
+            historyEntry.setFont(new Font(10));
+            historyBox.getChildren().add(historyEntry);
+        }
     }
 
     public void confirmCancelled() {

@@ -5,16 +5,9 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="cc834443-829b-41d8-912e-f768bb95e7ef" name="Changes" comment="">
-      <change beforePath="$PROJECT_DIR$/.idea/dataSources/1a9683f7-07c8-444d-bec8-a4d857ba5d7e.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/dataSources/1a9683f7-07c8-444d-bec8-a4d857ba5d7e.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/example/a2/DBManage.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/example/a2/DBManage.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/example/a2/Sys.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/example/a2/Sys.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/example/a2/User.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/example/a2/User.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/example/a2/view/ControlHandler.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/example/a2/view/ControlHandler.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/java/com/example/a2/view/HomeWindow.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/example/a2/view/HomeWindow.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/java/com/example/a2/view/LoginWindow.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/example/a2/view/LoginWindow.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/example/a2/view/RegistrationWindow.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/example/a2/view/RegistrationWindow.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
