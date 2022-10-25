@@ -4,6 +4,7 @@ public class Sys{
 
     private VendingMachine vendingMachine;
     private DBManage database;
+    private User currentUser;
 
     public Sys() {
         this.database = new DBManage("database.sqlite");
@@ -16,6 +17,14 @@ public class Sys{
      */
     public boolean addUser(User user){
         return false;
+    }
+
+    public void setCurrentUser(User currentUser) {
+        this.currentUser = currentUser;
+    }
+
+    public User getCurrentUser(){
+        return this.currentUser;
     }
 
     public VendingMachine getVendingMachine() {
