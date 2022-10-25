@@ -36,6 +36,7 @@ public class PaymentWindow implements Window {
     private Method method;
     private Text totalText;
     private TextField inputMoney;
+    private Button continueShopping;
 
     public PaymentWindow(HelloApplication app, Sys system, ControlHandler controlHandler) {
         this.controlHandler = controlHandler;
@@ -45,6 +46,15 @@ public class PaymentWindow implements Window {
         this.scene = new Scene(pane, width, height);
         this.system = system;
         this.vendingMachine = system.getVendingMachine();
+
+        //back to shopping
+        continueShopping = new Button("Continue shopping");
+        continueShopping.setTranslateX(370);
+        continueShopping.setTranslateY(20);
+        continueShopping.setStyle(
+                "-fx-background-color: #e6cc00;");
+        pane.getChildren().add(continueShopping);
+        controlHandler.toHomeWindowHandle(continueShopping);
     }
 
     @Override

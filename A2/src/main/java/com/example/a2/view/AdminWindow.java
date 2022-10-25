@@ -27,12 +27,20 @@ public class AdminWindow implements Window{
     private ComboBox combobox;
     private Button submitChange;
     private String changeOptions[] = {"Name", "Code", "Category", "Quantity", "Price"};
+    private Button home;
 
     public AdminWindow(Sys system, ControlHandler controlHandler) {
         pane = new Pane();
         scene = new Scene(pane, width, height);
         this.system = system;
         this.controlHandler = controlHandler;
+
+        // nav home
+        home = new Button("Back");
+        home.setTranslateX(450);
+        home.setTranslateY(10);
+        pane.getChildren().add(home);
+        controlHandler.toHomeWindowHandle(home);
     
         //product update
         updateText = new Text("Update Product Information");
