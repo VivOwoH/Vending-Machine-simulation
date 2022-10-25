@@ -277,7 +277,7 @@ public class HomeWindow implements Window {
     }
 
 
-    public void cfgCheckoutButton(){
+    public void cfgCheckoutButton() {
         checkout = new Button("Checkout");
         checkout.setTranslateX(415);
         checkout.setTranslateY(400);
@@ -325,6 +325,7 @@ public class HomeWindow implements Window {
                 }
             }
         });
+    }
 
     public void confirmCancelled() {
         if (cancelled == null) {
