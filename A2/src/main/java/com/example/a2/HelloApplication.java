@@ -7,9 +7,12 @@ import com.example.a2.view.ControlHandler;
 import com.example.a2.view.HomeWindow;
 
 import javafx.application.Application;
+import javafx.application.Platform;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
+import javafx.stage.WindowEvent;
 
+import java.beans.EventHandler;
 import java.io.IOException;
 import java.util.ArrayList;
 
@@ -30,12 +33,14 @@ public class HelloApplication extends Application {
         loginWindow = new LoginWindow(this, system);
         adminWindow = new AdminWindow(system, controlHandler);
         homeWindow = new HomeWindow(this, system, controlHandler);
-        paymentWindow = new PaymentWindow(system, controlHandler);
+        paymentWindow = new PaymentWindow(this, system, controlHandler);
 
         stage.setTitle("Lite Snacks");
         stage.setScene(loginWindow.getScene());
         stage.setResizable(false);
         stage.show();
+
+        stage.setOnCloseRequest(e -> System.exit(0));
     }
 
     public void setScene(Scene scene) {
