@@ -2,12 +2,10 @@ package com.example.a2.view;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Objects;
 
-<<<<<<< HEAD
 import com.example.a2.DBManage;
 import com.example.a2.HelloApplication;
-=======
->>>>>>> noah_branch
 import com.example.a2.Sys;
 import com.example.a2.VendingMachine;
 import com.example.a2.products.Chips;
@@ -98,11 +96,7 @@ public class HomeWindow implements Window {
         pane.getChildren().add(scrollPane);
 
         // checkout button
-        checkout = new Button("Checkout");
-        checkout.setTranslateX(415);
-        checkout.setTranslateY(400);
-        checkout.setStyle(
-                "-fx-background-color: #e6cc00;");
+        cfgCheckoutButton();
         pane.getChildren().add(checkout);
 
         //change to admin
@@ -270,6 +264,57 @@ public class HomeWindow implements Window {
 
         itemCode.setOnAction(event);
         itemQty.setOnAction(event);
+    }
+
+    public void cfgCheckoutButton(){
+        checkout = new Button("Checkout");
+        checkout.setTranslateX(415);
+        checkout.setTranslateY(400);
+        checkout.setStyle(
+                "-fx-background-color: #e6cc00;");
+
+        checkout.setOnAction(new EventHandler<ActionEvent>() {
+            @Override
+            public void handle(ActionEvent event) {
+                String currentUserName = sys.getCurrentUser().getUsername();
+                System.out.println("user: " + currentUserName + " Pressed with ID: " +
+                        sys.getDatabase().getUserID(currentUserName));
+
+                // -------- defensive programming -----------
+                boolean cont = true;
+                // empty fields
+                if (Objects.equals(itemQty.getText(), "") ||
+                        Objects.equals(itemCode.getText(), "")) {
+                    cont = false;
+                }
+
+                // non integer entries
+                try {
+                    int intTest;
+                    intTest = Integer.parseInt(itemQty.getText());
+                    intTest = Integer.parseInt(itemCode.getText());
+                } catch (Exception e) {
+                    cont = false;
+                }
+
+                // error check passed, continue
+                if (cont) {
+                    // get the current value that is in product id and quantity
+
+                    int prodCode = Integer.parseInt(itemCode.getText());
+                    int prodQty = Integer.parseInt(itemQty.getText());
+
+                    boolean success = controlHandler.checkoutButtonHandle(sys.getDatabase().getUserID(currentUserName), prodCode, prodQty, sys.getDatabase());
+
+                    if (success) {
+                        // reset text fields
+                        itemCode.setText("");
+                        itemQty.setText("");
+                    }
+                }
+            }
+        });
+
     }
 
     @Override
