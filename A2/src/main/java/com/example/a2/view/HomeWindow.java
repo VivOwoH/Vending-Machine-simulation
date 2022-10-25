@@ -56,6 +56,7 @@ public class HomeWindow implements Window {
     private ComboBox comboBox;
     private Button cancelButton;
     private Text cancelled;
+    private Text cannotCheckout;
 
     private Sys sys;
     private HelloApplication app;
@@ -65,9 +66,9 @@ public class HomeWindow implements Window {
 
     private Button adminButton;
 
-    public HomeWindow(HelloApplication app, Sys system) {
+    public HomeWindow(HelloApplication app, Sys system, ControlHandler controlHandler) {
         this.sys = system;
-        controlHandler = new ControlHandler(sys);
+        this.controlHandler = controlHandler;
         this.app = app;
 
         controlHandler = new ControlHandler(sys);
@@ -101,6 +102,7 @@ public class HomeWindow implements Window {
         // checkout button
         cfgCheckoutButton();
         pane.getChildren().add(checkout);
+        controlHandler.checkoutHandle(checkout);
 
         // cancel Transaction
         cancelButton = new Button("Cancel");
@@ -115,7 +117,7 @@ public class HomeWindow implements Window {
         adminButton.setTranslateX(420);
         adminButton.setTranslateY(135);
         pane.getChildren().add(adminButton);
-        controlHandler.adminWindowHandler(app, adminButton);
+        controlHandler.adminWindowHandler(adminButton);
     }
 
     public void cfgProductPane() {
@@ -328,6 +330,8 @@ public class HomeWindow implements Window {
     }
 
     public void confirmCancelled() {
+        if (cannotCheckout != null) clearCannotCheckoutText();
+
         if (cancelled == null) {
             cancelled = new Text("Cart cleared.");
             cancelled.setTranslateX(415);
@@ -342,6 +346,24 @@ public class HomeWindow implements Window {
     public void clearCancelText() {
         cancelled.setVisible(false);
 
+    }
+
+    public void dontLetCheckout() {
+        if (cancelled != null) clearCancelText();
+
+        if (cannotCheckout == null) {
+            cannotCheckout = new Text("Cart empty.");
+            cannotCheckout.setTranslateX(415);
+            cannotCheckout.setTranslateY(470);
+            pane.getChildren().add(cannotCheckout);
+            return;
+        }
+
+        cannotCheckout.setVisible(true);
+    }
+
+    public void clearCannotCheckoutText() {
+        cannotCheckout.setVisible(false);
     }
 
     @Override

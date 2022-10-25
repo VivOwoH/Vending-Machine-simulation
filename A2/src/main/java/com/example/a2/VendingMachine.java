@@ -1,6 +1,7 @@
 package com.example.a2;
 
 import java.util.*;
+import java.util.Map.Entry;
 
 import com.example.a2.products.Product;
 
@@ -385,5 +386,18 @@ public class VendingMachine {
 
     public HashMap<Integer, Integer> getCart() {
         return this.cart;
+    }
+
+    public double getTotalCost() {
+        double val = 0;
+
+        for (Entry<Integer, Integer> entry: this.cart.entrySet()) {
+            Integer prodID = entry.getKey();
+            Integer qty = entry.getValue();
+
+            val += findProductByID(prodID).getCost() * qty;
+        }
+
+        return val;
     }
 }
