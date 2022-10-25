@@ -277,10 +277,15 @@ public class HomeWindow implements Window {
     }
 
     public void confirmCancelled() {
-        cancelled = new Text("Cart cleared.");
-        cancelled.setTranslateX(415);
-        cancelled.setTranslateY(470);
-        pane.getChildren().add(cancelled);
+        if (cancelled == null) {
+            cancelled = new Text("Cart cleared.");
+            cancelled.setTranslateX(415);
+            cancelled.setTranslateY(470);
+            pane.getChildren().add(cancelled);
+            return;
+        }
+
+        cancelled.setVisible(true);
     }
 
     public void clearCancelText() {
