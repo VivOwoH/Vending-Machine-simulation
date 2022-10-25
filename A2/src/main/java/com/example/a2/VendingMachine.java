@@ -102,8 +102,6 @@ public class VendingMachine {
     }
 
     public String updateProduct(int prodID, String newValue, String field) {
-        this.updateProductInventory(); // refresh inventory just in case
-
         // "Name", "Code", "Category", "Quantity", "Price"
         Product selectedProduct = this.findProductByID(prodID);
 
@@ -151,7 +149,7 @@ public class VendingMachine {
 
             database.updateProduct(selectedProduct.getCost(), selectedProduct.getName(),
                     selectedProduct.getQty(), selectedProduct.getCategoryStr(), selectedProduct.getCode());
-            return "Product updated";
+            return String.format("Product %d updated", selectedProduct.getCode());
 
         } catch (NumberFormatException e) {
             String err = "Update product: input of wrong format";

@@ -47,6 +47,10 @@ public class PaymentWindow implements Window {
         this.system = system;
         this.vendingMachine = system.getVendingMachine();
 
+        // confirm transaction button
+        cfgConfirmTransactionButton();
+        pane.getChildren().add(confirmTransactionButton);
+
         //back to shopping
         continueShopping = new Button("Continue shopping");
         continueShopping.setTranslateX(370);
@@ -70,9 +74,6 @@ public class PaymentWindow implements Window {
         totalText.setTranslateY(50);
         pane.getChildren().add(totalText);
 
-        cfgConfirmTransactionButton();
-        pane.getChildren().add(confirmTransactionButton);
-
         if (method == Method.CASH) {
             inputMoney = new TextField();
             // inputMoney.translateX
@@ -90,7 +91,7 @@ public class PaymentWindow implements Window {
      */
     public void cfgConfirmTransactionButton() {
         confirmTransactionButton = new Button("Confirm Transaction");
-        confirmTransactionButton.setTranslateX(415);
+        confirmTransactionButton.setTranslateX(215);
         confirmTransactionButton.setTranslateY(400);
         confirmTransactionButton.setStyle(
                 "-fx-background-color: #e6cc00;");
@@ -114,12 +115,15 @@ public class PaymentWindow implements Window {
                         // stock already updated when user add to cart, just need to commit to database
                         int stock = system.getVendingMachine().findProductByID(prodID).getQty();
                         system.getVendingMachine().updateProduct(prodID, Integer.toString(stock), "Quantity");
-                        // auto logout user
-                        system.setCurrentUser(null);
-                        app.setScene(app.getloginWindow().scene);
+                    } 
+                    else { // TODO: handle edge case
+                        System.out.println("Transaction not added. Something happened.");
                     }
                 }
                 system.getVendingMachine().updateProductInventory(); // refresh inventory
+                // auto logout user after all products added
+                system.setCurrentUser(null);
+                app.setScene(app.getloginWindow().scene);
             }
         });
     }
