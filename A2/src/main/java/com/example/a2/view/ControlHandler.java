@@ -113,4 +113,13 @@ public class ControlHandler {
             }
         });
     }
+
+    public void methodBoxHandle(ComboBox c) {
+        c.setOnAction(new EventHandler<ActionEvent>() {
+            @Override
+            public void handle(ActionEvent event) {
+                system.getPaymentWindow().draw();
+            }
+        });
+    }
 }
