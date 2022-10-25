@@ -30,7 +30,7 @@ public class HelloApplication extends Application {
         loginWindow = new LoginWindow(this, system);
         adminWindow = new AdminWindow(system, controlHandler);
         homeWindow = new HomeWindow(this, system, controlHandler);
-        paymentWindow = new PaymentWindow(system, controlHandler);
+        paymentWindow = new PaymentWindow(this, system, controlHandler);
 
         stage.setTitle("Lite Snacks");
         stage.setScene(loginWindow.getScene());

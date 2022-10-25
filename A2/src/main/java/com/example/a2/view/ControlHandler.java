@@ -48,7 +48,7 @@ public class ControlHandler {
         }
     }
 
-    public boolean checkoutButtonHandle(int userID, int prodID, int quantity, DBManage database) {
+    public boolean confirmTransactionButtonHandle(int userID, int prodID, int quantity, DBManage database) {
         try {
             // adds transaction into database
             database.addTransaction(prodID, true, userID, quantity);
@@ -93,7 +93,7 @@ public class ControlHandler {
         checkoutButton.setOnAction(new EventHandler<ActionEvent>() {
             @Override
             public void handle(ActionEvent event) {
-                if (vendingMachine.getTotalCost() == 0) {
+                if (vendingMachine.getCart().size() == 0) {
                     system.getHomeWindow().dontLetCheckout();
                     return;
                 }
