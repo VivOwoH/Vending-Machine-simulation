@@ -277,9 +277,14 @@ public class HomeWindow implements Window {
                     boolean success = controlHandler.checkoutButtonHandle(sys.getDatabase().getUserID(currentUserName),
                             prodID, qty, sys.getDatabase());
 
-                    if (success)
+                    if (success) {
                         text.setText("Transaction added");
+                        // stock already updated when user add to cart, just need to commit to database
+                        int stock = sys.getVendingMachine().findProductByID(prodID).getQty();
+                        sys.getVendingMachine().updateProduct(prodID, Integer.toString(stock), "Quantity");
+                    }
                 }
+                sys.getVendingMachine().updateProductInventory(); // refresh inventory
             }
         });
     }
