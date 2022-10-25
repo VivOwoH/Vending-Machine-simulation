@@ -11,6 +11,7 @@ public class Sys{
     private VendingMachine vendingMachine;
     private DBManage database;
     private HelloApplication app;
+    private User currentUser;
 
     public Sys(HelloApplication app) {
         this.app = app;
@@ -24,6 +25,14 @@ public class Sys{
      */
     public boolean addUser(User user){
         return false;
+    }
+
+    public void setCurrentUser(User currentUser) {
+        this.currentUser = currentUser;
+    }
+
+    public User getCurrentUser(){
+        return this.currentUser;
     }
 
     public VendingMachine getVendingMachine() {

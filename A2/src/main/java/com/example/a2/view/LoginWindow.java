@@ -3,6 +3,7 @@ package com.example.a2.view;
 import com.example.a2.HelloApplication;
 import com.example.a2.Sys;
 
+import com.example.a2.User;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.scene.Scene;
@@ -99,13 +100,14 @@ public class LoginWindow implements Window {
                 String username = captureUsername.getText();
                 String password = capturePassword.getText();
 
-                String result = sys.getDatabase().getUser(username);
+                String result = sys.getDatabase().getUserPassword(username);
 
                 // if user exists, try and match the password
                 if (result != null) {
                     if (password.equals(result)) {
                         text.setText("User matched");
                         app.setScene(app.getHomeWindow().getScene());
+                        sys.setCurrentUser(new User(username,password));
                     } else {
                         text.setText("Wrong password");
                     }

@@ -3,6 +3,7 @@ package com.example.a2.view;
 import java.util.HashMap;
 import java.util.Map.Entry;
 
+import com.example.a2.DBManage;
 import com.example.a2.HelloApplication;
 import com.example.a2.Sys;
 import com.example.a2.VendingMachine;
@@ -23,7 +24,7 @@ public class ControlHandler {
         system = sys;
         vendingMachine = sys.getVendingMachine();
     }
-    
+  
     public void productBtnHandle(HomeWindow home, HashMap<Integer, Button> buttons, TextField itemCode) {
         for (Button b : buttons.values()){
             b.setOnAction(new EventHandler<ActionEvent>() {
@@ -44,6 +45,18 @@ public class ControlHandler {
                     home.clearCannotCheckoutText();
                 }
             });
+        }
+    }
+
+    public boolean checkoutButtonHandle(int userID, int prodID, int quantity, DBManage database) {
+        try {
+            // adds transaction into database
+            database.addTransaction(prodID, true, userID, quantity);
+            // success
+            return true;
+        } catch (Exception e) {
+            // fail
+            return false;
         }
     }
 
