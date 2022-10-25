@@ -1,15 +1,12 @@
 package com.example.a2.view;
 
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.Objects;
+import java.util.Map;
 
-import com.example.a2.DBManage;
 import com.example.a2.HelloApplication;
 import com.example.a2.Sys;
-import com.example.a2.VendingMachine;
-import com.example.a2.products.Chips;
 import com.example.a2.products.Candies;
+import com.example.a2.products.Chips;
 import com.example.a2.products.Chocolates;
 import com.example.a2.products.Drinks;
 import com.example.a2.products.Product;
@@ -33,7 +30,6 @@ import javafx.scene.layout.Pane;
 import javafx.scene.layout.VBox;
 import javafx.scene.text.Font;
 import javafx.scene.text.Text;
-import javafx.scene.text.TextAlignment;
 
 public class HomeWindow implements Window {
     private Pane pane;
@@ -110,7 +106,7 @@ public class HomeWindow implements Window {
         pane.getChildren().add(cancelButton);
         controlHandler.cancelTransactionHandle(this, cancelButton);
 
-        //change to admin
+        // change to admin
         adminButton = new Button("Admin");
         adminButton.setTranslateX(420);
         adminButton.setTranslateY(135);
@@ -153,11 +149,12 @@ public class HomeWindow implements Window {
             view.setFitWidth(50);
             Button button = new Button();
             button.setGraphic(view);
-            // button.setStyle("-fx-border-color: transparent;-fx-background-color: transparent;");
+            // button.setStyle("-fx-border-color: transparent;-fx-background-color:
+            // transparent;");
 
             productBox.getChildren().add(button);
             Text productText = new Text(String.format("%s \n%.2f",
-            product.getName(), product.getCost()));
+                    product.getName(), product.getCost()));
             // productText.setTextAlignment(TextAlignment.CENTER);
             productBox.getChildren().add(productText);
             productButtons.put(product.getCode(), button);
@@ -185,7 +182,7 @@ public class HomeWindow implements Window {
         comboBox.setTranslateY(20);
 
         comboBox.getItems().add("All");
-        for (String category: sys.getVendingMachine().getCategories()) {
+        for (String category : sys.getVendingMachine().getCategories()) {
             comboBox.getItems().add(category);
         }
 
@@ -196,7 +193,7 @@ public class HomeWindow implements Window {
 
             // reset scrollpane content
             VBox box = new VBox();
-            
+
             if (selectedCategory.equals("All")) {
                 for (Product product : sys.getVendingMachine().getProductInventroy()) {
                     box.getChildren().add(new Text(String.format("%d %s %.2f",
@@ -212,7 +209,7 @@ public class HomeWindow implements Window {
             scrollPane.setContent(box);
 
         });
-        
+
     }
 
     public void cfgPurchaseBox() {
@@ -239,36 +236,16 @@ public class HomeWindow implements Window {
 
         // action event
         EventHandler<ActionEvent> event = new EventHandler<ActionEvent>() {
-            public void handle(ActionEvent e)
-            {
-                try {
-                    int id = Integer.parseInt(itemCode.getText());
-                    int qty = Integer.parseInt(itemQty.getText());
+            public void handle(ActionEvent e) {
 
-                    Product product = sys.getVendingMachine().findProductByID(id);
-                    
-                    text.setTranslateX(360);
-                    text.setTranslateY(575);
+                int id = Integer.parseInt(itemCode.getText());
+                int qty = Integer.parseInt(itemQty.getText());
 
-                    //if product found and quantity in range
-                    if (product != null) {
-                        int currentQty = product.getQty();
-                        if(qty > 0 && qty <= currentQty){
-                            text.setText("Item add to cart!");
-                            sys.getVendingMachine().addToCart(id, qty);
-                        }
-                        else if (qty > currentQty) {
-                            text.setText("Stock not available.");
-                        } else {
-                            text.setText("Invalid quantity.");
-                        }
-                    }
-                    else {
-                        text.setText("Product not found.");
-                    }
-                } catch (Exception exception) {
-                    System.out.println(exception);
-                }
+                text.setTranslateX(360);
+                text.setTranslateY(575);
+
+                String msg = sys.getVendingMachine().addToCart(id, qty);
+                text.setText(msg);
             }
         };
 
@@ -276,7 +253,10 @@ public class HomeWindow implements Window {
         itemQty.setOnAction(event);
     }
 
-
+    /**
+     * Checkout by adding whatever in the cart into transaction
+     * Each unique item is 1 transaction
+     */
     public void cfgCheckoutButton() {
         checkout = new Button("Checkout");
         checkout.setTranslateX(415);
@@ -291,37 +271,14 @@ public class HomeWindow implements Window {
                 System.out.println("user: " + currentUserName + " Pressed with ID: " +
                         sys.getDatabase().getUserID(currentUserName));
 
-                // -------- defensive programming -----------
-                boolean cont = true;
-                // empty fields
-                if (Objects.equals(itemQty.getText(), "") ||
-                        Objects.equals(itemCode.getText(), "")) {
-                    cont = false;
-                }
+                for (Map.Entry<Integer, Integer> entry : sys.getVendingMachine().getCart().entrySet()) {
+                    int prodID = entry.getKey();
+                    int qty = entry.getValue();
+                    boolean success = controlHandler.checkoutButtonHandle(sys.getDatabase().getUserID(currentUserName),
+                            prodID, qty, sys.getDatabase());
 
-                // non integer entries
-                try {
-                    int intTest;
-                    intTest = Integer.parseInt(itemQty.getText());
-                    intTest = Integer.parseInt(itemCode.getText());
-                } catch (Exception e) {
-                    cont = false;
-                }
-
-                // error check passed, continue
-                if (cont) {
-                    // get the current value that is in product id and quantity
-
-                    int prodCode = Integer.parseInt(itemCode.getText());
-                    int prodQty = Integer.parseInt(itemQty.getText());
-
-                    boolean success = controlHandler.checkoutButtonHandle(sys.getDatabase().getUserID(currentUserName), prodCode, prodQty, sys.getDatabase());
-
-                    if (success) {
-                        // reset text fields
-                        itemCode.setText("");
-                        itemQty.setText("");
-                    }
+                    if (success)
+                        text.setText("Transaction added");
                 }
             }
         });
