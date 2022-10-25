@@ -1,10 +1,12 @@
 package com.example.a2.view;
 
+import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
-import com.example.a2.HelloApplication;
-import com.example.a2.Sys;
+import com.example.a2.*;
+import com.example.a2.products.Chips;
 import com.example.a2.products.Candies;
 import com.example.a2.products.Chips;
 import com.example.a2.products.Chocolates;
@@ -49,9 +51,14 @@ public class HomeWindow implements Window {
     private Button checkout;
     private Text recentTxt;
     private Text allTxt;
+    private Text historyTxt;
     private ComboBox comboBox;
     private Button cancelButton;
     private Text cancelled;
+    private User currentUser;
+    private VBox historyBox;
+    private Text cannotCheckout;
+
 
     private Sys sys;
     private HelloApplication app;
@@ -61,9 +68,9 @@ public class HomeWindow implements Window {
 
     private Button adminButton;
 
-    public HomeWindow(HelloApplication app, Sys system) {
+    public HomeWindow(HelloApplication app, Sys system, ControlHandler controlHandler) {
         this.sys = system;
-        controlHandler = new ControlHandler(sys);
+        this.controlHandler = controlHandler;
         this.app = app;
 
         controlHandler = new ControlHandler(sys);
@@ -97,21 +104,18 @@ public class HomeWindow implements Window {
         // checkout button
         cfgCheckoutButton();
         pane.getChildren().add(checkout);
+        controlHandler.checkoutHandle(checkout);
 
         // cancel Transaction
-        cancelButton = new Button("Cancel");
-        cancelButton.setTranslateX(415);
-        cancelButton.setTranslateY(430);
-        cancelButton.setMinWidth(70);
+        cfgCancelButton();
         pane.getChildren().add(cancelButton);
-        controlHandler.cancelTransactionHandle(this, cancelButton);
 
         // change to admin
         adminButton = new Button("Admin");
         adminButton.setTranslateX(420);
         adminButton.setTranslateY(135);
         pane.getChildren().add(adminButton);
-        controlHandler.adminWindowHandler(app, adminButton);
+        controlHandler.adminWindowHandler(adminButton);
     }
 
     public void cfgProductPane() {
@@ -119,9 +123,19 @@ public class HomeWindow implements Window {
         scrollPane.setPrefSize(380, 480);
         scrollPane.relocate(20, 60);
 
+        historyTxt = new Text("Last 5 purchases");
+        historyTxt.setFont(new Font(30));
+
         allTxt = new Text("Products");
         allTxt.setFont(new Font(30));
         VBox box = new VBox();
+        box.getChildren().add(historyTxt);
+
+        // this will be loaded with content when the user logs in
+        historyBox = new VBox();
+        box.getChildren().add(historyBox);
+
+        // product display
         box.getChildren().add(allTxt);
 
         HBox currHBox = new HBox();
@@ -253,6 +267,20 @@ public class HomeWindow implements Window {
         itemQty.setOnAction(event);
     }
 
+    public void cfgCancelButton(){
+        cancelButton = new Button("Cancel");
+        cancelButton.setTranslateX(415);
+        cancelButton.setTranslateY(430);
+        cancelButton.setMinWidth(70);
+
+        cancelButton.setOnAction(new EventHandler<ActionEvent>() {
+            @Override
+            public void handle(ActionEvent event) {
+                controlHandler.cancelTransactionHandle();
+                confirmCancelled();
+            }
+        });
+    }
     /**
      * Checkout by adding whatever in the cart into transaction
      * Each unique item is 1 transaction
@@ -282,6 +310,9 @@ public class HomeWindow implements Window {
                         // stock already updated when user add to cart, just need to commit to database
                         int stock = sys.getVendingMachine().findProductByID(prodID).getQty();
                         sys.getVendingMachine().updateProduct(prodID, Integer.toString(stock), "Quantity");
+                        // auto logout user
+                        sys.setCurrentUser(null);
+                        app.setScene(app.getloginWindow().scene);
                     }
                 }
                 sys.getVendingMachine().updateProductInventory(); // refresh inventory
@@ -289,21 +320,66 @@ public class HomeWindow implements Window {
         });
     }
 
-    public void confirmCancelled() {
-        if (cancelled == null) {
-            cancelled = new Text("Cart cleared.");
-            cancelled.setTranslateX(415);
-            cancelled.setTranslateY(470);
-            pane.getChildren().add(cancelled);
-            return;
-        }
+    // run this to set current user in home application after it has been loaded
+    // alongside all component that requires user
+    public void loadUserAfterLogin(User user){
+        currentUser = user;
+        loadHistory();
+    }
 
-        cancelled.setVisible(true);
+    public void loadHistory(){
+        // load the history box
+        ArrayList<Transaction> lastFiveTransactions = sys.getDatabase().getLastFiveTransactionsByUserID(
+                sys.getDatabase().getUserID(currentUser.getUsername()));
+
+        for (Transaction transaction : lastFiveTransactions){
+            int prodID = transaction.getProdID();
+            int quantity = transaction.getQuantity();
+            Date date = transaction.getDate();
+            String text = String.format("you bought %s amount of %s at %s",
+                    prodID, quantity, date);
+            Text historyEntry = new Text(text);
+            historyEntry.setFont(new Font(10));
+            historyBox.getChildren().add(historyEntry);
+        }
+    }
+
+    public void confirmCancelled() {
+//        if (cannotCheckout != null) clearCannotCheckoutText();
+//
+//        if (cancelled == null) {
+//            cancelled = new Text("Cart cleared.");
+//            cancelled.setTranslateX(415);
+//            cancelled.setTranslateY(470);
+//            pane.getChildren().add(cancelled);
+//            return;
+//        }
+//
+//        cancelled.setVisible(true);
+        sys.setCurrentUser(null);
+        sys.setScene(app.getloginWindow().scene);
     }
 
     public void clearCancelText() {
         cancelled.setVisible(false);
+    }
 
+    public void dontLetCheckout() {
+        if (cancelled != null) clearCancelText();
+
+        if (cannotCheckout == null) {
+            cannotCheckout = new Text("Cart empty.");
+            cannotCheckout.setTranslateX(415);
+            cannotCheckout.setTranslateY(470);
+            pane.getChildren().add(cannotCheckout);
+            return;
+        }
+
+        cannotCheckout.setVisible(true);
+    }
+
+    public void clearCannotCheckoutText() {
+        cannotCheckout.setVisible(false);
     }
 
     @Override

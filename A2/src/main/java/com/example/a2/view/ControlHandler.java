@@ -14,16 +14,19 @@ import javafx.scene.control.Button;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.TextField;
 import javafx.scene.text.Text;
+import javafx.scene.Scene;
 
 public class ControlHandler {
     private VendingMachine vendingMachine;
+    private Sys system;
 
     public ControlHandler(Sys sys) {
+        system = sys;
         vendingMachine = sys.getVendingMachine();
     }
-  
+
     public void productBtnHandle(HomeWindow home, HashMap<Integer, Button> buttons, TextField itemCode) {
-        for (Button b : buttons.values()){
+        for (Button b : buttons.values()) {
             b.setOnAction(new EventHandler<ActionEvent>() {
                 @Override
                 public void handle(ActionEvent event) {
@@ -39,6 +42,7 @@ public class ControlHandler {
 
                     //clear cancel transaction text
                     home.clearCancelText();
+                    home.clearCannotCheckoutText();
                 }
             });
         }
@@ -56,12 +60,12 @@ public class ControlHandler {
         }
     }
 
-    public void adminWindowHandler(HelloApplication app, Button b) {
+    public void adminWindowHandler(Button b) {
         b.setOnAction(new EventHandler<ActionEvent>() {
             @Override
             public void handle(ActionEvent event) {
-                AdminWindow adminWindow = app.getAdminWinodw();
-                app.setScene(adminWindow.getScene());
+                AdminWindow adminWindow = system.getAdminWinodw();
+                system.setScene(adminWindow.getScene());
             }
         });
     }
@@ -76,17 +80,28 @@ public class ControlHandler {
                 vendingMachine.updateProduct(productId, newValue, field.getValue().toString());
 
                 //TODO update on homeWindow
-                
+
             }
         });
     }
 
-    public void cancelTransactionHandle(HomeWindow home, Button cancelButton) {
-        cancelButton.setOnAction(new EventHandler<ActionEvent>() {
+    public void cancelTransactionHandle() {
+        vendingMachine.clearCart();
+    }
+
+    public void checkoutHandle(Button checkoutButton) {
+        checkoutButton.setOnAction(new EventHandler<ActionEvent>() {
             @Override
             public void handle(ActionEvent event) {
-                vendingMachine.clearCart();
-                home.confirmCancelled();
+                if (vendingMachine.getTotalCost() == 0) {
+                    system.getHomeWindow().dontLetCheckout();
+                    return;
+                }
+
+                System.out.println("here");
+                PaymentWindow paymentWindow = system.getPaymentWindow();
+                system.setScene(paymentWindow.getScene());
+                paymentWindow.draw();
             }
         });
     }

@@ -28,11 +28,11 @@ public class AdminWindow implements Window{
     private Button submitChange;
     private String changeOptions[] = {"Name", "Code", "Category", "Quantity", "Price"};
 
-    public AdminWindow(Sys system) {
+    public AdminWindow(Sys system, ControlHandler controlHandler) {
         pane = new Pane();
         scene = new Scene(pane, width, height);
         this.system = system;
-        this.controlHandler = new ControlHandler(system);
+        this.controlHandler = controlHandler;
     
         //product update
         updateText = new Text("Update Product Information");
@@ -59,9 +59,6 @@ public class AdminWindow implements Window{
         submitChange.setTranslateY(100);
     
         controlHandler.updateProductHandler(this, submitChange, idField, changeField, combobox);
-
-        // test backend logic
-        // system.getVendingMachine().updateProduct(100, "testing", "Name");
 
         pane.getChildren().addAll(updateText, idField, changeField, combobox, submitChange);
     }
