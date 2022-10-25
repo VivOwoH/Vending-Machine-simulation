@@ -49,7 +49,7 @@ public class DBManage {
                     "quantity INTEGER DEFAULT (5))");
             // transactions Table
             statement.executeUpdate("CREATE TABLE IF NOT EXISTS Transactions " +
-                    "(transID INTEGER PRIMARY KEY NOT NULL, " +
+                    "(transID INTEGER PRIMARY KEY, " +
                     "userID REFERENCES Users(userID), " +
                     "prodID REFERENCES Products(prodID) NOT NULL," +
                     "success BIT NOT NULL," +
@@ -134,7 +134,7 @@ public class DBManage {
         return resultAmount;
     }
 
-    public String getUser(String userName){
+    public String getUserPassword(String userName){
         String resultPassword = null;
 
         try {
@@ -155,7 +155,7 @@ public class DBManage {
             resultPassword = result.getString("password");
 
         } catch (Exception e) {
-            java.lang.System.out.println("_________________________ERROR at addUser_________________________");
+            java.lang.System.out.println("_________________________ERROR at getUserPassword_________________________");
             java.lang.System.err.println(e.getMessage());
         } finally {
             try {
@@ -169,6 +169,39 @@ public class DBManage {
         }
 
         return resultPassword;
+    }
+
+    public int getUserID(String userName){
+        int userID = 0;
+
+        try {
+            connection = DriverManager.getConnection(url);
+            Statement statement = connection.createStatement();
+            statement.setQueryTimeout(30);
+
+            String insertStatement = "SELECT * FROM Users WHERE (? = Users.Username)";
+            PreparedStatement preparedStatement =
+                    connection.prepareStatement(insertStatement);
+            preparedStatement.setString(1, userName);
+            ResultSet result = preparedStatement.executeQuery();
+
+            userID = result.getInt("userID");
+
+        } catch (Exception e) {
+            java.lang.System.out.println("_________________________ERROR at getUserPassword_________________________");
+            java.lang.System.err.println(e.getMessage());
+        } finally {
+            try {
+                if (connection != null) {
+                    connection.close();
+                }
+            } catch (SQLException e) {
+                // connection close failed.
+                java.lang.System.err.println(e.getMessage());
+            }
+        }
+
+        return userID;
     }
 
     // add user to database
@@ -333,7 +366,7 @@ public class DBManage {
     }
 
     // add purchase history (customer has account)(the time of transaction will be recorded when this function is called)
-    public void addTransaction(int prodID, boolean success, int userID){
+    public void addTransaction(int prodID, boolean success, int userID, int quantity){
         try {
             connection = DriverManager.getConnection(url);
             Statement statement = connection.createStatement();
@@ -348,52 +381,14 @@ public class DBManage {
 
             Timestamp timestamp = new Timestamp(java.lang.System.currentTimeMillis());
 
-            String insertStatement = "INSERT INTO Transactions (userID, prodID, success, date) VALUES(?,?,?,?)";
+            String insertStatement = "INSERT INTO Transactions (userID, prodID, success, date, quantity) VALUES(?,?,?,?,?)";
             PreparedStatement preparedStatement =
                     connection.prepareStatement(insertStatement);
             preparedStatement.setInt(1, userID);
             preparedStatement.setInt(2, prodID);
             preparedStatement.setInt(3, successBit);
             preparedStatement.setTimestamp(4, timestamp);
-            preparedStatement.executeUpdate();
-
-        } catch (Exception e) {
-            java.lang.System.out.println("_________________________ERROR at addTransaction_________________________");
-            java.lang.System.err.println(e.getMessage());
-        } finally {
-            try {
-                if (connection != null) {
-                    connection.close();
-                }
-            } catch (SQLException e) {
-                // connection close failed.
-                java.lang.System.err.println(e.getMessage());
-            }
-        }
-    }
-
-    // add purchase history (anonymous buyer)
-    public void addTransaction(int prodID, boolean success){
-        try {
-            connection = DriverManager.getConnection(url);
-            Statement statement = connection.createStatement();
-            statement.setQueryTimeout(30);
-
-            int successBit;
-            if (success){
-                successBit = 1;
-            } else {
-                successBit = 0;
-            }
-
-            Timestamp timestamp = new Timestamp(java.lang.System.currentTimeMillis());
-
-            String insertStatement = "INSERT INTO Transactions (prodID, success, date) VALUES(?,?,?)";
-            PreparedStatement preparedStatement =
-                    connection.prepareStatement(insertStatement);
-            preparedStatement.setInt(1, prodID);
-            preparedStatement.setInt(2, successBit);
-            preparedStatement.setTimestamp(3, timestamp);
+            preparedStatement.setInt(5, quantity);
             preparedStatement.executeUpdate();
 
         } catch (Exception e) {

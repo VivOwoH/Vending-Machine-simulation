@@ -42,7 +42,7 @@ public class RegistrationWindow extends LoginWindow {
                 String username = captureUsername.getText();
                 String password = capturePassword.getText();
 
-                String result = sys.getDatabase().getUser(username);
+                String result = sys.getDatabase().getUserPassword(username);
 
                 // if user exists, try and match the password
                 if (result != null) {
