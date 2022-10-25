@@ -107,12 +107,8 @@ public class HomeWindow implements Window {
         controlHandler.checkoutHandle(checkout);
 
         // cancel Transaction
-        cancelButton = new Button("Cancel");
-        cancelButton.setTranslateX(415);
-        cancelButton.setTranslateY(430);
-        cancelButton.setMinWidth(70);
+        cfgCancelButton();
         pane.getChildren().add(cancelButton);
-        controlHandler.cancelTransactionHandle(this, cancelButton);
 
         //change to admin
         adminButton = new Button("Admin");
@@ -287,6 +283,20 @@ public class HomeWindow implements Window {
         itemQty.setOnAction(event);
     }
 
+    public void cfgCancelButton(){
+        cancelButton = new Button("Cancel");
+        cancelButton.setTranslateX(415);
+        cancelButton.setTranslateY(430);
+        cancelButton.setMinWidth(70);
+
+        cancelButton.setOnAction(new EventHandler<ActionEvent>() {
+            @Override
+            public void handle(ActionEvent event) {
+                controlHandler.cancelTransactionHandle();
+                confirmCancelled();
+            }
+        });
+    }
 
     public void cfgCheckoutButton() {
         checkout = new Button("Checkout");
@@ -365,22 +375,23 @@ public class HomeWindow implements Window {
     }
 
     public void confirmCancelled() {
-        if (cannotCheckout != null) clearCannotCheckoutText();
-
-        if (cancelled == null) {
-            cancelled = new Text("Cart cleared.");
-            cancelled.setTranslateX(415);
-            cancelled.setTranslateY(470);
-            pane.getChildren().add(cancelled);
-            return;
-        }
-
-        cancelled.setVisible(true);
+//        if (cannotCheckout != null) clearCannotCheckoutText();
+//
+//        if (cancelled == null) {
+//            cancelled = new Text("Cart cleared.");
+//            cancelled.setTranslateX(415);
+//            cancelled.setTranslateY(470);
+//            pane.getChildren().add(cancelled);
+//            return;
+//        }
+//
+//        cancelled.setVisible(true);
+        sys.setCurrentUser(null);
+        sys.setScene(app.getloginWindow().scene);
     }
 
     public void clearCancelText() {
         cancelled.setVisible(false);
-
     }
 
     public void dontLetCheckout() {
