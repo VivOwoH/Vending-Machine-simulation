@@ -70,7 +70,7 @@ public class ControlHandler {
         });
     }
 
-    public void updateProductHandler(AdminWindow homeWindow, Button submitButton, TextField pid, TextField val, ComboBox field) {
+    public void updateProductHandler(AdminWindow admin, Button submitButton, TextField pid, TextField val, ComboBox field) {
         submitButton.setOnAction(new EventHandler<ActionEvent>() {
             @Override
             public void handle(ActionEvent event) {
@@ -79,8 +79,7 @@ public class ControlHandler {
 
                 vendingMachine.updateProduct(productId, newValue, field.getValue().toString());
 
-                //TODO update on homeWindow
-                
+                system.getHomeWindow().cfgProductPane();
             }
         });
     }
@@ -104,10 +103,19 @@ public class ControlHandler {
                     return;
                 }
 
-                System.out.println("here");
                 PaymentWindow paymentWindow = system.getPaymentWindow();
                 system.setScene(paymentWindow.getScene());
                 paymentWindow.draw();
+            }
+        });
+    }
+
+    public void toHomeWindowHandle(Button b) {
+        b.setOnAction(new EventHandler<ActionEvent>() {
+            @Override
+            public void handle(ActionEvent event) {
+                HomeWindow home = system.getHomeWindow();
+                system.setScene(home.getScene());
             }
         });
     }

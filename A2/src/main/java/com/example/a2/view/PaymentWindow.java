@@ -4,6 +4,7 @@ import com.example.a2.Sys;
 import com.example.a2.VendingMachine;
 
 import javafx.scene.Scene;
+import javafx.scene.control.Button;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.Pane;
 import javafx.scene.text.Font;
@@ -28,6 +29,7 @@ public class PaymentWindow implements Window{
     private Method method;
     private Text totalText;
     private TextField inputMoney;
+    private Button continueShopping;
 
     public PaymentWindow(Sys system, ControlHandler controlHandler) {
         this.controlHandler = controlHandler;
@@ -36,6 +38,15 @@ public class PaymentWindow implements Window{
         this.scene = new Scene(pane, width, height);
         this.system = system;
         this.vendingMachine = system.getVendingMachine();
+
+        //back to shopping
+        continueShopping = new Button("Continue shopping");
+        continueShopping.setTranslateX(370);
+        continueShopping.setTranslateY(20);
+        continueShopping.setStyle(
+                "-fx-background-color: #e6cc00;");
+        pane.getChildren().add(continueShopping);
+        controlHandler.toHomeWindowHandle(continueShopping);
     }
 
     @Override
@@ -50,7 +61,7 @@ public class PaymentWindow implements Window{
         totalText.setTranslateX(10);
         totalText.setTranslateY(50);
         pane.getChildren().add(totalText);
-        
+
         if (method == Method.CASH) {
             inputMoney = new TextField();
             // inputMoney.translateX
