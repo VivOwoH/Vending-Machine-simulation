@@ -64,7 +64,7 @@ public class HomeWindow implements Window {
 
     private ControlHandler controlHandler;
     private HashMap<Integer, Button> productButtons;
-    private HashMap<Integer, Vbox> productBox; 
+    private HashMap<Integer, VBox> productBoxes; 
 
     private Button adminButton;
 
@@ -142,6 +142,7 @@ public class HomeWindow implements Window {
         int hcount = 0;
 
         productButtons = new HashMap<>();
+        productBoxes = new HashMap<>();
 
         for (Product product : sys.getVendingMachine().getProductInventroy()) {
 
@@ -171,7 +172,7 @@ public class HomeWindow implements Window {
             // productText.setTextAlignment(TextAlignment.CENTER);
             productBox.getChildren().add(productText);
             productButtons.put(product.getCode(), button);
-            productBox.put(product.getCode, productBox);
+            productBoxes.put(product.getCode(), productBox);
 
             currHBox.getChildren().add(productBox);
 
@@ -203,7 +204,7 @@ public class HomeWindow implements Window {
         comboBox.getSelectionModel().selectFirst(); // placeholder = 1st option = default All
 
         comboBox.setOnAction((event) -> {
-            vendingMachine.triggerTimer();
+            sys.getVendingMachine().triggerTimer();
             String selectedCategory = (String) comboBox.getValue();
 
             // reset scrollpane content
@@ -252,7 +253,7 @@ public class HomeWindow implements Window {
         // action event
         EventHandler<ActionEvent> event = new EventHandler<ActionEvent>() {
             public void handle(ActionEvent e) {
-                vendingMachine.triggerTimer();
+                sys.getVendingMachine().triggerTimer();
 
                 int id = Integer.parseInt(itemCode.getText());
                 int qty = Integer.parseInt(itemQty.getText());
