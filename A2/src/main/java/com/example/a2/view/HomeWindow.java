@@ -303,6 +303,9 @@ public class HomeWindow implements Window {
 
     public void loadHistory() {
         // load the history box
+
+        historyBox.getChildren().clear();
+
         ArrayList<Transaction> lastFiveTransactions = sys.getDatabase().getLastFiveTransactionsByUserID(
                 sys.getDatabase().getUserID(currentUser.getUsername()));
 
