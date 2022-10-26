@@ -15,8 +15,8 @@ public class VendingMachine {
     private HashMap<Integer, Integer> cart = new HashMap<>(); // Map<prodID,qty>
     public final static String[] categories = { "Drinks", "Chocolates", "Chips", "Candies" }; // pre-defined; can't be
                                                                                               // modified
-    public final static String[] denominations = { "5c", "10c", "20c", "50c", "1d", "2d", "5d", "10d", "20d", "50d",
-            "100d" };
+    public final static String[] denominations = { "0.05", "0.10", "0.20", "0.50", "1.0", "2.0", "5.0", "10.0", "20.0", "50.0",
+            "100.0" };
     public final static String[] products = { "water", "sprite", "coke", "pepsi", "juice",
             "mars", "m&m", "bounty", "snicker",
             "smiths", "pringles", "kettles", "thins",
