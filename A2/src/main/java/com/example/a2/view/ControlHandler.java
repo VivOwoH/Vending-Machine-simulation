@@ -1,5 +1,6 @@
 package com.example.a2.view;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map.Entry;
 
@@ -110,6 +111,41 @@ public class ControlHandler {
             public void handle(ActionEvent event) {
                 HomeWindow home = system.getHomeWindow();
                 system.setScene(home.getScene());
+            }
+        });
+    }
+
+    public void cashHandle(TextField in, Text show) {
+        in.setOnAction(new EventHandler<ActionEvent>() {
+            @Override
+            public void handle(ActionEvent event) {
+                double input = Double.parseDouble(in.getText());
+
+                if (!vendingMachine.checkInput(input)) { 
+                    show.setText("Invalid input."); 
+                    return;
+                }
+
+                double inputTotal = system.getPaymentWindow().addInputCash(input);
+
+                double total = vendingMachine.getTotalCost();
+                ArrayList<HashMap<Double, Integer>> out = vendingMachine.makeCashPurchase(total, inputTotal);
+
+                if (out == null) {
+                    show.setText(String.format("Input: %.2f\nRemaining due: %.2f",inputTotal,total-inputTotal));
+                    return;
+                }
+
+                show.setText(String.format("Input: %.2f\nChange: %.2f", inputTotal, inputTotal - total));
+            }
+        });
+    }
+
+    public void methodBoxHandle(ComboBox c) {
+        c.setOnAction(new EventHandler<ActionEvent>() {
+            @Override
+            public void handle(ActionEvent event) {
+                system.getPaymentWindow().draw();
             }
         });
     }

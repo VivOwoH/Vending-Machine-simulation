@@ -402,6 +402,16 @@ public class VendingMachine {
         return result;
     }
 
+    public boolean checkInput(double d) {
+        double valid[] = {0.05, 0.1, 0.2, 0.5, 1, 2, 5, 10, 20, 50};
+
+        for (double v : valid) {
+            if (v == d) return true;
+        }
+
+        return false;
+    }
+
     // ---------------------------
     // ----- SETTER/GETTER -------
     // ---------------------------
