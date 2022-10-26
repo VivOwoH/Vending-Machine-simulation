@@ -1,38 +1,44 @@
 package com.example.a2.view;
-import com.example.a2.Sys;
-import com.example.a2.User;
 
-import com.example.a2.DBManage;
 import com.example.a2.HelloApplication;
+import com.example.a2.Sys;
 
-import javafx.scene.Scene;
-import javafx.scene.layout.Pane;
-import javafx.scene.control.*;
+import com.example.a2.User;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
+import javafx.scene.Scene;
+import javafx.scene.control.Button;
+import javafx.scene.control.PasswordField;
+import javafx.scene.control.TextField;
+import javafx.scene.layout.Pane;
 import javafx.scene.text.Text;
 
 public class LoginWindow implements Window {
-    private Pane pane;
-    private Scene scene;
-    private Text text;
-    private Text username;
-    private Text password;
-    private TextField captureUsername;
-    private PasswordField capturePassword;
-    private int width = 400;
-    private int height = 300;
-    private HelloApplication app;
-    private Sys sys;
+    protected Pane pane;
+    protected Scene scene;
+    protected Text titleTxt;
+    protected Text text;
+    protected Text username;
+    protected Text password;
+    protected TextField captureUsername;
+    protected PasswordField capturePassword;
+    protected Button redirectButton;
+    protected int width = 400;
+    protected int height = 300;
+    protected HelloApplication app;
+    protected Sys sys;
 
     public LoginWindow(HelloApplication app, Sys sys) {
+        this.app = app;
+        this.sys = sys;
+        
         pane = new Pane();
         scene = new Scene(pane, width, height);
         text = new Text();
         username = new Text("Username:");
         password = new Text("Password:");
 
-        //declare shapes here
+        // declare shapes here
         username.setLayoutX(130);
         username.setLayoutY(95);
         pane.getChildren().add(username);
@@ -53,34 +59,62 @@ public class LoginWindow implements Window {
         capturePassword.setLayoutY(150);
         capturePassword.setLayoutX(130);
 
+        titleTxt = new Text("Login in");
+        titleTxt.setLayoutY(60);
+        titleTxt.setLayoutX(130);
+        pane.getChildren().add(titleTxt);
+
         text.setText("");
         text.setLayoutY(200);
         text.setLayoutX(130);
         pane.getChildren().add(text);
 
+        cfgRedirectButton();
+        cfgInput();
+    }
+
+    public void cfgRedirectButton() {
+        // registration button
+        redirectButton = new Button("Sign up");
+        redirectButton.setTranslateX(180);
+        redirectButton.setTranslateY(230);
+
         // action event
         EventHandler<ActionEvent> event = new EventHandler<ActionEvent>() {
-            public void handle(ActionEvent e)
-            {
+            public void handle(ActionEvent e) {
+                RegistrationWindow registration = new RegistrationWindow(app, sys);
+                app.setScene(registration.getScene());
+            }
+        };
+
+        // when button is pressed
+        redirectButton.setOnAction(event);
+
+        pane.getChildren().add(redirectButton);
+    }
+
+    public void cfgInput() {
+        // action event
+        EventHandler<ActionEvent> event = new EventHandler<ActionEvent>() {
+            public void handle(ActionEvent e) {
                 String username = captureUsername.getText();
                 String password = capturePassword.getText();
 
-                String result = sys.getDatabase().getUser(username);
+                String result = sys.getDatabase().getUserPassword(username);
 
-                //if user exists, try and match the password
-                if(result != null){
-                    if(password.equals(result)){
+                // if user exists, try and match the password
+                if (result != null) {
+                    if (password.equals(result)) {
                         text.setText("User matched");
                         app.setScene(app.getHomeWindow().getScene());
-                    }
-                    else{
+                        User currentUser = new User(username,password);
+                        app.getHomeWindow().loadUserAfterLogin(currentUser);
+                        sys.setCurrentUser(currentUser);
+                    } else {
                         text.setText("Wrong password");
                     }
-                }
-                else{//is user does not exist create it
-                    sys.getDatabase().addUser(username, password, "User");
-                    String displayText = "User added with username " + username;
-                    text.setText(displayText);
+                } else {
+                    text.setText("Username not found");
                 }
             }
         };
@@ -90,7 +124,9 @@ public class LoginWindow implements Window {
         capturePassword.setOnAction(event);
     }
 
-    public Scene getScene() { return scene; }
+    public Scene getScene() {
+        return scene;
+    }
 
     @Override
     public void draw() {
@@ -101,6 +137,6 @@ public class LoginWindow implements Window {
     @Override
     public void run() {
         // TODO Auto-generated method stub
-        
+
     }
 }

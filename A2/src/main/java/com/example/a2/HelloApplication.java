@@ -1,31 +1,46 @@
 package com.example.a2;
 
 import com.example.a2.view.LoginWindow;
+import com.example.a2.view.PaymentWindow;
+import com.example.a2.view.AdminWindow;
+import com.example.a2.view.ControlHandler;
 import com.example.a2.view.HomeWindow;
 
 import javafx.application.Application;
+import javafx.application.Platform;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
+import javafx.stage.WindowEvent;
 
+import java.beans.EventHandler;
 import java.io.IOException;
 import java.util.ArrayList;
 
 public class HelloApplication extends Application {
     private LoginWindow loginWindow;
     private HomeWindow homeWindow;
+    private AdminWindow adminWindow;
+    private PaymentWindow paymentWindow;
+    private ControlHandler controlHandler;
     private Stage stage;
 
     @Override
     public void start(Stage stage) throws IOException {
-        Sys system = new Sys(); //use this for logic
+        Sys system = new Sys(this); //use this for logic
 
         this.stage = stage;
+        controlHandler = new ControlHandler(system);
         loginWindow = new LoginWindow(this, system);
-        homeWindow = new HomeWindow(system);
+        adminWindow = new AdminWindow(system, controlHandler);
+        homeWindow = new HomeWindow(this, system, controlHandler);
+        paymentWindow = new PaymentWindow(this, system, controlHandler);
 
         stage.setTitle("Lite Snacks");
         stage.setScene(loginWindow.getScene());
+        stage.setResizable(false);
         stage.show();
+
+        stage.setOnCloseRequest(e -> System.exit(0));
     }
 
     public void setScene(Scene scene) {
@@ -33,13 +48,11 @@ public class HelloApplication extends Application {
         stage.show();
     }
 
-    public HomeWindow getHomeWindow() {
-        return this.homeWindow;
-    }
+    public LoginWindow getloginWindow() { return loginWindow; }
+    public AdminWindow getAdminWindow() { return adminWindow; }
+    public HomeWindow getHomeWindow() { return homeWindow; }
+    public PaymentWindow getPaymentWindow() { return paymentWindow; }
 
-    public LoginWindow getLoginWindow() {
-        return this.loginWindow;
-    }
 
     public static void main(String[] args) {
 //         DBManage.addUser("admin", "admin", "Owner");

@@ -1,5 +1,6 @@
 package com.example.a2;
 
+import java.io.File;
 import java.sql.*;
 import java.util.ArrayList;
 
@@ -15,7 +16,7 @@ import java.util.Date;
 public class DBManage {
 
     public Connection connection = null;
-    public String url = "jdbc:sqlite:src\\main\\data\\";
+    public String url = "jdbc:sqlite:src/main/data/";
     public String fileName;
 
     public DBManage(String fileName){
@@ -48,7 +49,7 @@ public class DBManage {
                     "quantity INTEGER DEFAULT (5))");
             // transactions Table
             statement.executeUpdate("CREATE TABLE IF NOT EXISTS Transactions " +
-                    "(transID INTEGER PRIMARY KEY NOT NULL, " +
+                    "(transID INTEGER PRIMARY KEY, " +
                     "userID REFERENCES Users(userID), " +
                     "prodID REFERENCES Products(prodID) NOT NULL," +
                     "success BIT NOT NULL," +
@@ -75,6 +76,8 @@ public class DBManage {
             statement.executeUpdate(toExecute);
 
         } catch (Exception e) {
+            if (e.getMessage().contains("UNIQUE"))
+                return;
             java.lang.System.out.println("_________________________ERROR at createDB_________________________");
             java.lang.System.err.println(e.getMessage());
         } finally {
@@ -89,6 +92,14 @@ public class DBManage {
         }
     }
 
+    public void deleteDB() {
+        File myObj = new File("src/main/data/" + fileName);
+        if (myObj.delete()) {
+            System.out.println("Deleted the file: " + myObj.getName());
+        } else {
+            System.out.println("Failed to delete the file.");
+        }
+    }
     public Integer getCurrencyQuantity(Double denom){
         Integer resultAmount = 0;
         String denomination = denom.toString();
@@ -127,7 +138,7 @@ public class DBManage {
         return resultAmount;
     }
 
-    public String getUser(String userName){
+    public String getUserPassword(String userName){
         String resultPassword = null;
 
         try {
@@ -148,7 +159,7 @@ public class DBManage {
             resultPassword = result.getString("password");
 
         } catch (Exception e) {
-            java.lang.System.out.println("_________________________ERROR at addUser_________________________");
+            java.lang.System.out.println("_________________________ERROR at getUserPassword_________________________");
             java.lang.System.err.println(e.getMessage());
         } finally {
             try {
@@ -162,6 +173,39 @@ public class DBManage {
         }
 
         return resultPassword;
+    }
+
+    public int getUserID(String userName){
+        int userID = 0;
+
+        try {
+            connection = DriverManager.getConnection(url);
+            Statement statement = connection.createStatement();
+            statement.setQueryTimeout(30);
+
+            String insertStatement = "SELECT * FROM Users WHERE (? = Users.Username)";
+            PreparedStatement preparedStatement =
+                    connection.prepareStatement(insertStatement);
+            preparedStatement.setString(1, userName);
+            ResultSet result = preparedStatement.executeQuery();
+
+            userID = result.getInt("userID");
+
+        } catch (Exception e) {
+            java.lang.System.out.println("_________________________ERROR at getUserPassword_________________________");
+            java.lang.System.err.println(e.getMessage());
+        } finally {
+            try {
+                if (connection != null) {
+                    connection.close();
+                }
+            } catch (SQLException e) {
+                // connection close failed.
+                java.lang.System.err.println(e.getMessage());
+            }
+        }
+
+        return userID;
     }
 
     // add user to database
@@ -223,7 +267,7 @@ public class DBManage {
     }
 
     // add product to database
-    public void addProduct(double cost, String name, String category){
+    public String addProduct(double cost, String name, String category){
         try {
             connection = DriverManager.getConnection(url);
             Statement statement = connection.createStatement();
@@ -237,7 +281,12 @@ public class DBManage {
             preparedStatement.setString(3, category);
             preparedStatement.executeUpdate();
 
+            return "Product added";
+
         } catch (Exception e) {
+            if (e.getMessage().contains("UNIQUE")) {
+                return "Product already in DB.";
+            }
             java.lang.System.out.println("_________________________ERROR at addProduct_________________________");
             java.lang.System.err.println(e.getMessage());
         } finally {
@@ -250,6 +299,46 @@ public class DBManage {
                 java.lang.System.err.println(e.getMessage());
             }
         }
+        return null;
+    }
+
+    public String updateProduct(double cost, String name, int qty, String category, int prodID) {
+        try {
+            connection = DriverManager.getConnection(url);
+            Statement statement = connection.createStatement();
+            statement.setQueryTimeout(30);
+
+            String insertStatement = "UPDATE Products SET cost=?,name=?,quantity=?,Category=? WHERE prodID=?";
+            PreparedStatement preparedStatement =
+                    connection.prepareStatement(insertStatement);
+            preparedStatement.setDouble(1, cost);
+            preparedStatement.setString(2, name);
+            preparedStatement.setInt(3, qty);
+            preparedStatement.setString(4, category);
+            preparedStatement.setInt(5, prodID);
+            preparedStatement.executeUpdate();
+ 
+            return "Product updated";
+
+        } catch (Exception e) {
+            if (e.getMessage().contains("UNIQUE")) {
+                String err = "Product violates UNIQUE constraint.";
+                System.out.println(err);
+                return err;
+            }
+            java.lang.System.out.println("_________________________ERROR at addProduct_________________________");
+            java.lang.System.err.println(e.getMessage());
+        } finally {
+            try {
+                if (connection != null) {
+                    connection.close();
+                }
+            } catch (SQLException e) {
+                // connection close failed.
+                java.lang.System.err.println(e.getMessage());
+            }
+        }
+        return null;
     }
 
     // remove product from database using their ID
@@ -281,7 +370,7 @@ public class DBManage {
     }
 
     // add purchase history (customer has account)(the time of transaction will be recorded when this function is called)
-    public void addTransaction(int prodID, boolean success, int userID){
+    public void addTransaction(int prodID, boolean success, int userID, int quantity){
         try {
             connection = DriverManager.getConnection(url);
             Statement statement = connection.createStatement();
@@ -296,52 +385,14 @@ public class DBManage {
 
             Timestamp timestamp = new Timestamp(java.lang.System.currentTimeMillis());
 
-            String insertStatement = "INSERT INTO Transactions (userID, prodID, success, date) VALUES(?,?,?,?)";
+            String insertStatement = "INSERT INTO Transactions (userID, prodID, success, date, quantity) VALUES(?,?,?,?,?)";
             PreparedStatement preparedStatement =
                     connection.prepareStatement(insertStatement);
             preparedStatement.setInt(1, userID);
             preparedStatement.setInt(2, prodID);
             preparedStatement.setInt(3, successBit);
             preparedStatement.setTimestamp(4, timestamp);
-            preparedStatement.executeUpdate();
-
-        } catch (Exception e) {
-            java.lang.System.out.println("_________________________ERROR at addTransaction_________________________");
-            java.lang.System.err.println(e.getMessage());
-        } finally {
-            try {
-                if (connection != null) {
-                    connection.close();
-                }
-            } catch (SQLException e) {
-                // connection close failed.
-                java.lang.System.err.println(e.getMessage());
-            }
-        }
-    }
-
-    // add purchase history (anonymous buyer)
-    public void addTransaction(int prodID, boolean success){
-        try {
-            connection = DriverManager.getConnection(url);
-            Statement statement = connection.createStatement();
-            statement.setQueryTimeout(30);
-
-            int successBit;
-            if (success){
-                successBit = 1;
-            } else {
-                successBit = 0;
-            }
-
-            Timestamp timestamp = new Timestamp(java.lang.System.currentTimeMillis());
-
-            String insertStatement = "INSERT INTO Transactions (prodID, success, date) VALUES(?,?,?)";
-            PreparedStatement preparedStatement =
-                    connection.prepareStatement(insertStatement);
-            preparedStatement.setInt(1, prodID);
-            preparedStatement.setInt(2, successBit);
-            preparedStatement.setTimestamp(3, timestamp);
+            preparedStatement.setInt(5, quantity);
             preparedStatement.executeUpdate();
 
         } catch (Exception e) {
