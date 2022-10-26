@@ -2,6 +2,7 @@ package com.example.a2.view;
 
 import com.example.a2.HelloApplication;
 import com.example.a2.Sys;
+import com.example.a2.User;
 
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
@@ -51,6 +52,11 @@ public class RegistrationWindow extends LoginWindow {
                     sys.getDatabase().addUser(username, password, "User");
                     String displayText = "User added with username " + username;
                     text.setText(displayText);
+
+                    app.setScene(app.getHomeWindow().getScene());
+                    User currentUser = new User(username, password);
+                    app.getHomeWindow().loadUserAfterLogin(currentUser);
+                    sys.setCurrentUser(currentUser);
                 }
             }
         };
