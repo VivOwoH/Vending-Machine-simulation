@@ -399,6 +399,13 @@ public class VendingMachine {
             return null;
         }
         ArrayList<HashMap<Double, Integer>> result = fillGap(requestChange(changeCalc(change, 100.1)));
+
+        double num_remaining = (result.get(0).get(0.05)) * 0.05;
+
+        if(num_remaining != 0){
+            result.set(0, changeCalc(num_remaining, 100.1));
+        }
+
         return result;
     }
 
