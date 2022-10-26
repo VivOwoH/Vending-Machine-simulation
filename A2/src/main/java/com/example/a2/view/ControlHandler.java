@@ -54,6 +54,7 @@ public class ControlHandler {
             // adds transaction into database
             database.addTransaction(prodID, true, userID, quantity);
             // success
+            vendingMachine.cancelTimer();
             return true;
         } catch (Exception e) {
             // fail
@@ -67,6 +68,8 @@ public class ControlHandler {
             public void handle(ActionEvent event) {
                 AdminWindow adminWindow = system.getAdminWinodw();
                 system.setScene(adminWindow.getScene());
+
+                vendingMachine.triggerTimer();
             }
         });
     }
@@ -86,6 +89,7 @@ public class ControlHandler {
     }
 
     public void cancelTransactionHandle() {
+        vendingMachine.cancelTimer();
         vendingMachine.clearCart();
     }
 
@@ -93,6 +97,8 @@ public class ControlHandler {
         checkoutButton.setOnAction(new EventHandler<ActionEvent>() {
             @Override
             public void handle(ActionEvent event) {
+                vendingMachine.triggerTimer();
+
                 if (vendingMachine.getCart().size() == 0) {
                     system.getHomeWindow().dontLetCheckout();
                     return;
@@ -119,6 +125,8 @@ public class ControlHandler {
         in.setOnAction(new EventHandler<ActionEvent>() {
             @Override
             public void handle(ActionEvent event) {
+                vendingMachine.triggerTimer();
+
                 double input = Double.parseDouble(in.getText());
 
                 if (!vendingMachine.checkInput(input)) { 
@@ -145,6 +153,7 @@ public class ControlHandler {
         c.setOnAction(new EventHandler<ActionEvent>() {
             @Override
             public void handle(ActionEvent event) {
+                vendingMachine.triggerTimer();
                 system.getPaymentWindow().draw();
             }
         });

@@ -179,6 +179,10 @@ public class VendingMachine {
         idleTimer.schedule(cancelTransactionTask, idleLimit);
     }
 
+    public void cancelTimer() {
+        idleTimer.cancel();
+    }
+
     // ---------------------------
     // -------- Cart -------------
     // ---------------------------

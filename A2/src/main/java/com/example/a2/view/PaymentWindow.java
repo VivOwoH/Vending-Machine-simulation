@@ -128,6 +128,8 @@ public class PaymentWindow implements Window {
         confirmTransactionButton.setOnAction(new EventHandler<ActionEvent>() {
             @Override
             public void handle(ActionEvent event) {
+                vendingMachine.cancelTimer();
+
                 String currentUserName = system.getCurrentUser().getUsername();
                 System.out.println("user: " + currentUserName + " Pressed with ID: " +
                         system.getDatabase().getUserID(currentUserName));
