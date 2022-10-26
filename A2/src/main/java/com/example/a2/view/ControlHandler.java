@@ -4,10 +4,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map.Entry;
 
-import com.example.a2.DBManage;
-import com.example.a2.HelloApplication;
-import com.example.a2.Sys;
-import com.example.a2.VendingMachine;
+import com.example.a2.*;
 
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
@@ -65,6 +62,7 @@ public class ControlHandler {
         b.setOnAction(new EventHandler<ActionEvent>() {
             @Override
             public void handle(ActionEvent event) {
+                User currentUser = system.getCurrentUser();
                 AdminWindow adminWindow = system.getAdminWinodw();
                 system.setScene(adminWindow.getScene());
             }
