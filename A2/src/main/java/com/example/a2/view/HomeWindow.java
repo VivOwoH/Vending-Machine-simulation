@@ -338,6 +338,10 @@ public class HomeWindow implements Window {
     }
 
     public void clearCancelText() {
+        if (cancelled == null) {
+            return;
+        }
+
         cancelled.setVisible(false);
     }
 
@@ -357,6 +361,10 @@ public class HomeWindow implements Window {
     }
 
     public void clearCannotCheckoutText() {
+        if (cannotCheckout == null) {
+            return;
+        }
+
         cannotCheckout.setVisible(false);
     }
 
