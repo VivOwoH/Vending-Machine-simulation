@@ -13,6 +13,7 @@ import javafx.event.EventHandler;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.ComboBox;
+import javafx.scene.control.ScrollPane;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.VBox;
@@ -47,6 +48,7 @@ public class PaymentWindow implements Window {
     private String methods[] = {"Cash", "Card"};
     private TextField cardHolder;
     private TextField cardNumber;
+    private ScrollPane scrollPane;
 
     private double inputTotal = 0;
 
@@ -103,13 +105,13 @@ public class PaymentWindow implements Window {
 
             inputMoney = new TextField();
             inputMoney.setTranslateX(10);
-            inputMoney.setTranslateY(100);
+            inputMoney.setTranslateY(210);
             inputMoney.setPromptText("insert cash/coins");
             pane.getChildren().add(inputMoney);
 
             cashMsg = new Text();
             cashMsg.setTranslateX(15);
-            cashMsg.setTranslateY(140);
+            cashMsg.setTranslateY(250);
             pane.getChildren().add(cashMsg);
 
             controlHandler.cashHandle(inputMoney, cashMsg);
@@ -120,13 +122,13 @@ public class PaymentWindow implements Window {
 
             cardHolder = new TextField();
             cardHolder.setTranslateX(10);
-            cardHolder.setTranslateY(100);
+            cardHolder.setTranslateY(210);
             cardHolder.setPromptText("Cardholder name");
             pane.getChildren().add(cardHolder);
 
             cardNumber = new TextField();
             cardNumber.setTranslateX(10);
-            cardNumber.setTranslateY(130);
+            cardNumber.setTranslateY(240);
             cardNumber.setPromptText("Card number");
             pane.getChildren().add(cardNumber);
         }
@@ -134,10 +136,12 @@ public class PaymentWindow implements Window {
     }
 
     public void refreshCart() {
+        scrollPane = new ScrollPane();
+        scrollPane.setPrefSize(200, 100);
+        scrollPane.relocate(10, 100);
+
         pane.getChildren().remove(box); // remove the previous print
         box = new VBox(10);
-        box.setTranslateX(10);
-        box.setTranslateY(100);
 
         // List all cart items
         for (Map.Entry<Integer, Integer> entry : system.getVendingMachine().getCart().entrySet()) {
@@ -148,7 +152,10 @@ public class PaymentWindow implements Window {
                     product.getCost() * qty));
             box.getChildren().add(text);
         }
-        pane.getChildren().add(box);
+        // pane.getChildren().add(box);
+
+        scrollPane.setContent(box);
+        pane.getChildren().add(scrollPane);
     }
 
     public double addInputCash(double amount) {
