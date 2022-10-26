@@ -64,6 +64,7 @@ public class HomeWindow implements Window {
 
     private ControlHandler controlHandler;
     private HashMap<Integer, Button> productButtons;
+    private HashMap<Integer, VBox> productBoxes; 
 
     private Button adminButton;
 
@@ -141,6 +142,7 @@ public class HomeWindow implements Window {
         int hcount = 0;
 
         productButtons = new HashMap<>();
+        productBoxes = new HashMap<>();
 
         for (Product product : sys.getVendingMachine().getProductInventroy()) {
 
@@ -170,6 +172,7 @@ public class HomeWindow implements Window {
             // productText.setTextAlignment(TextAlignment.CENTER);
             productBox.getChildren().add(productText);
             productButtons.put(product.getCode(), button);
+            productBoxes.put(product.getCode(), productBox);
 
             currHBox.getChildren().add(productBox);
 
@@ -201,6 +204,7 @@ public class HomeWindow implements Window {
         comboBox.getSelectionModel().selectFirst(); // placeholder = 1st option = default All
 
         comboBox.setOnAction((event) -> {
+            sys.getVendingMachine().triggerTimer();
             String selectedCategory = (String) comboBox.getValue();
 
             // reset scrollpane content
@@ -249,6 +253,7 @@ public class HomeWindow implements Window {
         // action event
         EventHandler<ActionEvent> event = new EventHandler<ActionEvent>() {
             public void handle(ActionEvent e) {
+                sys.getVendingMachine().triggerTimer();
 
                 int id = Integer.parseInt(itemCode.getText());
                 int qty = Integer.parseInt(itemQty.getText());
@@ -338,10 +343,7 @@ public class HomeWindow implements Window {
     }
 
     public void clearCancelText() {
-        if (cancelled == null) {
-            return;
-        }
-
+        if (cancelled == null) {return;}
         cancelled.setVisible(false);
     }
 
@@ -361,10 +363,7 @@ public class HomeWindow implements Window {
     }
 
     public void clearCannotCheckoutText() {
-        if (cannotCheckout == null) {
-            return;
-        }
-
+        if (cannotCheckout == null) {return;}
         cannotCheckout.setVisible(false);
     }
 

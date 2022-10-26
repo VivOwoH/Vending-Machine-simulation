@@ -26,6 +26,7 @@ public class VendingMachine {
     private Timer idleTimer;
     private TimerTask cancelTransactionTask;
     private long idleLimit = 120000;
+    private boolean timerRunning = false;
     // private Alert alert;
 
     static {
@@ -172,11 +173,18 @@ public class VendingMachine {
     }
 
     public void triggerTimer() {
-        if (!cart.isEmpty()) {
-            idleTimer.cancel();
-        }
+        // if (timerRunning) {
+        //     idleTimer.cancel();
+        // }
         makeTimerTask();
         idleTimer.schedule(cancelTransactionTask, idleLimit);
+        timerRunning = true;
+    }
+
+    public void cancelTimer() {
+        idleTimer.cancel();
+        timerRunning = false;
+        System.out.println("cancelled");
     }
 
     // ---------------------------
@@ -410,11 +418,11 @@ public class VendingMachine {
         return result;
     }
 
-    public boolean checkInput(double input) {
-        double valid[] = {0.01, 0.1, 0.2, 0.5, 1, 2, 5, 10, 20, 50};
+    public boolean checkInput(double d) {
+        double valid[] = {0.05, 0.1, 0.2, 0.5, 1, 2, 5, 10, 20, 50};
 
         for (double v : valid) {
-            if (input == v) return true;
+            if (v == d) return true;
         }
 
         return false;

@@ -44,7 +44,9 @@ public class PaymentWindow implements Window {
     private Button continueShopping;
     private Text cashMsg;
     private ComboBox methodBox;
-    private String methods[] = { "Cash", "Card" };
+    private String methods[] = {"Cash", "Card"};
+    private TextField cardHolder;
+    private TextField cardNumber;
 
     private double inputTotal = 0;
 
@@ -96,6 +98,9 @@ public class PaymentWindow implements Window {
         refreshCart();
 
         if (methodBox.getValue() == "Cash") {
+            if (cardHolder != null) { cardHolder.setVisible(false); }
+            if (cardNumber != null) { cardNumber.setVisible(false); }
+
             inputMoney = new TextField();
             inputMoney.setTranslateX(10);
             inputMoney.setTranslateY(100);
@@ -109,8 +114,21 @@ public class PaymentWindow implements Window {
 
             controlHandler.cashHandle(inputMoney, cashMsg);
 
-        } else {
+        } else if (methodBox.getValue() == "Card") {
+            if (inputMoney != null) { inputMoney.setVisible(false); }
+            if (cashMsg != null) { cashMsg.setVisible(false); }
 
+            cardHolder = new TextField();
+            cardHolder.setTranslateX(10);
+            cardHolder.setTranslateY(100);
+            cardHolder.setPromptText("Cardholder name");
+            pane.getChildren().add(cardHolder);
+
+            cardNumber = new TextField();
+            cardNumber.setTranslateX(10);
+            cardNumber.setTranslateY(130);
+            cardNumber.setPromptText("Card number");
+            pane.getChildren().add(cardNumber);
         }
 
     }
@@ -152,6 +170,8 @@ public class PaymentWindow implements Window {
         confirmTransactionButton.setOnAction(new EventHandler<ActionEvent>() {
             @Override
             public void handle(ActionEvent event) {
+                vendingMachine.cancelTimer();
+
                 String currentUserName = system.getCurrentUser().getUsername();
                 System.out.println("user: " + currentUserName + " Pressed with ID: " +
                         system.getDatabase().getUserID(currentUserName));
