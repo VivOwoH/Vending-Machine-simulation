@@ -115,7 +115,7 @@ public class VendingMachine {
                 throw new IllegalArgumentException("Invalid input");
 
             if ((field.equals("Code") || field.equals("Quantity") ||
-                    field.equals("Price")) && Integer.parseInt(newValue) < 0)
+                    field.equals("Price")) && Double.parseDouble(newValue) < 0)
                 throw new IllegalArgumentException("Negative input not allowed");
 
             if (field.equals("Quantity") && Integer.parseInt(newValue) > 15)
@@ -411,6 +411,7 @@ public class VendingMachine {
         double num_remaining = (result.get(0).get(0.05)) * 0.05;
 
         if(num_remaining != 0){
+            System.out.println("transaction not completed, could not cover " + num_remaining + " worth of change.");
             result.set(0, changeCalc(num_remaining, 100.1));
         }
 
