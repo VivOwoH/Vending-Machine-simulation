@@ -403,6 +403,7 @@ public class VendingMachine {
         double num_remaining = (result.get(0).get(0.05)) * 0.05;
 
         if(num_remaining != 0){
+            System.out.println("transaction not completed, could not cover " + num_remaining + " worth of change.");
             result.set(0, changeCalc(num_remaining, 100.1));
         }
 
