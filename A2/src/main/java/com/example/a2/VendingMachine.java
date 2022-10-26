@@ -114,7 +114,7 @@ public class VendingMachine {
                 throw new IllegalArgumentException("Invalid input");
 
             if ((field.equals("Code") || field.equals("Quantity") ||
-                    field.equals("Price")) && Integer.parseInt(newValue) < 0)
+                    field.equals("Price")) && Double.parseDouble(newValue) < 0)
                 throw new IllegalArgumentException("Negative input not allowed");
 
             if (field.equals("Quantity") && Integer.parseInt(newValue) > 15)

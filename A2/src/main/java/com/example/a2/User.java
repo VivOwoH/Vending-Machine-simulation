@@ -19,5 +19,6 @@ public class User{
     }
 
     public boolean getRole() {
+        return false;
     }
 }
