@@ -69,6 +69,10 @@ public class DBManage {
                    this.addProduct(0, product, key);
                }
             }
+            //populate users
+            String toExecute = "INSERT INTO Users(username, password, userID, role) " +
+                    "VALUES(\"admin\", \"admin\", 0, \"admin\");";
+            statement.executeUpdate(toExecute);
 
         } catch (Exception e) {
             java.lang.System.out.println("_________________________ERROR at createDB_________________________");
