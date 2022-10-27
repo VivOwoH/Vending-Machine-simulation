@@ -136,14 +136,20 @@ public class ControlHandler {
                 double inputTotal = system.getPaymentWindow().addInputCash(input);
 
                 double total = vendingMachine.getTotalCost();
-                ArrayList<HashMap<Double, Integer>> out = vendingMachine.makeCashPurchase(total, inputTotal);
 
-                if (out == null) {
+                if (inputTotal < total) {
                     show.setText(String.format("Input: %.2f\nRemaining due: %.2f",inputTotal,total-inputTotal));
                     return;
                 }
 
-                show.setText(String.format("Input: %.2f\nChange: %.2f", inputTotal, inputTotal - total));
+                ArrayList<HashMap<Double, Integer>> out = vendingMachine.makeCashPurchase(total, inputTotal);
+
+                if(out.get(0).get(0.05) != 0){
+                    show.setText(String.format("Could not cover %.2f of change.", out.get(0).get(0.05) * 0.05));
+                }
+                else {
+                    show.setText(String.format("Input: %.2f\nChange: %.2f", inputTotal, inputTotal - total));
+                }
             }
         });
     }

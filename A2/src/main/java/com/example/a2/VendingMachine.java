@@ -15,8 +15,7 @@ public class VendingMachine {
     private HashMap<Integer, Integer> cart = new HashMap<>(); // Map<prodID,qty>
     public final static String[] categories = { "Drinks", "Chocolates", "Chips", "Candies" }; // pre-defined; can't be
                                                                                               // modified
-    public final static String[] denominations = { "0.05", "0.10", "0.20", "0.50", "1.0", "2.0", "5.0", "10.0", "20.0", "50.0",
-            "100.0" };
+    public final static String[] denominations = { "100.0", "50.0", "20.0", "10.0", "5.0", "2.0", "1.0", "0.50", "0.20", "0.10", "0.05"};
     public final static String[] products = { "water", "sprite", "coke", "pepsi", "juice",
             "mars", "m&m", "bounty", "snicker",
             "smiths", "pringles", "kettles", "thins",
@@ -307,8 +306,6 @@ public class VendingMachine {
      * @return updated result which has tried to fill the change still left to give.
      */
     public ArrayList<HashMap<Double, Integer>> fillGap(ArrayList<HashMap<Double, Integer>> changes) {
-        System.out.println("-----FILLING----");
-
         HashMap<Double, Integer> left = changes.get(0);
         HashMap<Double, Integer> given = changes.get(1);
         ArrayList<Double> denominations = new ArrayList<>();
@@ -406,19 +403,32 @@ public class VendingMachine {
             System.out.println("Not enough money");
             return null;
         }
+
         ArrayList<HashMap<Double, Integer>> result = fillGap(requestChange(changeCalc(change, 100.1)));
 
+        HashMap<Double, Integer> left = result.get(0);
+        HashMap<Double, Integer> given = result.get(1);
+
+        for(Double denomination: left.keySet()){
+            System.out.printf("%s %s %s\n", denomination, left.get(denomination), given.get(denomination));
+        }
+
         double num_remaining = (result.get(0).get(0.05)) * 0.05;
+        System.out.println(num_remaining);
+
         if(num_remaining != 0){
-            System.out.println("transaction not completed, could not cover " + num_remaining + " worth of change.");
-            result.set(0, changeCalc(num_remaining, 100.1));
+            //put the given back in!
+            for(Double denomination : given.keySet()){
+                database.updateCurrency(denomination, given.get(denomination)
+                        + database.getCurrencyQuantity(denomination));
+            }
         }
 
         return result;
     }
 
     public boolean checkInput(double d) {
-        double valid[] = {0.05, 0.1, 0.2, 0.5, 1, 2, 5, 10, 20, 50};
+        double valid[] = {0.05, 0.1, 0.2, 0.5, 1, 2, 5, 10, 20, 50, 100};
 
         for (double v : valid) {
             if (v == d) return true;
