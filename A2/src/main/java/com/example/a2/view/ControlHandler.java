@@ -13,6 +13,7 @@ import javafx.scene.control.ComboBox;
 import javafx.scene.control.TextField;
 import javafx.scene.text.Text;
 import javafx.scene.Scene;
+import javafx.scene.layout.VBox;
 
 public class ControlHandler {
     private VendingMachine vendingMachine;
@@ -153,6 +154,15 @@ public class ControlHandler {
             public void handle(ActionEvent event) {
                 vendingMachine.triggerTimer();
                 system.getPaymentWindow().draw();
+            }
+        });
+    }
+
+    public void drawReport(ComboBox reportType, VBox box) {
+        reportType.setOnAction(new EventHandler<ActionEvent>() {
+            @Override
+            public void handle(ActionEvent event) {
+                //TODO add texts to box
             }
         });
     }
