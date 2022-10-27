@@ -36,6 +36,9 @@ javafx {
 }
 
 dependencies {
+    // https://mvnrepository.com/artifact/com.googlecode.json-simple/json-simple
+    implementation group: 'com.googlecode.json-simple', name: 'json-simple', version: '1.1'
+
     implementation('org.controlsfx:controlsfx:11.1.1')
     implementation('com.dlsc.formsfx:formsfx-core:11.5.0') {
         exclude(group: 'org.openjfx')
@@ -51,6 +54,7 @@ dependencies {
     testImplementation("org.junit.jupiter:junit-jupiter-api:${junitVersion}")
     testRuntimeOnly("org.junit.jupiter:junit-jupiter-engine:${junitVersion}")
     implementation group: 'org.xerial', name: 'sqlite-jdbc', version: '3.36.0.3'
+
 }
 
 test {
