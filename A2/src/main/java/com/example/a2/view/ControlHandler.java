@@ -4,10 +4,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map.Entry;
 
-import com.example.a2.DBManage;
-import com.example.a2.HelloApplication;
-import com.example.a2.Sys;
-import com.example.a2.VendingMachine;
+import com.example.a2.*;
 
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
@@ -16,6 +13,7 @@ import javafx.scene.control.ComboBox;
 import javafx.scene.control.TextField;
 import javafx.scene.text.Text;
 import javafx.scene.Scene;
+import javafx.scene.layout.VBox;
 
 public class ControlHandler {
     private VendingMachine vendingMachine;
@@ -54,6 +52,7 @@ public class ControlHandler {
             // adds transaction into database
             database.addTransaction(prodID, true, userID, quantity);
             // success
+            vendingMachine.cancelTimer();
             return true;
         } catch (Exception e) {
             // fail
@@ -65,8 +64,11 @@ public class ControlHandler {
         b.setOnAction(new EventHandler<ActionEvent>() {
             @Override
             public void handle(ActionEvent event) {
+                User currentUser = system.getCurrentUser();
                 AdminWindow adminWindow = system.getAdminWinodw();
                 system.setScene(adminWindow.getScene());
+
+                vendingMachine.triggerTimer();
             }
         });
     }
@@ -86,6 +88,7 @@ public class ControlHandler {
     }
 
     public void cancelTransactionHandle() {
+        vendingMachine.cancelTimer();
         vendingMachine.clearCart();
     }
 
@@ -93,6 +96,8 @@ public class ControlHandler {
         checkoutButton.setOnAction(new EventHandler<ActionEvent>() {
             @Override
             public void handle(ActionEvent event) {
+                vendingMachine.triggerTimer();
+
                 if (vendingMachine.getCart().size() == 0) {
                     system.getHomeWindow().dontLetCheckout();
                     return;
@@ -119,6 +124,8 @@ public class ControlHandler {
         in.setOnAction(new EventHandler<ActionEvent>() {
             @Override
             public void handle(ActionEvent event) {
+                vendingMachine.triggerTimer();
+
                 double input = Double.parseDouble(in.getText());
 
                 if (!vendingMachine.checkInput(input)) { 
@@ -145,7 +152,17 @@ public class ControlHandler {
         c.setOnAction(new EventHandler<ActionEvent>() {
             @Override
             public void handle(ActionEvent event) {
+                vendingMachine.triggerTimer();
                 system.getPaymentWindow().draw();
+            }
+        });
+    }
+
+    public void drawReport(ComboBox reportType, VBox box) {
+        reportType.setOnAction(new EventHandler<ActionEvent>() {
+            @Override
+            public void handle(ActionEvent event) {
+                //TODO add texts to box
             }
         });
     }

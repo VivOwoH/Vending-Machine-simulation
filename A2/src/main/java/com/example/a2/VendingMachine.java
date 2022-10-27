@@ -26,6 +26,7 @@ public class VendingMachine {
     private Timer idleTimer;
     private TimerTask cancelTransactionTask;
     private long idleLimit = 120000;
+    private boolean timerRunning = false;
     // private Alert alert;
 
     static {
@@ -114,7 +115,7 @@ public class VendingMachine {
                 throw new IllegalArgumentException("Invalid input");
 
             if ((field.equals("Code") || field.equals("Quantity") ||
-                    field.equals("Price")) && Integer.parseInt(newValue) < 0)
+                    field.equals("Price")) && Double.parseDouble(newValue) < 0)
                 throw new IllegalArgumentException("Negative input not allowed");
 
             if (field.equals("Quantity") && Integer.parseInt(newValue) > 15)
@@ -172,11 +173,18 @@ public class VendingMachine {
     }
 
     public void triggerTimer() {
-        if (!cart.isEmpty()) {
-            idleTimer.cancel();
-        }
+        // if (timerRunning) {
+        //     idleTimer.cancel();
+        // }
         makeTimerTask();
         idleTimer.schedule(cancelTransactionTask, idleLimit);
+        timerRunning = true;
+    }
+
+    public void cancelTimer() {
+        idleTimer.cancel();
+        timerRunning = false;
+        System.out.println("cancelled");
     }
 
     // ---------------------------
@@ -402,17 +410,18 @@ public class VendingMachine {
 
         double num_remaining = (result.get(0).get(0.05)) * 0.05;
         if(num_remaining != 0){
+            System.out.println("transaction not completed, could not cover " + num_remaining + " worth of change.");
             result.set(0, changeCalc(num_remaining, 100.1));
         }
 
         return result;
     }
 
-    public boolean checkInput(double input) {
-        double valid[] = {0.01, 0.1, 0.2, 0.5, 1, 2, 5, 10, 20, 50};
+    public boolean checkInput(double d) {
+        double valid[] = {0.05, 0.1, 0.2, 0.5, 1, 2, 5, 10, 20, 50};
 
         for (double v : valid) {
-            if (input == v) return true;
+            if (v == d) return true;
         }
 
         return false;
