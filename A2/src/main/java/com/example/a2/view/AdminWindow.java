@@ -10,6 +10,8 @@ import javafx.scene.control.ComboBox;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.Pane;
 import javafx.scene.text.Text;
+import javafx.scene.layout.VBox;
+import javafx.scene.control.ScrollPane;
 
 public class AdminWindow implements Window{
 
@@ -28,6 +30,16 @@ public class AdminWindow implements Window{
     private Button submitChange;
     private String changeOptions[] = {"Name", "Code", "Category", "Quantity", "Price"};
     private Button home;
+    private TextField denomination;
+    private TextField cashQty;
+    private Text cashText;
+    private Button submitCashChange;
+    private Text cashMsg;
+    private Text reportTitle;
+    private ScrollPane reportPane;
+    private ComboBox reportType;
+    private String reportOptionsCashier[] = {"Available change", "Transactions"};
+    private String reportOptionsOwner[] = {"Available change", "Transactions", "Accounts", "Cancelled transactions"};
 
     public AdminWindow(Sys system, ControlHandler controlHandler) {
         pane = new Pane();
@@ -69,6 +81,39 @@ public class AdminWindow implements Window{
         controlHandler.updateProductHandler(this, submitChange, idField, changeField, combobox);
 
         pane.getChildren().addAll(updateText, idField, changeField, combobox, submitChange);
+
+        //update notes and coins
+        cashText = new Text("Update notes/coins");
+        cashText.setTranslateX(10);
+        cashText.setTranslateY(160);
+
+        denomination = new TextField();
+        denomination.setTranslateX(10);
+        denomination.setTranslateY(170);
+        denomination.setPromptText("Denimination");
+        
+        cashQty = new TextField();
+        cashQty.setTranslateX(10);
+        cashQty.setTranslateY(200);
+        cashQty.setPromptText("Quantity");
+
+        submitCashChange = new Button("Submit");
+        submitCashChange.setTranslateX(10);
+        submitCashChange.setTranslateY(230);
+
+        cashMsg = new Text();
+        cashMsg.setTranslateX(70);
+        cashMsg.setTranslateY(240);
+
+        pane.getChildren().addAll(cashText, denomination, cashQty, submitCashChange, cashMsg);
+
+        //report
+        reportTitle = new Text("Report");
+        reportTitle.setTranslateX(10);
+        reportTitle.setTranslateY(290);
+        pane.getChildren().add(reportTitle);
+
+        draw();
     }
 
     @Override
@@ -78,7 +123,23 @@ public class AdminWindow implements Window{
 
     @Override
     public void draw() {
-        // TODO Auto-generated method stub
+        //report
+        reportType = new ComboBox(FXCollections.observableArrayList(reportOptionsOwner)); //depends on role
+        reportType.setTranslateX(10);
+        reportType.setTranslateY(300);
+        reportType.setPromptText("Report type");
+
+        reportPane = new ScrollPane();
+        reportPane.setPrefSize(300, 200);
+        reportPane.relocate(10, 330);
+        VBox box = new VBox();
+
+        //TODO drawReport in controlHandler
+        controlHandler.drawReport(reportType, box);
+
+        reportPane.setContent(box);
+        
+        pane.getChildren().addAll(reportPane, reportType);
         
     }
 
