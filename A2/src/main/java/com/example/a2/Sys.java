@@ -19,6 +19,7 @@ public class Sys{
         database.createDB();
         database.loadCreditConfig();
         this.vendingMachine = new VendingMachine(database);
+
     }
 
     /*

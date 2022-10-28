@@ -27,7 +27,7 @@ public class DBManage {
     public String url = "jdbc:sqlite:src/main/data/";
     public String fileName;
 
-    public DBManage(String fileName) {
+    public DBManage(String fileName){
         this.fileName = fileName;
     }
 
@@ -70,17 +70,17 @@ public class DBManage {
             java.lang.System.out.println("------------DB created------------");
 
             //populate currecies
-            for (String denomination : VendingMachine.denominations) {
-                String toExecute = "INSERT INTO Currencies(amount, quantity) " +
-                        "VALUES( \"" + denomination + "\", 5);";
+            for(String denomination : VendingMachine.denominations){
+                String toExecute = "INSERT INTO Currencies(amount, quantity) "+
+                        "VALUES( \""+ denomination + "\", 5);";
                 statement.executeUpdate(toExecute);
             }
             //populate products
-            for (String key : VendingMachine.productMap.keySet()) {
-                ArrayList<String> products = VendingMachine.productMap.get(key);
-                for (String product : products) {
-                    this.addProduct(0, product, key);
-                }
+            for(String key : VendingMachine.productMap.keySet()){
+               ArrayList<String> products = VendingMachine.productMap.get(key);
+               for(String product : products){
+                   this.addProduct(0, product, key);
+               }
             }
             //populate users
             String toExecute = "INSERT INTO Users(username, password, userID, role) " +
@@ -105,34 +105,15 @@ public class DBManage {
     }
 
     public void deleteDB() {
-        try {
-            connection = DriverManager.getConnection(url);
-            Statement statement = connection.createStatement();
-            statement.setQueryTimeout(30);
-
-            // clear all tables
-            statement.executeUpdate("DELETE FROM credit_card");
-            statement.executeUpdate("DELETE FROM currencies");
-            statement.executeUpdate("DELETE FROM Products");
-            statement.executeUpdate("DELETE FROM transactions");
-            statement.executeUpdate("DELETE FROM users");
-
-        } catch (Exception e) {
-            java.lang.System.out.println("_________________________ERROR at addUser_________________________");
-            java.lang.System.err.println(e.getMessage());
-        } finally {
-            try {
-                if (connection != null) {
-                    connection.close();
-                }
-            } catch (SQLException e) {
-                // connection close failed.
-                java.lang.System.err.println(e.getMessage());
-            }
+        File myObj = new File("src/main/data/" + fileName);
+        if (myObj.delete()) {
+            System.out.println("Deleted the file: " + myObj.getName());
+        } else {
+            System.out.println("Failed to delete the file.");
         }
     }
 
-    public Integer getCurrencyQuantity(Double denom) {
+    public Integer getCurrencyQuantity(Double denom){
         Integer resultAmount = 0;
         String denomination = denom.toString();
 
@@ -147,7 +128,7 @@ public class DBManage {
             preparedStatement.setString(1, denomination);
             ResultSet result = preparedStatement.executeQuery();
 
-            if (result.isClosed()) {
+            if(result.isClosed()){
                 return null;
             }
 
@@ -170,7 +151,7 @@ public class DBManage {
         return resultAmount;
     }
 
-    public String getUserPassword(String userName) {
+    public String getUserPassword(String userName){
         String resultPassword = null;
 
         try {
@@ -184,7 +165,7 @@ public class DBManage {
             preparedStatement.setString(1, userName);
             ResultSet result = preparedStatement.executeQuery();
 
-            if (result.isClosed()) {
+            if(result.isClosed()){
                 return null;
             }
 
@@ -207,7 +188,7 @@ public class DBManage {
         return resultPassword;
     }
 
-    public int getUserID(String userName) {
+    public int getUserID(String userName){
         int userID = 0;
 
         try {
@@ -241,7 +222,7 @@ public class DBManage {
     }
 
     // add user to database
-    public void addUser(String userName, String password, String role) {
+    public void addUser(String userName, String password, String role){
         try {
             connection = DriverManager.getConnection(url);
             Statement statement = connection.createStatement();
@@ -252,7 +233,7 @@ public class DBManage {
                     connection.prepareStatement(insertStatement);
             preparedStatement.setString(1, userName);
             preparedStatement.setString(2, password);
-            preparedStatement.setString(3, role);
+            preparedStatement.setString(3,role);
             preparedStatement.executeUpdate();
 
         } catch (Exception e) {
@@ -271,7 +252,7 @@ public class DBManage {
     }
 
     // remove user from database using their ID
-    public void removeUser(int userID) {
+    public void removeUser(int userID){
         try {
             connection = DriverManager.getConnection(url);
             Statement statement = connection.createStatement();
@@ -299,7 +280,7 @@ public class DBManage {
     }
 
     // add product to database
-    public String addProduct(double cost, String name, String category) {
+    public String addProduct(double cost, String name, String category){
         try {
             connection = DriverManager.getConnection(url);
             Statement statement = connection.createStatement();
@@ -349,7 +330,7 @@ public class DBManage {
             preparedStatement.setString(4, category);
             preparedStatement.setInt(5, prodID);
             preparedStatement.executeUpdate();
-
+ 
             return "Product updated";
 
         } catch (Exception e) {
@@ -374,7 +355,7 @@ public class DBManage {
     }
 
     // remove product from database using their ID
-    public void removeProduct(int prodID) {
+    public void removeProduct(int prodID){
         try {
             connection = DriverManager.getConnection(url);
             Statement statement = connection.createStatement();
@@ -402,14 +383,14 @@ public class DBManage {
     }
 
     // add purchase history (customer has account)(the time of transaction will be recorded when this function is called)
-    public void addTransaction(int prodID, boolean success, int userID, int quantity) {
+    public void addTransaction(int prodID, boolean success, int userID, int quantity){
         try {
             connection = DriverManager.getConnection(url);
             Statement statement = connection.createStatement();
             statement.setQueryTimeout(30);
 
             int successBit;
-            if (success) {
+            if (success){
                 successBit = 1;
             } else {
                 successBit = 0;
@@ -443,7 +424,7 @@ public class DBManage {
     }
 
     // get the last 5 transaction of a user
-    public ArrayList<Transaction> getLastFiveTransactionsByUserID(int userID) {
+    public ArrayList<Transaction> getLastFiveTransactionsByUserID(int userID){
         ArrayList<Transaction> transactions = new ArrayList<>();
 
         try {
@@ -485,7 +466,7 @@ public class DBManage {
 
 
     // get all products currently in db
-    public ArrayList<Product> getProducts() {
+    public ArrayList<Product> getProducts(){
         ArrayList<Product> products = new ArrayList<>();
 
         try {
@@ -521,7 +502,7 @@ public class DBManage {
                     default:
                         System.out.println("product category invalid");
                 }
-
+                
             }
         } catch (Exception e) {
             java.lang.System.out.println("_________________________ERROR at getProducts_________________________");
@@ -543,7 +524,7 @@ public class DBManage {
      * Function updates the amount associated with a denomination of currency
      *
      * @param denomination - desired denomination to update
-     * @param new_amount   - new amount for denomination
+     * @param new_amount - new amount for denomination
      */
     public void updateCurrency(Double denomination, int new_amount) {
         String insert_denomination = String.valueOf(denomination);
@@ -574,7 +555,6 @@ public class DBManage {
         }
     }
 
-    // get 5 most recent products
     public void loadCreditConfig() {
         JSONParser jsonParser = new JSONParser();
         try {
@@ -595,10 +575,8 @@ public class DBManage {
                     JSONObject creditCardObject = (JSONObject) creditCard;
 
                     String name = (String) creditCardObject.get("name");
-                    System.out.println(name);
 
                     int number = Integer.parseInt((String) creditCardObject.get("number"));
-                    System.out.println(number);
 
                     String insertStatement = "INSERT INTO credit_card (Name, Number) VALUES(?,?)";
                     PreparedStatement preparedStatement =
@@ -630,5 +608,37 @@ public class DBManage {
         }
     }
 
+    // check for name number and returns if exists
+    public boolean creditCardIsValid(String name, int number){
+        try {
+            connection = DriverManager.getConnection(url);
+            Statement statement = connection.createStatement();
+            statement.setQueryTimeout(30);
+
+            String insertStatement = "SELECT * FROM credit_card WHERE (name = ?) AND (number = ?)";
+            PreparedStatement preparedStatement =
+                    connection.prepareStatement(insertStatement);
+            preparedStatement.setString(1, name);
+            preparedStatement.setInt(2, number);
+            ResultSet result = preparedStatement.executeQuery();
+
+            // result closed if there are no entry
+            return !result.isClosed();
+
+        } catch (Exception e) {
+            java.lang.System.out.println("_________________________ERROR at creditCardIsValid_________________________");
+            java.lang.System.err.println(e.getMessage());
+        } finally {
+            try {
+                if (connection != null) {
+                    connection.close();
+                }
+            } catch (SQLException e) {
+                // connection close failed.
+                java.lang.System.err.println(e.getMessage());
+            }
+        }
+        return false;
+    }
 
 }
