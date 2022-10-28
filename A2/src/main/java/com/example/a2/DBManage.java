@@ -43,7 +43,9 @@ public class DBManage {
                     "(username TEXT, " +
                     "password TEXT, " +
                     "userID INTEGER PRIMARY KEY NOT NULL, " +
-                    "role TEXT)");
+                    "role TEXT," +
+                    "cardName TEXT," +
+                    "cardNumber INTEGER)");
             // products Table
             statement.executeUpdate("CREATE TABLE IF NOT EXISTS Products " +
                     "(cost FLOAT, " +
@@ -694,4 +696,34 @@ public class DBManage {
         return false;
     }
 
+    public void saveCreditCardInfo(String cardName, int cardNumber, int userID) {
+        try {
+            connection = DriverManager.getConnection(url);
+            Statement statement = connection.createStatement();
+            statement.setQueryTimeout(30);
+
+            String insertStatement = "UPDATE users " +
+                    "SET cardName = ?, cardNumber = ? " +
+                    "WHERE userID = ?";
+            PreparedStatement preparedStatement =
+                    connection.prepareStatement(insertStatement);
+            preparedStatement.setString(1, cardName);
+            preparedStatement.setInt(2, cardNumber);
+            preparedStatement.setInt(3, userID);
+            preparedStatement.executeUpdate();
+
+        } catch (Exception e) {
+            java.lang.System.out.println("_________________________ERROR at saveCreditCardInfo_________________");
+            java.lang.System.err.println(e.getMessage());
+        } finally {
+            try {
+                if (connection != null) {
+                    connection.close();
+                }
+            } catch (SQLException e) {
+                // connection close failed.
+                java.lang.System.err.println(e.getMessage());
+            }
+        }
+    }
 }
