@@ -50,13 +50,14 @@ public class RegistrationWindow extends LoginWindow {
                     text.setText("This username has been used");
                 } else {// is user does not exist create it
                     sys.getDatabase().addUser(username, password, "User");
+                    sys.getUserbase().updateUserList();
                     String displayText = "User added with username " + username;
                     text.setText(displayText);
 
-                    app.setScene(app.getHomeWindow().getScene());
-                    User currentUser = new User(username, password);
+                    User currentUser = sys.getUserbase().getUserByID(sys.getDatabase().getUserID(username));
                     app.getHomeWindow().loadUserAfterLogin(currentUser);
                     sys.setCurrentUser(currentUser);
+                    app.setScene(app.getHomeWindow().getScene());
                 }
             }
         };

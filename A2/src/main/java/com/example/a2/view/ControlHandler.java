@@ -32,17 +32,17 @@ public class ControlHandler {
             b.setOnAction(new EventHandler<ActionEvent>() {
                 @Override
                 public void handle(ActionEvent event) {
-                    //trigger idle
+                    // trigger idle
                     vendingMachine.triggerTimer();
 
-                    //show product id 
+                    // show product id
                     for (Entry<Integer, Button> entry : buttons.entrySet()) {
                         if (b.equals(entry.getValue())) {
                             itemCode.setText(entry.getKey().toString());
                         }
                     }
 
-                    //clear cancel transaction text
+                    // clear cancel transaction text
                     home.clearCancelText();
                     home.clearCannotCheckoutText();
                 }
@@ -53,7 +53,7 @@ public class ControlHandler {
     public boolean confirmTransactionButtonHandle(int userID, int prodID, int quantity, DBManage database) {
         try {
             // adds transaction into database
-            if(purchaseFlag) {
+            if (purchaseFlag) {
                 database.addTransaction(prodID, true, userID, quantity);
                 // success
                 vendingMachine.cancelTimer();
@@ -69,20 +69,35 @@ public class ControlHandler {
         }
     }
 
-    public void adminWindowHandler(Button b) {
+    public void adminWindowHandler(Button b, String role) {
         b.setOnAction(new EventHandler<ActionEvent>() {
             @Override
             public void handle(ActionEvent event) {
-                User currentUser = system.getCurrentUser();
-                AdminWindow adminWindow = system.getAdminWinodw();
-                system.setScene(adminWindow.getScene());
-
+                Window window = null;
+                switch (role) {
+                    case "Owner":
+                        window = system.getAdminWinodw();
+                        System.out.println("Display owner window");
+                        break;
+                    case "Cashier":
+                        window = system.getCashierWindow();
+                        System.out.println("Display cashier window");
+                        break;
+                    case "Seller":
+                        window = system.getSellerWindow();
+                        System.out.println("Display seller window");
+                        break;
+                    default:
+                        System.out.println("Something went wrong when switching admin window.");
+                }
+                system.setScene(window.getScene());
                 vendingMachine.triggerTimer();
             }
         });
     }
 
-    public void updateProductHandler(AdminWindow admin, Button submitButton, TextField pid, TextField val, ComboBox field) {
+    public void updateProductHandler(Window admin, Button submitButton, TextField pid, TextField val,
+            ComboBox field) {
         submitButton.setOnAction(new EventHandler<ActionEvent>() {
             @Override
             public void handle(ActionEvent event) {
@@ -97,8 +112,8 @@ public class ControlHandler {
                 for (Node n : box.getChildren()) {
                     if (n instanceof Text) {
                         Product product = system.getVendingMachine().findProductByID(productId);
-                        ((Text)n).setText(String.format("%s \n%.2f",
-                        product.getName(), product.getCost()));
+                        ((Text) n).setText(String.format("%s \n%.2f",
+                                product.getName(), product.getCost()));
                     }
                 }
             }
@@ -146,8 +161,8 @@ public class ControlHandler {
 
                 double input = Double.parseDouble(in.getText());
 
-                if (!vendingMachine.checkInput(input)) { 
-                    show.setText("Invalid input."); 
+                if (!vendingMachine.checkInput(input)) {
+                    show.setText("Invalid input.");
                     return;
                 }
 
@@ -155,17 +170,16 @@ public class ControlHandler {
                 double total = vendingMachine.getTotalCost();
 
                 if (inputTotal < total) {
-                    show.setText(String.format("Input: %.2f\nRemaining due: %.2f",inputTotal,total-inputTotal));
+                    show.setText(String.format("Input: %.2f\nRemaining due: %.2f", inputTotal, total - inputTotal));
                     return;
                 }
 
                 ArrayList<HashMap<Double, Integer>> out = vendingMachine.makeCashPurchase(total, inputTotal);
 
-                if(out.get(0).get(0.05) != 0){
+                if (out.get(0).get(0.05) != 0) {
                     system.getPaymentWindow().addInputCash(-1 * input);
                     show.setText(String.format("Could not cover %.2f of change.", out.get(0).get(0.05) * 0.05));
-                }
-                else {
+                } else {
                     purchaseFlag = true;
                     show.setText(String.format("Input: %.2f\nChange: %.2f", inputTotal, inputTotal - total));
                 }
@@ -187,7 +201,7 @@ public class ControlHandler {
         reportType.setOnAction(new EventHandler<ActionEvent>() {
             @Override
             public void handle(ActionEvent event) {
-                //TODO add texts to box
+                // TODO add texts to box
             }
         });
     }
