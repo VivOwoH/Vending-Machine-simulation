@@ -113,12 +113,14 @@ public class HomeWindow implements Window {
         cfgRoleButton();
     }
 
+    // whatever that needs to be updated upon scene change goes here
     public void reconfiguration() {
         this.cfgRoleButton();
     }
 
     public void cfgRoleButton() {
-        System.out.println(sys.getCurrentUser());
+        // System.out.println(sys.getCurrentUser());
+        
         // change to admin (null role = normal user)
         if (sys.getCurrentUser() != null && sys.getCurrentUser().getRole() != null) {
             if (sys.getCurrentUser().getRole().getClass() == Owner.class) {
