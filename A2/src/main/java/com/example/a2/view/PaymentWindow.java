@@ -180,8 +180,6 @@ public class PaymentWindow implements Window {
                 vendingMachine.cancelTimer();
 
                 String currentUserName = system.getCurrentUser().getUsername();
-                System.out.println("user: " + currentUserName + " Pressed with ID: " +
-                        system.getDatabase().getUserID(currentUserName));
 
                 for (Map.Entry<Integer, Integer> entry : system.getVendingMachine().getCart().entrySet()) {
                     int prodID = entry.getKey();
@@ -195,14 +193,15 @@ public class PaymentWindow implements Window {
                         // stock already updated when user add to cart, just need to commit to database
                         int stock = system.getVendingMachine().findProductByID(prodID).getQty();
                         system.getVendingMachine().updateProduct(prodID, Integer.toString(stock), "Quantity");
+
+                        system.getVendingMachine().updateProductInventory(); // refresh inventory
+                        // auto logout user after all products added
+                        system.setCurrentUser(null);
+                        app.setScene(app.getloginWindow().scene);
                     } else { // TODO: handle edge case
-                        System.out.println("Transaction not added. Something happened.");
+                        System.out.println("Not enough money."); //should be javafx
                     }
                 }
-                system.getVendingMachine().updateProductInventory(); // refresh inventory
-                // auto logout user after all products added
-                system.setCurrentUser(null);
-                app.setScene(app.getloginWindow().scene);
             }
         });
     }

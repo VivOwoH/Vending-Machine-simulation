@@ -183,7 +183,6 @@ public class VendingMachine {
     public void cancelTimer() {
         idleTimer.cancel();
         timerRunning = false;
-        System.out.println("cancelled");
     }
 
     // ---------------------------
@@ -409,12 +408,7 @@ public class VendingMachine {
         HashMap<Double, Integer> left = result.get(0);
         HashMap<Double, Integer> given = result.get(1);
 
-        for(Double denomination: left.keySet()){
-            System.out.printf("%s %s %s\n", denomination, left.get(denomination), given.get(denomination));
-        }
-
         double num_remaining = (result.get(0).get(0.05)) * 0.05;
-        System.out.println(num_remaining);
 
         if(num_remaining != 0){
             //put the given back in!

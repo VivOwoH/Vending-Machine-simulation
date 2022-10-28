@@ -17,6 +17,7 @@ import javafx.scene.layout.VBox;
 
 public class ControlHandler {
     private VendingMachine vendingMachine;
+    private boolean purchaseFlag = false;
     private Sys system;
 
     public ControlHandler(Sys sys) {
@@ -50,10 +51,16 @@ public class ControlHandler {
     public boolean confirmTransactionButtonHandle(int userID, int prodID, int quantity, DBManage database) {
         try {
             // adds transaction into database
-            database.addTransaction(prodID, true, userID, quantity);
-            // success
-            vendingMachine.cancelTimer();
-            return true;
+            if(purchaseFlag) {
+                database.addTransaction(prodID, true, userID, quantity);
+                // success
+                vendingMachine.cancelTimer();
+
+                purchaseFlag = false;
+                return true;
+            }
+
+            return false;
         } catch (Exception e) {
             // fail
             return false;
@@ -148,6 +155,7 @@ public class ControlHandler {
                     show.setText(String.format("Could not cover %.2f of change.", out.get(0).get(0.05) * 0.05));
                 }
                 else {
+                    purchaseFlag = true;
                     show.setText(String.format("Input: %.2f\nChange: %.2f", inputTotal, inputTotal - total));
                 }
             }
