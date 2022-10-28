@@ -141,7 +141,6 @@ public class ControlHandler {
                 }
 
                 double inputTotal = system.getPaymentWindow().addInputCash(input);
-
                 double total = vendingMachine.getTotalCost();
 
                 if (inputTotal < total) {
@@ -152,6 +151,7 @@ public class ControlHandler {
                 ArrayList<HashMap<Double, Integer>> out = vendingMachine.makeCashPurchase(total, inputTotal);
 
                 if(out.get(0).get(0.05) != 0){
+                    system.getPaymentWindow().addInputCash(-1 * input);
                     show.setText(String.format("Could not cover %.2f of change.", out.get(0).get(0.05) * 0.05));
                 }
                 else {

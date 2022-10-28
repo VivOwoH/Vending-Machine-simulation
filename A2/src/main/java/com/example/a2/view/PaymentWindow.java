@@ -91,7 +91,7 @@ public class PaymentWindow implements Window {
     @Override
     public void draw() {
         pane.getChildren().remove(totalText); // remove the previous print first
-        totalText = new Text("Total: " + Double.toString(vendingMachine.getTotalCost()));
+        totalText = new Text("Total: " + String.format("%.2f", vendingMachine.getTotalCost()));
         totalText.setFont(new Font(30));
         totalText.setTranslateX(10);
         totalText.setTranslateY(50);
