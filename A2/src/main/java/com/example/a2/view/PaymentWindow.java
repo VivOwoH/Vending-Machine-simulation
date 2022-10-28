@@ -199,7 +199,7 @@ public class PaymentWindow implements Window {
                         system.setCurrentUser(null);
                         app.setScene(app.getloginWindow().scene);
                     } else { // TODO: handle edge case
-                        System.out.println("Not enough money."); //should be javafx
+                        System.out.println("Either not enough money or machine can't cover the change."); //should be javafx
                     }
                 }
             }
