@@ -17,6 +17,7 @@ public class Sys{
         this.app = app;
         this.database = new DBManage("database.sqlite");
         database.createDB();
+        database.loadCreditConfig();
         this.vendingMachine = new VendingMachine(database);
     }
 

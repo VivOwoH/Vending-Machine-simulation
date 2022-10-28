@@ -4,6 +4,7 @@ module com.example.a2 {
     requires javafx.web;
     requires java.sql;
     requires java.desktop;
+    requires json.simple;
 
     opens com.example.a2 to javafx.fxml;
     exports com.example.a2;
