@@ -84,7 +84,7 @@ public class DBManage {
             }
             //populate users
             String toExecute = "INSERT INTO Users(username, password, userID, role) " +
-                    "VALUES(\"admin\", \"admin\", 0, \"admin\");";
+                    "VALUES(\"admin\", \"admin\", 0, \"Owner\");";
             statement.executeUpdate(toExecute);
 
         } catch (Exception e) {
@@ -518,6 +518,59 @@ public class DBManage {
             }
         }
         return products;
+    }
+
+    public ArrayList<User> getUsers() {
+        ArrayList<User> users = new ArrayList<User>();
+
+        try {
+            connection = DriverManager.getConnection(url);
+
+            // make sure the order is same using "order by"
+            String insertStatement = "SELECT * FROM users";
+            PreparedStatement preparedStatement =
+                    connection.prepareStatement(insertStatement);
+            ResultSet userList = preparedStatement.executeQuery();
+
+            while (userList.next()) {
+                String username = userList.getString("username");
+                String password = userList.getString("password");
+                int userID = userList.getInt("userID");
+
+                // Don't remove this -> this populates product inventory that shows on UI
+                // all category cases to create different subclasses of Product
+                switch (userList.getString("role")) {
+                    case "User":
+                        users.add(new User(username, password, userID));
+                        break;
+                    case "Owner":
+                        users.add(new User(username, password, userID).setRole(new Owner()));
+                        break;
+                    case "Cashier":
+                        users.add(new User(username, password, userID).setRole(new Cashier()));
+                        break;
+                    case "Seller":
+                        users.add(new User(username, password, userID).setRole(new Seller()));
+                        break;
+                    default:
+                        System.out.println("User role invalid");
+                }
+                
+            }
+        } catch (Exception e) {
+            java.lang.System.out.println("_________________________ERROR at getUsers_________________________");
+            java.lang.System.err.println(e.getMessage());
+        } finally {
+            try {
+                if (connection != null) {
+                    connection.close();
+                }
+            } catch (SQLException e) {
+                // connection close failed.
+                java.lang.System.err.println(e.getMessage());
+            }
+        }
+        return users;
     }
 
     /**

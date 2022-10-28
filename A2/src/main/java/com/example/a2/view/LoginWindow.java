@@ -106,10 +106,11 @@ public class LoginWindow implements Window {
                 if (result != null) {
                     if (password.equals(result)) {
                         text.setText("User matched");
-                        app.setScene(app.getHomeWindow().getScene());
-                        User currentUser = new User(username,password);
+                        User currentUser = sys.getUserbase().getUserByID(sys.getDatabase().getUserID(username));
+                        // System.out.println(currentUser);
                         app.getHomeWindow().loadUserAfterLogin(currentUser);
                         sys.setCurrentUser(currentUser);
+                        app.setScene(app.getHomeWindow().getScene());
                     } else {
                         text.setText("Wrong password");
                     }

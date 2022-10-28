@@ -1,8 +1,10 @@
 package com.example.a2;
 
 import com.example.a2.view.AdminWindow;
+import com.example.a2.view.CashierWindow;
 import com.example.a2.view.HomeWindow;
 import com.example.a2.view.PaymentWindow;
+import com.example.a2.view.SellerWindow;
 
 import javafx.scene.Scene;
 
@@ -10,6 +12,7 @@ public class Sys{
 
     private VendingMachine vendingMachine;
     private DBManage database;
+    private Userbase userbase;
     private HelloApplication app;
     private User currentUser;
 
@@ -19,7 +22,7 @@ public class Sys{
         database.createDB();
         database.loadCreditConfig();
         this.vendingMachine = new VendingMachine(database);
-
+        this.userbase = new Userbase(database, "admin", "admin", 0);
     }
 
     /*
@@ -45,6 +48,10 @@ public class Sys{
         return database;
     }
 
+    public Userbase getUserbase() {
+        return userbase;
+    }
+
     public void setScene(Scene scene) {
         app.setScene(scene);
     }
@@ -52,6 +59,10 @@ public class Sys{
     public PaymentWindow getPaymentWindow() { return app.getPaymentWindow(); }
 
     public AdminWindow getAdminWinodw() {return app.getAdminWindow();}
+
+    public SellerWindow getSellerWindow() {return app.getSellerWindow();}
+    
+    public CashierWindow getCashierWindow() {return app.getCashierWindow();}
 
     public HomeWindow getHomeWindow() { return app.getHomeWindow(); }
 
