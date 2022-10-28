@@ -5,6 +5,7 @@ import java.util.HashMap;
 import java.util.Map.Entry;
 
 import com.example.a2.*;
+import com.example.a2.products.Product;
 
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
@@ -12,6 +13,7 @@ import javafx.scene.control.Button;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.TextField;
 import javafx.scene.text.Text;
+import javafx.scene.Node;
 import javafx.scene.Scene;
 import javafx.scene.layout.VBox;
 
@@ -89,7 +91,16 @@ public class ControlHandler {
 
                 vendingMachine.updateProduct(productId, newValue, field.getValue().toString());
 
-                system.getHomeWindow().cfgProductPane();
+                // system.getHomeWindow().cfgProductPane();
+                HashMap<Integer, VBox> productBoxes = system.getHomeWindow().getProductBoxes();
+                VBox box = productBoxes.get(productId);
+                for (Node n : box.getChildren()) {
+                    if (n instanceof Text) {
+                        Product product = system.getVendingMachine().findProductByID(productId);
+                        ((Text)n).setText(String.format("%s \n%.2f",
+                        product.getName(), product.getCost()));
+                    }
+                }
             }
         });
     }

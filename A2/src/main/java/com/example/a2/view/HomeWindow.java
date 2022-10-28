@@ -326,6 +326,10 @@ public class HomeWindow implements Window {
         }
     }
 
+    public HashMap<Integer, VBox> getProductBoxes() {
+        return productBoxes;
+    }
+
     public void confirmCancelled() {
         // if (cannotCheckout != null) clearCannotCheckoutText();
         //
