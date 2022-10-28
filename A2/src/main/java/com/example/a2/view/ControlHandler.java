@@ -14,12 +14,12 @@ import javafx.scene.control.ComboBox;
 import javafx.scene.control.TextField;
 import javafx.scene.text.Text;
 import javafx.scene.Node;
-import javafx.scene.Scene;
 import javafx.scene.layout.VBox;
 
 public class ControlHandler {
     private VendingMachine vendingMachine;
-    private boolean purchaseFlag = false;
+    private boolean purchaseCashFlag = false;
+    private boolean purchaseCardFlag = false;
     private Sys system;
 
     public ControlHandler(Sys sys) {
@@ -53,18 +53,26 @@ public class ControlHandler {
     public boolean confirmTransactionButtonHandle(int userID, int prodID, int quantity, DBManage database) {
         try {
             // adds transaction into database
-            if (purchaseFlag) {
+            if (purchaseCashFlag) {
                 database.addTransaction(prodID, true, userID, quantity);
                 // success
                 vendingMachine.cancelTimer();
 
-                purchaseFlag = false;
+                purchaseCashFlag = false;
+                return true;
+            }
+            if (purchaseCardFlag) {
+                database.addTransaction(prodID, true, userID, quantity);
+                // success
+                vendingMachine.cancelTimer();
+
                 return true;
             }
 
             return false;
         } catch (Exception e) {
-            // fail
+            System.out.println(e);
+            System.out.println(e.getMessage());
             return false;
         }
     }
@@ -153,6 +161,7 @@ public class ControlHandler {
         });
     }
 
+    // handle cash input
     public void cashHandle(TextField in, Text show) {
         in.setOnAction(new EventHandler<ActionEvent>() {
             @Override
@@ -180,11 +189,35 @@ public class ControlHandler {
                     system.getPaymentWindow().addInputCash(-1 * input);
                     show.setText(String.format("Could not cover %.2f of change.", out.get(0).get(0.05) * 0.05));
                 } else {
-                    purchaseFlag = true;
+                    purchaseCashFlag = true;
                     show.setText(String.format("Input: %.2f\nChange: %.2f", inputTotal, inputTotal - total));
                 }
             }
         });
+    }
+
+    // handle credit card input
+    public void creditCardHandle(TextField cardName, TextField cardNum, Text show) {
+        String cardHolder = cardName.getText();
+        String cardNumberTemp = cardNum.getText();
+
+        try {
+           int cardNumber = Integer.parseInt(cardNumberTemp);
+
+           // check if exist in system
+           if (system.getDatabase().creditCardIsValid(cardHolder, cardNumber)){
+               purchaseCardFlag = true;
+           } else {
+               purchaseCardFlag = false;
+               show.setVisible(true);
+               show.setText("Invalid Details");
+           }
+        } catch (Exception e){
+            show.setVisible(true);
+            show.setText("Invalid Details");
+            purchaseCardFlag = false;
+        }
+
     }
 
     public void methodBoxHandle(ComboBox c) {
