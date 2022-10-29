@@ -726,4 +726,45 @@ public class DBManage {
             }
         }
     }
+
+    // return array where first position is cc name and second is cc num
+    public ArrayList<String> getCCInfo(String userName){
+        ArrayList<String> namePassword = new ArrayList<>();
+
+        try {
+            connection = DriverManager.getConnection(url);
+            Statement statement = connection.createStatement();
+            statement.setQueryTimeout(30);
+
+            String insertStatement = "SELECT cardName, cardNumber FROM Users " +
+                    "WHERE (? = Users.Username)";
+            PreparedStatement preparedStatement =
+                    connection.prepareStatement(insertStatement);
+            preparedStatement.setString(1, userName);
+            ResultSet result = preparedStatement.executeQuery();
+
+            // no entry
+            if(result.isClosed()){
+                return namePassword;
+            }
+
+            namePassword.add(result.getString("cardName"));
+            namePassword.add(result.getString("cardNumber"));
+
+        } catch (Exception e) {
+            java.lang.System.out.println("_________________________ERROR at getCCInfo_________________________");
+            java.lang.System.err.println(e.getMessage());
+        } finally {
+            try {
+                if (connection != null) {
+                    connection.close();
+                }
+            } catch (SQLException e) {
+                // connection close failed.
+                java.lang.System.err.println(e.getMessage());
+            }
+        }
+
+        return namePassword;
+    }
 }

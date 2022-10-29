@@ -5,10 +5,9 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="cc834443-829b-41d8-912e-f768bb95e7ef" name="Changes" comment="fixes">
-      <change beforePath="$PROJECT_DIR$/.idea/dataSources.local.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/dataSources.local.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/dataSources.local.xml" beforeDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/java/com/example/a2/DBManage.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/example/a2/DBManage.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/example/a2/view/ControlHandler.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/example/a2/view/ControlHandler.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/java/com/example/a2/view/PaymentWindow.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/example/a2/view/PaymentWindow.java" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
@@ -157,7 +156,6 @@
         </entry>
       </map>
     </option>
-    <option name="oldMeFiltersMigrated" value="true" />
   </component>
   <component name="VcsManagerConfiguration">
     <MESSAGE value="fixes" />

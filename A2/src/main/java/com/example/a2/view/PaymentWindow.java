@@ -1,5 +1,6 @@
 package com.example.a2.view;
 
+import java.util.ArrayList;
 import java.util.Map;
 
 import com.example.a2.HelloApplication;
@@ -146,12 +147,19 @@ public class PaymentWindow implements Window {
             saveInfoButton.setTranslateX(10);
             saveInfoButton.setTranslateY(320);
             saveInfoButton.setText("Save CC info for next purchases");
-            pane.getChildren().add(saveInfoButton);
 
             saveMsg = new Text();
             saveMsg.setTranslateX(10);
             saveMsg.setTranslateY(370);
             pane.getChildren().add(saveMsg);
+
+            // check if current user is anonymous user, if so don't give same cc info button
+            if (system.getDatabase().getUserID(system.getCurrentUser().getUsername()) == 1) {
+                saveMsg.setText("Anonymous user cannot save CC info");
+                saveMsg.setVisible(true);
+            } else {
+                pane.getChildren().add(saveInfoButton);
+            }
 
             saveInfoButton.setOnAction(new EventHandler<ActionEvent>() {
                 @Override
@@ -167,6 +175,18 @@ public class PaymentWindow implements Window {
                     }
                 }
             });
+
+            // autofill card info if exists
+            ArrayList<String> nameNumber = system.getDatabase().getCCInfo(system.getCurrentUser().getUsername());
+            try {
+                String ccName = nameNumber.get(0);
+                String ccNumber = nameNumber.get(1);
+
+                cardHolder.setText(ccName);
+                cardNumber.setText(ccNumber);
+            } catch (Exception e){
+                // ignore, cause it just means no name and number is saved
+            }
 
         }
 
