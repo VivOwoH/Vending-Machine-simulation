@@ -121,6 +121,8 @@ public class PaymentWindow implements Window {
             cashMsg.setTranslateY(250);
             pane.getChildren().add(cashMsg);
 
+            controlHandler.cashHandle(inputMoney, cashMsg);
+
         } else if (methodBox.getValue() == "Card") {
             if (inputMoney != null) { inputMoney.setVisible(false); }
             if (cashMsg != null) { cashMsg.setVisible(false); }

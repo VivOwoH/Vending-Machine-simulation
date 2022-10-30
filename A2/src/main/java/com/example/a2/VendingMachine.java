@@ -172,15 +172,20 @@ public class VendingMachine {
     }
 
     public void triggerTimer() {
-        // if (timerRunning) {
-        //     idleTimer.cancel();
-        // }
+        if (timerRunning) {
+            idleTimer.cancel();
+        }
         makeTimerTask();
+        idleTimer = new Timer("idleTimer");
         idleTimer.schedule(cancelTransactionTask, idleLimit);
         timerRunning = true;
     }
 
     public void cancelTimer() {
+        if (!timerRunning) {
+            return;
+        }
+
         idleTimer.cancel();
         timerRunning = false;
     }
