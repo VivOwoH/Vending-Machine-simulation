@@ -52,6 +52,14 @@ public class Sys{
         return database.getUsersReport();
     }
 
+    public String getTransactionHistory() {
+        return database.getTransactionHistory();
+    }
+
+    public String getCancelledTransactions() {
+        return database.getCancelledTransactions();
+    }
+
     public Userbase getUserbase() {
         return userbase;
     }

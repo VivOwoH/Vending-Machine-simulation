@@ -5,6 +5,7 @@ import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
 import java.sql.*;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 
 import com.example.a2.products.Candies;
@@ -458,6 +459,84 @@ public class DBManage {
                 java.lang.System.err.println(e.getMessage());
             }
         }
+    }
+
+    //get all cancelled transactions
+    public String getCancelledTransactions() {
+        String returnResult = null;
+
+        try {
+            connection = DriverManager.getConnection(url);
+
+            // make sure the order is same using "order by"
+            String insertStatement = "SELECT * FROM Transactions WHERE success = 0";
+            PreparedStatement preparedStatement =
+                    connection.prepareStatement(insertStatement);
+            ResultSet list = preparedStatement.executeQuery();
+
+            returnResult = "";
+            while (list.next()) {
+                String userID = list.getString("userID");
+                Date date = new Date(list.getTimestamp("date").getTime());
+                String formattedDate = new SimpleDateFormat("dd/MM/yyyy, hh:mm").format(date);
+                // int quantity = list.getInt("quantity");
+
+                returnResult += String.format("%s | %s\n", formattedDate, userID);
+            }
+        } catch (Exception e) {
+            java.lang.System.out.println("_________________________ERROR at getTransactionHistory_________________________");
+            java.lang.System.err.println(e.getMessage());
+        } finally {
+            try {
+                if (connection != null) {
+                    connection.close();
+                }
+            } catch (SQLException e) {
+                // connection close failed.
+                java.lang.System.err.println(e.getMessage());
+            }
+        }
+        return returnResult;
+    }
+
+    //get all transactions
+    public String getTransactionHistory() {
+        String history = null;
+
+        try {
+            connection = DriverManager.getConnection(url);
+
+            // make sure the order is same using "order by"
+            String insertStatement = "SELECT * FROM Transactions";
+            PreparedStatement preparedStatement =
+                    connection.prepareStatement(insertStatement);
+            ResultSet list = preparedStatement.executeQuery();
+
+            history = "";
+            while (list.next()) {
+                String prodID = list.getString("prodID");
+                // String transID = list.getString("transID");
+                // boolean success = list.getInt("success") == 1;
+                Date date = new Date(list.getTimestamp("date").getTime());
+                String formattedDate = new SimpleDateFormat("dd/MM/yyyy, hh:mm").format(date);
+                // int quantity = list.getInt("quantity");
+
+                history += String.format("%s | %s", formattedDate, prodID);
+            }
+        } catch (Exception e) {
+            java.lang.System.out.println("_________________________ERROR at getTransactionHistory_________________________");
+            java.lang.System.err.println(e.getMessage());
+        } finally {
+            try {
+                if (connection != null) {
+                    connection.close();
+                }
+            } catch (SQLException e) {
+                // connection close failed.
+                java.lang.System.err.println(e.getMessage());
+            }
+        }
+        return history;
     }
 
     // get the last 5 transaction of a user
