@@ -64,9 +64,9 @@ public class HomeWindow implements Window {
 
     private ControlHandler controlHandler;
     private HashMap<Integer, Button> productButtons;
-    private HashMap<Integer, VBox> productBoxes; 
+    private HashMap<Integer, VBox> productBoxes;
 
-    private Button adminButton;
+    private Button roleButton;
 
     public HomeWindow(HelloApplication app, Sys system, ControlHandler controlHandler) {
         this.sys = system;
@@ -109,12 +109,36 @@ public class HomeWindow implements Window {
         cfgCancelButton();
         pane.getChildren().add(cancelButton);
 
-        // change to admin
-        adminButton = new Button("Admin");
-        adminButton.setTranslateX(420);
-        adminButton.setTranslateY(135);
-        pane.getChildren().add(adminButton);
-        controlHandler.adminWindowHandler(adminButton);
+        // admin button
+        cfgRoleButton();
+    }
+
+    // whatever that needs to be updated upon scene change goes here
+    public void reconfiguration() {
+        this.cfgRoleButton();
+    }
+
+    public void cfgRoleButton() {
+        // System.out.println(sys.getCurrentUser());
+        
+        // change to admin (null role = normal user)
+        if (sys.getCurrentUser() != null && sys.getCurrentUser().getRole() != null) {
+            if (sys.getCurrentUser().getRole().getClass() == Owner.class) {
+                roleButton = new Button("Owner");
+                controlHandler.adminWindowHandler(roleButton, "Owner");
+            }
+            else if (sys.getCurrentUser().getRole().getClass() == Seller.class) {
+                roleButton = new Button("Seller");
+                controlHandler.adminWindowHandler(roleButton, "Seller");
+            }
+            else if (sys.getCurrentUser().getRole().getClass() == Cashier.class) {
+                roleButton = new Button("Cashier");
+                controlHandler.adminWindowHandler(roleButton, "Cashier");
+            }
+            roleButton.setTranslateX(420);
+            roleButton.setTranslateY(135);
+            pane.getChildren().add(roleButton);
+        }
     }
 
     public void cfgProductPane() {
@@ -347,7 +371,9 @@ public class HomeWindow implements Window {
     }
 
     public void clearCancelText() {
-        if (cancelled == null) {return;}
+        if (cancelled == null) {
+            return;
+        }
         cancelled.setVisible(false);
     }
 
@@ -367,7 +393,9 @@ public class HomeWindow implements Window {
     }
 
     public void clearCannotCheckoutText() {
-        if (cannotCheckout == null) {return;}
+        if (cannotCheckout == null) {
+            return;
+        }
         cannotCheckout.setVisible(false);
     }
 

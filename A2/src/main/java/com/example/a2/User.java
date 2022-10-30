@@ -1,24 +1,31 @@
 package com.example.a2;
 
-public class User{
-    private Role role; //role is set as owner by the system or set as something else by owner -> modify call.
+public class User {
+    private Role role = null; //role is set as owner by the system or set as something else by owner -> modify call.
     private String username;
     private String password;
+    private int userID;
 
-    public User(String username, String password){
+    public User(String username, String password, int userID){
         this.username = username;
         this.password = password;
+        this.userID = userID;
     }
 
     public String getUsername() {
         return username;
     }
 
-    public void setRole(Role role){
+    public User setRole(Role role){
         this.role = role;
+        return this;
     }
 
-    public boolean getRole() {
-        return false;
+    public Role getRole() {
+        return role;
+    }
+
+    public int getID() {
+        return userID;
     }
 }

@@ -100,16 +100,34 @@ public class LoginWindow implements Window {
                 String username = captureUsername.getText();
                 String password = capturePassword.getText();
 
+                // Null username and password creates error, so we manually set an anon user
+                // Password is base 64 encryption of string "Anonymous"
+                if (username.equals("") && password.equals("")) {
+                    
+                    String result = sys.getDatabase().getUserPassword("Anonymous");
+
+                    if (result == null) { // no anon user
+                        sys.getDatabase().addUser("Anonymous", "QW5vbnltb3Vz", "User");
+                        sys.getUserbase().updateUserList();
+                    }
+                    User currentUser = sys.getUserbase().getUserByID(sys.getDatabase().getUserID("Anonymous"));
+                    app.getHomeWindow().loadUserAfterLogin(currentUser);
+                    sys.setCurrentUser(currentUser);
+                    app.setScene(app.getHomeWindow().getScene());
+                    return;
+                }
+
                 String result = sys.getDatabase().getUserPassword(username);
 
                 // if user exists, try and match the password
                 if (result != null) {
                     if (password.equals(result)) {
                         text.setText("User matched");
-                        app.setScene(app.getHomeWindow().getScene());
-                        User currentUser = new User(username,password);
+                        User currentUser = sys.getUserbase().getUserByID(sys.getDatabase().getUserID(username));
+                        // System.out.println(currentUser);
                         app.getHomeWindow().loadUserAfterLogin(currentUser);
                         sys.setCurrentUser(currentUser);
+                        app.setScene(app.getHomeWindow().getScene());
                     } else {
                         text.setText("Wrong password");
                     }

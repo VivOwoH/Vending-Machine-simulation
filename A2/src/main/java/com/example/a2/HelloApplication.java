@@ -2,7 +2,9 @@ package com.example.a2;
 
 import com.example.a2.view.LoginWindow;
 import com.example.a2.view.PaymentWindow;
+import com.example.a2.view.SellerWindow;
 import com.example.a2.view.AdminWindow;
+import com.example.a2.view.CashierWindow;
 import com.example.a2.view.ControlHandler;
 import com.example.a2.view.HomeWindow;
 
@@ -20,6 +22,8 @@ public class HelloApplication extends Application {
     private LoginWindow loginWindow;
     private HomeWindow homeWindow;
     private AdminWindow adminWindow;
+    private SellerWindow sellerWindow;
+    private CashierWindow cashierWindow;
     private PaymentWindow paymentWindow;
     private ControlHandler controlHandler;
     private Stage stage;
@@ -32,6 +36,8 @@ public class HelloApplication extends Application {
         controlHandler = new ControlHandler(system);
         loginWindow = new LoginWindow(this, system);
         adminWindow = new AdminWindow(system, controlHandler);
+        sellerWindow = new SellerWindow(system, controlHandler);
+        cashierWindow = new CashierWindow(system, controlHandler);
         homeWindow = new HomeWindow(this, system, controlHandler);
         paymentWindow = new PaymentWindow(this, system, controlHandler);
 
@@ -50,7 +56,12 @@ public class HelloApplication extends Application {
 
     public LoginWindow getloginWindow() { return loginWindow; }
     public AdminWindow getAdminWindow() { return adminWindow; }
-    public HomeWindow getHomeWindow() { return homeWindow; }
+    public SellerWindow getSellerWindow() { return sellerWindow; }
+    public CashierWindow getCashierWindow() { return cashierWindow; }
+    public HomeWindow getHomeWindow() { 
+        homeWindow.reconfiguration();
+        return homeWindow; 
+    }
     public PaymentWindow getPaymentWindow() { return paymentWindow; }
 
 

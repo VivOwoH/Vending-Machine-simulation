@@ -43,7 +43,9 @@ public class DBManage {
                     "(username TEXT, " +
                     "password TEXT, " +
                     "userID INTEGER PRIMARY KEY NOT NULL, " +
-                    "role TEXT)");
+                    "role TEXT," +
+                    "cardName TEXT," +
+                    "cardNumber INTEGER)");
             // products Table
             statement.executeUpdate("CREATE TABLE IF NOT EXISTS Products " +
                     "(cost FLOAT, " +
@@ -84,7 +86,7 @@ public class DBManage {
             }
             //populate users
             String toExecute = "INSERT INTO Users(username, password, userID, role) " +
-                    "VALUES(\"admin\", \"admin\", 0, \"admin\");";
+                    "VALUES(\"admin\", \"admin\", 0, \"Owner\");";
             statement.executeUpdate(toExecute);
 
         } catch (Exception e) {
@@ -555,6 +557,59 @@ public class DBManage {
         return products;
     }
 
+    public ArrayList<User> getUsers() {
+        ArrayList<User> users = new ArrayList<User>();
+
+        try {
+            connection = DriverManager.getConnection(url);
+
+            // make sure the order is same using "order by"
+            String insertStatement = "SELECT * FROM users";
+            PreparedStatement preparedStatement =
+                    connection.prepareStatement(insertStatement);
+            ResultSet userList = preparedStatement.executeQuery();
+
+            while (userList.next()) {
+                String username = userList.getString("username");
+                String password = userList.getString("password");
+                int userID = userList.getInt("userID");
+
+                // Don't remove this -> this populates product inventory that shows on UI
+                // all category cases to create different subclasses of Product
+                switch (userList.getString("role")) {
+                    case "User":
+                        users.add(new User(username, password, userID));
+                        break;
+                    case "Owner":
+                        users.add(new User(username, password, userID).setRole(new Owner()));
+                        break;
+                    case "Cashier":
+                        users.add(new User(username, password, userID).setRole(new Cashier()));
+                        break;
+                    case "Seller":
+                        users.add(new User(username, password, userID).setRole(new Seller()));
+                        break;
+                    default:
+                        System.out.println("User role invalid");
+                }
+                
+            }
+        } catch (Exception e) {
+            java.lang.System.out.println("_________________________ERROR at getUsers_________________________");
+            java.lang.System.err.println(e.getMessage());
+        } finally {
+            try {
+                if (connection != null) {
+                    connection.close();
+                }
+            } catch (SQLException e) {
+                // connection close failed.
+                java.lang.System.err.println(e.getMessage());
+            }
+        }
+        return users;
+    }
+
     /**
      * Function updates the amount associated with a denomination of currency
      *
@@ -676,4 +731,75 @@ public class DBManage {
         return false;
     }
 
+    public void saveCreditCardInfo(String cardName, int cardNumber, int userID) {
+        try {
+            connection = DriverManager.getConnection(url);
+            Statement statement = connection.createStatement();
+            statement.setQueryTimeout(30);
+
+            String insertStatement = "UPDATE users " +
+                    "SET cardName = ?, cardNumber = ? " +
+                    "WHERE userID = ?";
+            PreparedStatement preparedStatement =
+                    connection.prepareStatement(insertStatement);
+            preparedStatement.setString(1, cardName);
+            preparedStatement.setInt(2, cardNumber);
+            preparedStatement.setInt(3, userID);
+            preparedStatement.executeUpdate();
+
+        } catch (Exception e) {
+            java.lang.System.out.println("_________________________ERROR at saveCreditCardInfo_________________");
+            java.lang.System.err.println(e.getMessage());
+        } finally {
+            try {
+                if (connection != null) {
+                    connection.close();
+                }
+            } catch (SQLException e) {
+                // connection close failed.
+                java.lang.System.err.println(e.getMessage());
+            }
+        }
+    }
+
+    // return array where first position is cc name and second is cc num
+    public ArrayList<String> getCCInfo(String userName){
+        ArrayList<String> namePassword = new ArrayList<>();
+
+        try {
+            connection = DriverManager.getConnection(url);
+            Statement statement = connection.createStatement();
+            statement.setQueryTimeout(30);
+
+            String insertStatement = "SELECT cardName, cardNumber FROM Users " +
+                    "WHERE (? = Users.Username)";
+            PreparedStatement preparedStatement =
+                    connection.prepareStatement(insertStatement);
+            preparedStatement.setString(1, userName);
+            ResultSet result = preparedStatement.executeQuery();
+
+            // no entry
+            if(result.isClosed()){
+                return namePassword;
+            }
+
+            namePassword.add(result.getString("cardName"));
+            namePassword.add(result.getString("cardNumber"));
+
+        } catch (Exception e) {
+            java.lang.System.out.println("_________________________ERROR at getCCInfo_________________________");
+            java.lang.System.err.println(e.getMessage());
+        } finally {
+            try {
+                if (connection != null) {
+                    connection.close();
+                }
+            } catch (SQLException e) {
+                // connection close failed.
+                java.lang.System.err.println(e.getMessage());
+            }
+        }
+
+        return namePassword;
+    }
 }
