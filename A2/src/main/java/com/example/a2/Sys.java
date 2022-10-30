@@ -20,6 +20,9 @@ public class Sys{
         database.loadCreditConfig();
         this.vendingMachine = new VendingMachine(database);
 
+        //test
+        database.getUsers();
+
     }
 
     /*
@@ -43,6 +46,10 @@ public class Sys{
 
     public DBManage getDatabase(){
         return database;
+    }
+
+    public String getUsers() {
+        return database.getUsers();
     }
 
     public void setScene(Scene scene) {
