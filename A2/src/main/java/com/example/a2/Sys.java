@@ -48,8 +48,8 @@ public class Sys{
         return database;
     }
 
-    public String getUsers() {
-        return database.getUsers();
+    public String getUsersReport() {
+        return database.getUsersReport();
     }
 
     public Userbase getUserbase() {
