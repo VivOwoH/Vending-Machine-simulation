@@ -172,10 +172,10 @@ public class DBManage {
             }
 
             String tmp = "";
-            resultStr = result.getString(1) + " " + result.getString(2) + "\n";
+            resultStr = result.getString(1) + " | " + result.getString(2) + "\n";
             while (result.next()){
                 resultStr += tmp;
-                tmp = result.getString(1) + " " + result.getString(2) + "\n";
+                tmp = result.getString(1) + " | " + result.getString(2) + "\n";
             }
 
         } catch (Exception e) {

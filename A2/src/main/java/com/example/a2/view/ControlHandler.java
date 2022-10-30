@@ -210,7 +210,13 @@ public class ControlHandler {
         reportType.setOnAction(new EventHandler<ActionEvent>() {
             @Override
             public void handle(ActionEvent event) {
-                //TODO add texts to box
+                String type = reportType.getValue().toString();
+                
+                if (type.equals("Accounts")) {
+                    Text header = new Text("Username | Role");
+                    Text report = new Text(system.getUsers());
+                    box.getChildren().addAll(header,report);
+                }
             }
         });
     }

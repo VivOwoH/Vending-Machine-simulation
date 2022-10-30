@@ -20,9 +20,6 @@ public class Sys{
         database.loadCreditConfig();
         this.vendingMachine = new VendingMachine(database);
 
-        //test
-        database.getUsers();
-
     }
 
     /*
