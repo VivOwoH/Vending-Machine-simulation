@@ -261,9 +261,20 @@ public class ControlHandler {
                 String type = reportType.getValue().toString();
                 
                 if (type.equals("Accounts")) {
+                    box.getChildren().clear();
                     Text header = new Text("Username | Role");
                     Text report = new Text(system.getUsersReport());
                     box.getChildren().addAll(header,report);
+                } else if (type.equals("Transactions")) {
+                    box.getChildren().clear();
+                    Text header = new Text("DateTime | ProductID | Paid | Change | Method");
+                    Text report = new Text(system.getTransactionHistory());
+                    box.getChildren().addAll(header, report);
+                } else if (type.equals("Cancelled transactions")) {
+                    box.getChildren().clear();
+                    Text header = new Text("DateTime | User | Reason");
+                    Text report = new Text(system.getCancelledTransactions());
+                    box.getChildren().addAll(header, report);
                 }
             }
         });
