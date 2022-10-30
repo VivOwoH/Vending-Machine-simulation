@@ -12,6 +12,8 @@ import javafx.event.EventHandler;
 import javafx.scene.control.Button;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.TextField;
+import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
 import javafx.scene.text.Text;
 import javafx.scene.Node;
 import javafx.scene.layout.VBox;
@@ -118,7 +120,28 @@ public class ControlHandler {
                 HashMap<Integer, VBox> productBoxes = system.getHomeWindow().getProductBoxes();
                 VBox box = productBoxes.get(productId);
                 for (Node n : box.getChildren()) {
-                    if (n instanceof Text) {
+                    if (n instanceof Button) {
+                        if (field.getValue() == "Category") {
+
+                            ImageView view = new ImageView();
+                            System.out.println(newValue);
+
+                            if (newValue.equals("Drinks")) {
+                                view.setImage(new Image(getClass().getResource("/drink.png").toString()));
+                            } else if (newValue.equals("Chocolates")) {
+                                view.setImage(new Image(getClass().getResource("/chocolate.png").toString()));
+                            } else if (newValue.equals("Chips")) {
+                                view.setImage(new Image(getClass().getResource("/chips.png").toString()));
+                            } else if (newValue.equals("Candies")) {
+                                view.setImage(new Image(getClass().getResource("/candy.png").toString()));
+                            }
+
+                            view.setFitHeight(50);
+                            view.setFitWidth(50);
+                            ((Button)n).setGraphic(view);
+                        }
+                        
+                    } else if (n instanceof Text) {
                         Product product = system.getVendingMachine().findProductByID(productId);
                         ((Text) n).setText(String.format("%s \n%.2f",
                                 product.getName(), product.getCost()));
@@ -234,7 +257,14 @@ public class ControlHandler {
         reportType.setOnAction(new EventHandler<ActionEvent>() {
             @Override
             public void handle(ActionEvent event) {
-                // TODO add texts to box
+
+                String type = reportType.getValue().toString();
+                
+                if (type.equals("Accounts")) {
+                    Text header = new Text("Username | Role");
+                    Text report = new Text(system.getUsers());
+                    box.getChildren().addAll(header,report);
+                }
             }
         });
     }
