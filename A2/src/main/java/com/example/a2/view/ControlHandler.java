@@ -262,7 +262,7 @@ public class ControlHandler {
                 
                 if (type.equals("Accounts")) {
                     Text header = new Text("Username | Role");
-                    Text report = new Text(system.getUsers());
+                    Text report = new Text(system.getUsersReport());
                     box.getChildren().addAll(header,report);
                 }
             }

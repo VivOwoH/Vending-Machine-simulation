@@ -153,7 +153,7 @@ public class DBManage {
         return resultAmount;
     }
 
-    public String getUsers() {
+    public String getUsersReport() {
         String resultStr = null;
 
         try {
