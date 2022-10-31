@@ -55,11 +55,6 @@ public class HelloApplication extends Application {
         stage.show();
     }
 
-
-    public void makeAdminWindow() {
-        adminWindow = new AdminWindow(system, controlHandler);
-    }
-
     public void reset() {
         Sys system = new Sys(this);
 
@@ -72,11 +67,14 @@ public class HelloApplication extends Application {
         paymentWindow = new PaymentWindow(this, system, controlHandler);
     }
 
+    public void makeAdminWindow() {
+        adminWindow = new AdminWindow(system, controlHandler);
+    }
+
     public LoginWindow getloginWindow() { 
         reset();
         return loginWindow; 
     }
-  
     public AdminWindow getAdminWindow() { return adminWindow; }
     public SellerWindow getSellerWindow() { return sellerWindow; }
     public CashierWindow getCashierWindow() { return cashierWindow; }

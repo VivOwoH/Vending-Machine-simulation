@@ -48,6 +48,7 @@ public class AdminWindow implements Window{
     private ScrollPane reportPane;
     private ComboBox reportType;
     private String reportOptionsOwner[] = {"Available change", "Transactions", "Accounts", "Cancelled transactions", "Item details", "Item summary"};
+    private String reportOptionsCashier[] = {"Available change", "Transactions"};
 
     public AdminWindow(Sys system, ControlHandler controlHandler) {
         pane = new Pane();
@@ -122,32 +123,34 @@ public class AdminWindow implements Window{
         pane.getChildren().addAll(cashText, denomination, cashQty, submitCashChange, cashMsg);
 
         //update roles
-        if (system.getCurrentUser().getRole() instanceof Owner) {
-            roleText = new Text("Update user roles");
-            roleText.setTranslateX(10);
-            roleText.setTranslateY(550);
+        if (system.getCurrentUser() != null) {
+            if (system.getCurrentUser().getRole() instanceof Owner) {
+                roleText = new Text("Update user roles");
+                roleText.setTranslateX(10);
+                roleText.setTranslateY(550);
 
-            userID = new TextField();
-            userID.setTranslateX(10);
-            userID.setTranslateY(570);
-            userID.setPromptText("Username");
+                userID = new TextField();
+                userID.setTranslateX(10);
+                userID.setTranslateY(570);
+                userID.setPromptText("Username");
 
-            roleComboBox = new ComboBox(FXCollections.observableArrayList(roleOptions));
-            roleComboBox.setTranslateX(180);
-            roleComboBox.setTranslateY(570);
-            roleComboBox.setPromptText("Available roles");
+                roleComboBox = new ComboBox(FXCollections.observableArrayList(roleOptions));
+                roleComboBox.setTranslateX(180);
+                roleComboBox.setTranslateY(570);
+                roleComboBox.setPromptText("Available roles");
 
-            submitRoleChange = new Button("Submit");
-            submitRoleChange.setTranslateX(10);
-            submitRoleChange.setTranslateY(600);
+                submitRoleChange = new Button("Submit");
+                submitRoleChange.setTranslateX(10);
+                submitRoleChange.setTranslateY(600);
 
-            roleMsg = new Text();
-            roleMsg.setTranslateX(10);
-            roleMsg.setTranslateY(640);
+                roleMsg = new Text();
+                roleMsg.setTranslateX(10);
+                roleMsg.setTranslateY(640);
 
-            controlHandler.updateRoleHandler(userID, submitRoleChange, roleComboBox, roleMsg);
+                controlHandler.updateRoleHandler(userID, submitRoleChange, roleComboBox, roleMsg);
 
-            pane.getChildren().addAll(roleText, userID, roleMsg, roleComboBox, submitRoleChange);
+                pane.getChildren().addAll(roleText, userID, roleMsg, roleComboBox, submitRoleChange);
+            }
         }
         //report
         reportTitle = new Text("Report");
@@ -166,7 +169,9 @@ public class AdminWindow implements Window{
     @Override
     public void draw() {
         //report
-        if (system.getCurrentUser().getRole() instanceof Owner){
+        if (system.getCurrentUser() == null) {
+            return;
+        } else if (system.getCurrentUser().getRole() instanceof Owner){
             reportType = new ComboBox(FXCollections.observableArrayList(reportOptionsOwner));
         } else if (system.getCurrentUser().getRole() instanceof Cashier) {
             reportType = new ComboBox(FXCollections.observableArrayList(reportOptionsCashier));
