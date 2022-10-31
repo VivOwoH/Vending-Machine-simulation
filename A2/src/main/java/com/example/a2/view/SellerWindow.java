@@ -31,8 +31,7 @@ public class SellerWindow implements Window {
     private Text reportTitle;
     private ScrollPane reportPane;
     private ComboBox reportType;
-    private String reportOptionsCashier[] = {"Available change", "Transactions"};
-    private String reportOptionsOwner[] = {"Available change", "Transactions", "Accounts", "Cancelled transactions"};
+    private String reportOptionsSeller[] = {"Item details", "Item summary"};
 
     public SellerWindow(Sys system, ControlHandler controlHandler) {
         pane = new Pane();
@@ -92,7 +91,7 @@ public class SellerWindow implements Window {
     @Override
     public void draw() {
         //report
-        reportType = new ComboBox(FXCollections.observableArrayList(reportOptionsOwner)); //depends on role
+        reportType = new ComboBox(FXCollections.observableArrayList(reportOptionsSeller)); //depends on role
         reportType.setTranslateX(10);
         reportType.setTranslateY(300);
         reportType.setPromptText("Report type");

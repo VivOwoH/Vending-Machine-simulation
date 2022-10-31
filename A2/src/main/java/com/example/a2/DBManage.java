@@ -227,6 +227,58 @@ public class DBManage {
         return resultStr;
     }
 
+    /**
+     * Function gets all products in the system as well as all their details
+     * @return String made up of rows separated by \n
+     */
+    public String getItemDetails() {
+        String resultStr = null;
+
+        try {
+            connection = DriverManager.getConnection(url);
+            Statement statement = connection.createStatement();
+            statement.setQueryTimeout(30);
+
+            String insertStatement = "SELECT name, prodID, quantity, cost, Category FROM Products";
+            PreparedStatement preparedStatement =
+                    connection.prepareStatement(insertStatement);
+            ResultSet result = preparedStatement.executeQuery();
+
+            if (result.isClosed()) {
+                return null;
+            }
+            if (result.getString(1) == null) {
+                return null;
+            }
+
+            String tmp = "";
+            resultStr = result.getString(1) + " | " + result.getString(2) + " | " +
+                    result.getString(3) + " | " + String.format("%.2f", Double.parseDouble(result.getString(4)))
+                    + " | " + result.getString(5) + "\n";
+
+            while (result.next()){
+                resultStr += tmp;
+                tmp = result.getString(1) + " | " + result.getString(2) + " | " +
+                        result.getString(3) + " | " + String.format("%.2f", Double.parseDouble(result.getString(4)))
+                        + " | " + result.getString(5) + "\n";
+            }
+
+        } catch (Exception e) {
+            java.lang.System.out.println("_________________________ERROR at getUsers_________________________");
+            java.lang.System.err.println(e.getMessage());
+        }
+
+        return resultStr;
+    }
+
+    /**
+     * Functions gets all products in a system as well as how many of them have sold so far
+     * @return String made up of rows separated by \n
+     */
+    public String getItemSummary() {
+        return "summary";
+    }
+
     public String getUserPassword(String userName){
         String resultPassword = null;
 

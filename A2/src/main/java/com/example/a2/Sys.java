@@ -61,6 +61,10 @@ public class Sys{
         return database.getCancelledTransactions();
     }
 
+    public String getItemDetails() {return database.getItemDetails();}
+
+    public String getItemSummary() {return database.getItemSummary();}
+
     public Userbase getUserbase() {
         return userbase;
     }

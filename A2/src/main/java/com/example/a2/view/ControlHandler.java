@@ -341,6 +341,18 @@ public class ControlHandler {
                     Text report = new Text(system.getCancelledTransactions());
                     box.getChildren().addAll(header, report);
                 }
+                else if (type.equals("Item details")){
+                    box.getChildren().clear();
+                    Text header = new Text("Product | Code | Quantity | Price | Category");
+                    Text report = new Text(system.getItemDetails());
+                    box.getChildren().addAll(header, report);
+                }
+                else if(type.equals("Item summary")){
+                    box.getChildren().clear();
+                    Text header = new Text("Product | Code | Quantity Sold");
+                    Text report = new Text(system.getItemSummary());
+                    box.getChildren().addAll(header, report);
+                }
             }
         });
     }

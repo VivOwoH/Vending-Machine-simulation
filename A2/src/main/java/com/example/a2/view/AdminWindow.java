@@ -44,8 +44,7 @@ public class AdminWindow implements Window{
     private Text reportTitle;
     private ScrollPane reportPane;
     private ComboBox reportType;
-    private String reportOptionsCashier[] = {"Available change", "Transactions"};
-    private String reportOptionsOwner[] = {"Available change", "Transactions", "Accounts", "Cancelled transactions"};
+    private String reportOptionsOwner[] = {"Available change", "Transactions", "Accounts", "Cancelled transactions", "Item details", "Item summary"};
 
     public AdminWindow(Sys system, ControlHandler controlHandler) {
         pane = new Pane();
