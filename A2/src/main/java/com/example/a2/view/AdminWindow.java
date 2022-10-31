@@ -90,7 +90,7 @@ public class AdminWindow implements Window{
         denomination = new TextField();
         denomination.setTranslateX(10);
         denomination.setTranslateY(170);
-        denomination.setPromptText("Denimination");
+        denomination.setPromptText("Denomination");
         
         cashQty = new TextField();
         cashQty.setTranslateX(10);
@@ -100,6 +100,8 @@ public class AdminWindow implements Window{
         submitCashChange = new Button("Submit");
         submitCashChange.setTranslateX(10);
         submitCashChange.setTranslateY(230);
+
+        controlHandler.updateCashHandler(this, submitCashChange, denomination, cashQty);
 
         cashMsg = new Text();
         cashMsg.setTranslateX(70);
@@ -147,6 +149,10 @@ public class AdminWindow implements Window{
     public void run() {
         // TODO Auto-generated method stub
         
+    }
+
+    public void setCashText(String s){
+        this.cashMsg.setText(s);
     }
     
 }
