@@ -24,6 +24,9 @@ public class ControlHandler {
     private boolean purchaseCardFlag = false;
     private Sys system;
 
+    private double cashGiven;
+    private double change;
+
     public ControlHandler(Sys sys) {
         system = sys;
         vendingMachine = sys.getVendingMachine();
@@ -56,7 +59,7 @@ public class ControlHandler {
         try {
             // adds transaction into database
             if (purchaseCashFlag) {
-                database.addTransaction(prodID, true, userID, quantity);
+                database.addTransaction(prodID, true, userID, quantity, cashGiven, change);
                 // success
                 vendingMachine.cancelTimer();
 
@@ -64,7 +67,7 @@ public class ControlHandler {
                 return true;
             }
             if (purchaseCardFlag) {
-                database.addTransaction(prodID, true, userID, quantity);
+                database.addTransaction(prodID, true, userID, quantity, -1, -1);
                 // success
                 vendingMachine.cancelTimer();
 
@@ -267,6 +270,8 @@ public class ControlHandler {
                 } else {
                     purchaseCashFlag = true;
                     show.setText(String.format("Input: %.2f\nChange: %.2f", inputTotal, inputTotal - total));
+                    cashGiven = inputTotal;
+                    change = inputTotal-total;
                 }
             }
         });

@@ -64,6 +64,9 @@ public class DBManage {
                     "userID REFERENCES Users(userID), " +
                     "prodID REFERENCES Products(prodID) NOT NULL," +
                     "success BIT NOT NULL," +
+                    "cancelReason VARCHAR(50)," +
+                    "cash FLOAT," +
+                    "change FLOAT," +
                     "quantity INTEGER DEFAULT (7)," +
                     "date TIMESTAMP)");
             // credit card Table
@@ -487,7 +490,7 @@ public class DBManage {
     }
 
     // add purchase history (customer has account)(the time of transaction will be recorded when this function is called)
-    public void addTransaction(int prodID, boolean success, int userID, int quantity){
+    public void addTransaction(int prodID, boolean success, int userID, int quantity, double cash, double change){
         try {
             connection = DriverManager.getConnection(url);
             Statement statement = connection.createStatement();
@@ -502,14 +505,25 @@ public class DBManage {
 
             Timestamp timestamp = new Timestamp(java.lang.System.currentTimeMillis());
 
-            String insertStatement = "INSERT INTO Transactions (userID, prodID, success, date, quantity) VALUES(?,?,?,?,?)";
-            PreparedStatement preparedStatement =
+            String insertStatement = null;
+            PreparedStatement preparedStatement = null;
+            if (cash == -1) {
+                insertStatement = "INSERT INTO Transactions (userID, prodID, success, date, quantity) VALUES(?,?,?,?,?)";
+                preparedStatement =
+                        connection.prepareStatement(insertStatement);
+                preparedStatement.setInt(5, quantity);
+            } else {
+                insertStatement = "INSERT INTO Transactions (userID, prodID, success, date, cash, change, quantity) VALUES(?,?,?,?,?,?,?)";
+                preparedStatement =
                     connection.prepareStatement(insertStatement);
+                preparedStatement.setFloat(5, (float)cash);
+                preparedStatement.setFloat(6, (float)change);
+                preparedStatement.setInt(7, quantity);
+            }
             preparedStatement.setInt(1, userID);
             preparedStatement.setInt(2, prodID);
             preparedStatement.setInt(3, successBit);
             preparedStatement.setTimestamp(4, timestamp);
-            preparedStatement.setInt(5, quantity);
             preparedStatement.executeUpdate();
 
         } catch (Exception e) {
@@ -550,7 +564,7 @@ public class DBManage {
                 returnResult += String.format("%s | %s\n", formattedDate, userID);
             }
         } catch (Exception e) {
-            java.lang.System.out.println("_________________________ERROR at getTransactionHistory_________________________");
+            java.lang.System.out.println("_________________________ERROR at getCancelledTransaction_________________________");
             java.lang.System.err.println(e.getMessage());
         } finally {
             try {
@@ -581,13 +595,15 @@ public class DBManage {
             history = "";
             while (list.next()) {
                 String prodID = list.getString("prodID");
-                // String transID = list.getString("transID");
-                // boolean success = list.getInt("success") == 1;
                 Date date = new Date(list.getTimestamp("date").getTime());
                 String formattedDate = new SimpleDateFormat("dd/MM/yyyy, hh:mm").format(date);
-                // int quantity = list.getInt("quantity");
-
-                history += String.format("%s | %s", formattedDate, prodID);
+                float cash = list.getFloat("cash");
+                if (!list.wasNull()) { 
+                    float change = list.getFloat("change");
+                    history += String.format("%s | %s | %.2f | %.2f | CASH\n", formattedDate, prodID, cash, change);
+                } else {
+                    history += String.format("%s | %s | N/A | N/A | CARD\n", formattedDate, prodID);
+                }
             }
         } catch (Exception e) {
             java.lang.System.out.println("_________________________ERROR at getTransactionHistory_________________________");
