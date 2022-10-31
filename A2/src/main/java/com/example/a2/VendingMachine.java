@@ -222,9 +222,7 @@ public class VendingMachine {
             this.findProductByID(prodID).setQty(newQty);
             
             return String.format("Item add to cart! Stock: %d", newQty);
-
-        } catch (NumberFormatException e) {
-            return "Invalid input.";
+            
         } catch (IllegalArgumentException e) {
             return e.getMessage();
         }

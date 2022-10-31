@@ -13,7 +13,7 @@ import static org.junit.jupiter.api.Assertions.*;
 public class databaseTesting {
 
     private static DBManage database;
-    private String url = "jdbc:sqlite:src/main/data/test.sqlite";
+    private String url = "jdbc:sqlite:src/main/data/";
     private Connection connection = null;
 
     @BeforeAll
@@ -65,9 +65,9 @@ public class databaseTesting {
         // test if transactions are being added
     void addTransactionTest() {
 
-        database.addTransaction(1, true, 1, 1);
-        database.addTransaction(2, true, 1, 1);
-        database.addTransaction(3, true, 1, 1);
+        database.addTransaction(1, true, 1, 1, 0, 0);
+        database.addTransaction(2, true, 1, 1, 0, 0);
+        database.addTransaction(3, true, 1, 1, 0, 0);
 
         ArrayList<Transaction> tran1 = database.getLastFiveTransactionsByUserID(1);
 

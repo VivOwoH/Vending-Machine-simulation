@@ -248,6 +248,8 @@ public class HomeWindow implements Window {
     public void cfgPurchaseBox() {
         // notification text
         text = new Text();
+        text.setTranslateX(360);
+        text.setTranslateY(575);
 
         // item code
         prodID = new Text("Enter Product ID:");
@@ -270,16 +272,17 @@ public class HomeWindow implements Window {
         // action event
         EventHandler<ActionEvent> event = new EventHandler<ActionEvent>() {
             public void handle(ActionEvent e) {
-                sys.getVendingMachine().triggerTimer();
+                try {
+                    sys.getVendingMachine().triggerTimer();
 
-                int id = Integer.parseInt(itemCode.getText());
-                int qty = Integer.parseInt(itemQty.getText());
+                    int id = Integer.parseInt(itemCode.getText());
+                    int qty = Integer.parseInt(itemQty.getText());
 
-                text.setTranslateX(360);
-                text.setTranslateY(575);
-
-                String msg = sys.getVendingMachine().addToCart(id, qty);
-                text.setText(msg);
+                    String msg = sys.getVendingMachine().addToCart(id, qty);
+                    text.setText(msg);
+                } catch (NumberFormatException exception) {
+                    text.setText("Invalid input.");
+                }
             }
         };
 
