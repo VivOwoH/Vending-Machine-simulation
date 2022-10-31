@@ -3,6 +3,7 @@ package com.example.a2.view;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import com.example.a2.*;
@@ -97,9 +98,12 @@ public class HomeWindow implements Window {
         pane.getChildren().add(itemQty);
         pane.getChildren().add(text);
 
-        cfgProductPane(); // need to cfg everything in the scrollpane b4 adding to renderqueue
+
+        scrollPane = new ScrollPane();
+        scrollPane.setPrefSize(380, 480);
+        scrollPane.relocate(20, 60);
+        cfgProductPane(sys.getVendingMachine().getProductInventroy());
         pane.getChildren().add(scrollPane);
-        controlHandler.productBtnHandle(this, productButtons, itemCode);
 
         // checkout button
         cfgCheckoutButton();
@@ -141,11 +145,7 @@ public class HomeWindow implements Window {
         }
     }
 
-    public void cfgProductPane() {
-        scrollPane = new ScrollPane();
-        scrollPane.setPrefSize(380, 480);
-        scrollPane.relocate(20, 60);
-
+    public void cfgProductPane(List<Product> listOfProducts) {
         historyTxt = new Text("Last 5 purchases");
         historyTxt.setFont(new Font(30));
 
@@ -168,7 +168,7 @@ public class HomeWindow implements Window {
         productButtons = new HashMap<>();
         productBoxes = new HashMap<>();
 
-        for (Product product : sys.getVendingMachine().getProductInventroy()) {
+        for (Product product : listOfProducts) {
 
             VBox productBox = new VBox();
             ImageView view = new ImageView();
@@ -212,6 +212,8 @@ public class HomeWindow implements Window {
         box.getChildren().add(currHBox);
 
         scrollPane.setContent(box);
+        
+        controlHandler.productBtnHandle(this, productButtons, itemCode);
     }
 
     public void cfgCategoryDropbox() {
@@ -235,19 +237,10 @@ public class HomeWindow implements Window {
             VBox box = new VBox();
 
             if (selectedCategory.equals("All")) {
-                for (Product product : sys.getVendingMachine().getProductInventroy()) {
-                    box.getChildren().add(new Text(String.format("%d %s %.2f",
-                            product.getCode(), product.getName(), product.getCost())));
-                }
+                this.cfgProductPane(sys.getVendingMachine().getProductInventroy());
             } else {
-                for (Product product : sys.getVendingMachine().ShowProductCategorized(selectedCategory)) {
-                    box.getChildren().add(new Text(String.format("%d %s %.2f",
-                            product.getCode(), product.getName(), product.getCost())));
-                }
+                this.cfgProductPane(sys.getVendingMachine().ShowProductCategorized(selectedCategory));
             }
-
-            scrollPane.setContent(box);
-
         });
 
     }
