@@ -245,7 +245,6 @@ public class ControlHandler {
     public void cancelTransactionHandle() {
         vendingMachine.cancelTimer();
         vendingMachine.clearCart();
-
     }
 
     public void checkoutHandle(Button checkoutButton) {

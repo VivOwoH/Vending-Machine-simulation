@@ -757,6 +757,7 @@ public class DBManage {
                 String formattedDate = new SimpleDateFormat("dd/MM/yyyy, hh:mm").format(date);
                 if (list.getInt("success") == 0) {
                     history += String.format("%s | N/A | N/A | N/A | CANCELLED\n", formattedDate);
+                    continue;
                 }
                 String prodID = list.getString("prodID");
                 float cash = list.getFloat("cash");
