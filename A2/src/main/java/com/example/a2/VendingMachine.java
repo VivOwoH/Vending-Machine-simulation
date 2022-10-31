@@ -107,23 +107,23 @@ public class VendingMachine {
         try {
             // ------------------ Defense ---------------------------
             if (selectedProduct == null) // no product of this code OR invalid code
-                throw new IllegalArgumentException("Product not found");
+                throw new IllegalArgumentException("Product not found.");
 
             if (newValue == null || field == null) // null input
-                throw new IllegalArgumentException("Invalid input");
+                throw new IllegalArgumentException("Invalid input.");
 
             if ((field.equals("Code") || field.equals("Quantity") ||
                     field.equals("Price")) && Double.parseDouble(newValue) < 0)
-                throw new IllegalArgumentException("Negative input not allowed");
+                throw new IllegalArgumentException("Negative input not allowed.");
 
             if (field.equals("Quantity") && Integer.parseInt(newValue) > 15)
-                throw new IllegalArgumentException("Maximum 15 for each product");
+                throw new IllegalArgumentException("Maximum 15 for each product.");
 
             if (field.equals("Code") && listAllProductID().contains(Integer.parseInt(newValue)))
-                throw new IllegalArgumentException("Conflicting code");
+                throw new IllegalArgumentException("Conflicting code.");
 
             if (field.equals("Name") && listAllProductName().contains(newValue))
-                throw new IllegalArgumentException("Conflicting name");
+                throw new IllegalArgumentException("Conflicting name.");
             
             if (field.equals("Category") && !Arrays.asList(categories).contains(newValue))
                 throw new IllegalArgumentException("Unavailable category.");
@@ -151,12 +151,11 @@ public class VendingMachine {
 
             database.updateProduct(selectedProduct.getCost(), selectedProduct.getName(),
                     selectedProduct.getQty(), selectedProduct.getCategoryStr(), selectedProduct.getCode());
-            return String.format("Product %d updated", selectedProduct.getCode());
+            return String.format("Product %d updated.", selectedProduct.getCode());
 
         } catch (NumberFormatException e) {
-            String err = "Update product: input of wrong format";
-            System.out.println(err);
-            return "Input of wrong format";
+            System.out.println("Update product: input of wrong format");
+            return "Input of wrong format.";
         } catch (IllegalArgumentException e) {
             System.out.println("Update product: " + e.getMessage());
             return e.getMessage();

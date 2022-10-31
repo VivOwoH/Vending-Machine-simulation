@@ -107,90 +107,110 @@ public class ControlHandler {
     }
 
     public void updateProductHandler(Window admin, Button submitButton, TextField pid, TextField val,
-            ComboBox field) {
+            ComboBox field, Text productMsg) {
         submitButton.setOnAction(new EventHandler<ActionEvent>() {
             @Override
             public void handle(ActionEvent event) {
-                int productId = Integer.parseInt(pid.getText());
-                String newValue = val.getText();
+                try {
+                    // have not chosen a field
+                    if (field.getValue() == null) {
+                        productMsg.setText("Please select a field to update first.");
+                        return;
+                    }
 
-                vendingMachine.updateProduct(productId, newValue, field.getValue().toString());
+                    int productId = Integer.parseInt(pid.getText());
+                    String newValue = val.getText();
 
-                // system.getHomeWindow().cfgProductPane();
-                HashMap<Integer, VBox> productBoxes = system.getHomeWindow().getProductBoxes();
-                VBox box = productBoxes.get(productId);
-                for (Node n : box.getChildren()) {
-                    if (n instanceof Button) {
-                        if (field.getValue() == "Category") {
+                    String msg = vendingMachine.updateProduct(productId, newValue, field.getValue().toString());
+                    productMsg.setText(msg);
 
-                            ImageView view = new ImageView();
-                            System.out.println(newValue);
+                    if (!msg.contains("Product updated")) {
+                        return;
+                    }
 
-                            if (newValue.equals("Drinks")) {
-                                view.setImage(new Image(getClass().getResource("/drink.png").toString()));
-                            } else if (newValue.equals("Chocolates")) {
-                                view.setImage(new Image(getClass().getResource("/chocolate.png").toString()));
-                            } else if (newValue.equals("Chips")) {
-                                view.setImage(new Image(getClass().getResource("/chips.png").toString()));
-                            } else if (newValue.equals("Candies")) {
-                                view.setImage(new Image(getClass().getResource("/candy.png").toString()));
+                    // system.getHomeWindow().cfgProductPane();
+                    HashMap<Integer, VBox> productBoxes = system.getHomeWindow().getProductBoxes();
+                    VBox box = productBoxes.get(productId);
+                    for (Node n : box.getChildren()) {
+                        if (n instanceof Button) {
+                            if (field.getValue() == "Category") {
+
+                                ImageView view = new ImageView();
+                                System.out.println(newValue);
+
+                                if (newValue.equals("Drinks")) {
+                                    view.setImage(new Image(getClass().getResource("/drink.png").toString()));
+                                } else if (newValue.equals("Chocolates")) {
+                                    view.setImage(new Image(getClass().getResource("/chocolate.png").toString()));
+                                } else if (newValue.equals("Chips")) {
+                                    view.setImage(new Image(getClass().getResource("/chips.png").toString()));
+                                } else if (newValue.equals("Candies")) {
+                                    view.setImage(new Image(getClass().getResource("/candy.png").toString()));
+                                }
+
+                                view.setFitHeight(50);
+                                view.setFitWidth(50);
+                                ((Button) n).setGraphic(view);
                             }
 
-                            view.setFitHeight(50);
-                            view.setFitWidth(50);
-                            ((Button) n).setGraphic(view);
+                        } else if (n instanceof Text) {
+                            Product product = system.getVendingMachine().findProductByID(productId);
+                            ((Text) n).setText(String.format("%s \n%.2f",
+                                    product.getName(), product.getCost()));
                         }
-
-                    } else if (n instanceof Text) {
-                        Product product = system.getVendingMachine().findProductByID(productId);
-                        ((Text) n).setText(String.format("%s \n%.2f",
-                                product.getName(), product.getCost()));
                     }
+
+                } catch (NumberFormatException e) {
+                    productMsg.setText("Input of wrong format.");
                 }
             }
         });
     }
+
     /**
-     * Function changes the amount of cash associated with some specific denomination
-     * @param adminWindow - window input so that output text can be displayed
+     * Function changes the amount of cash associated with some specific
+     * denomination
+     * 
+     * @param adminWindow      - window input so that output text can be displayed
      * @param submitCashChange - button for submission
-     * @param denomination - denomination input (should be in VendingMachine.denominations)
-     * @param cashQty - quantity input (should be integer)
+     * @param denomination     - denomination input (should be in
+     *                         VendingMachine.denominations)
+     * @param cashQty          - quantity input (should be integer)
      */
-    public void updateCashHandler(Window adminWindow, Button submitCashChange, TextField denomination, TextField cashQty, Text cashMsg) {
-        submitCashChange.setOnAction(new EventHandler<ActionEvent>(){
+    public void updateCashHandler(Window adminWindow, Button submitCashChange, TextField denomination,
+            TextField cashQty, Text cashMsg) {
+        submitCashChange.setOnAction(new EventHandler<ActionEvent>() {
             @Override
-            public void handle(ActionEvent event){
-                try{
+            public void handle(ActionEvent event) {
+                try {
                     int quantity = Integer.parseInt(cashQty.getText());
                     String denom = denomination.getText();
 
                     boolean in = false;
-                    for(String test : VendingMachine.denominations){
-                        if(denom.equalsIgnoreCase(test)){
+                    for (String test : VendingMachine.denominations) {
+                        if (denom.equalsIgnoreCase(test)) {
                             in = true;
                         }
                     }
                     if (!in) {
                         throw new IllegalArgumentException("Invalid denomination.");
-                    } else if (quantity < 1 || quantity > 999){
+                    } else if (quantity < 1 || quantity > 999) {
                         throw new IllegalArgumentException("Quantity out of range (1~999).");
                     }
 
                     system.getDatabase().updateCurrency(Double.parseDouble(denom), quantity);
                     cashMsg.setText(String.format("Denomination %s's quantity updated to %s", denom, quantity));
-                    
+
                 } catch (NumberFormatException e) {
                     cashMsg.setText("Input of wrong format.");
                 } catch (IllegalArgumentException e) {
                     cashMsg.setText(e.getMessage());
-                } catch(Exception e){
+                } catch (Exception e) {
                     cashMsg.setText("Invalid.");
                 }
             }
         });
     }
-
 
     public void updateRoleHandler(TextField userID, Button submitButton, ComboBox box, Text roleMsg) {
         submitButton.setOnAction(new EventHandler<ActionEvent>() {
@@ -225,7 +245,7 @@ public class ControlHandler {
     public void cancelTransactionHandle() {
         vendingMachine.cancelTimer();
         vendingMachine.clearCart();
-        
+
     }
 
     public void checkoutHandle(Button checkoutButton) {
@@ -287,7 +307,7 @@ public class ControlHandler {
                     purchaseCashFlag = true;
                     show.setText(String.format("Input: %.2f\nChange: %.2f", inputTotal, inputTotal - total));
                     cashGiven = inputTotal;
-                    change = inputTotal-total;
+                    change = inputTotal - total;
                 }
             }
         });
@@ -334,13 +354,12 @@ public class ControlHandler {
 
                 String type = reportType.getValue().toString();
 
-                if(type.equals("Available change")) {
+                if (type.equals("Available change")) {
                     box.getChildren().clear();
                     Text header = new Text("Denomination | Quantity");
                     Text report = new Text(system.getCurrencyReport());
                     box.getChildren().addAll(header, report);
-                }
-                else if (type.equals("Accounts")) {
+                } else if (type.equals("Accounts")) {
                     box.getChildren().clear();
                     Text header = new Text("Username | Role");
                     Text report = new Text(system.getUsersReport());
