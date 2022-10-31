@@ -125,6 +125,9 @@ public class VendingMachine {
 
             if (field.equals("Name") && listAllProductName().contains(newValue))
                 throw new IllegalArgumentException("Conflicting name");
+            
+            if (field.equals("Category") && !Arrays.asList(categories).contains(newValue))
+                throw new IllegalArgumentException("Unavailable category.");
 
             // ------------------ Update ---------------------------
             switch (field) {

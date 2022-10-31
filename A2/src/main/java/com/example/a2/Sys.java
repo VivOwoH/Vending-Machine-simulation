@@ -44,9 +44,18 @@ public class Sys{
         return this.vendingMachine;
     }
 
+    public void setVendingMachine(VendingMachine model) {
+        this.vendingMachine = model;
+    }
+
     public DBManage getDatabase(){
         return database;
     }
+
+    public void setDatabase(DBManage database) {
+        this.database = database;
+    }
+
     public String getCurrencyReport() { return database.getCurrencyReport();}
 
     public String getUsersReport() {
@@ -63,6 +72,10 @@ public class Sys{
 
     public Userbase getUserbase() {
         return userbase;
+    }
+
+    public void setUserbase(Userbase userbase) {
+        this.userbase = userbase;
     }
 
     public void setScene(Scene scene) {

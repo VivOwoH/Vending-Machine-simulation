@@ -7,6 +7,8 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.util.List;
 
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -14,36 +16,43 @@ import com.example.a2.products.Product;
 
 public class vendingMachineTest {
 
-    private HelloApplication app;
-    private Sys system;
     private VendingMachine model;
+    private DBManage database;
+    private Userbase userbase;
+    private Sys system;
 
     @BeforeEach
     public void setUp() {
-        app = new HelloApplication();
-        system = new Sys(app);
-        model = system.getVendingMachine();
+        database = new DBManage("test2.sqlite");
+        database.createDB();
+        database.loadCreditConfig();
+
+        model = new VendingMachine(database);
+        userbase = new Userbase(database, "admin", "admin", 0);
+
+        system = new Sys(new HelloApplication());
+        system.setDatabase(database);
+        system.setUserbase(userbase);
+        system.setVendingMachine(model);
     }
 
     // ---------------------------------------------
 
-    // will re-enable this test when db test is fixed
+    @Test
+    void testInitialProducts() {
+        // 16 products
+        List<Product> ls = model.getProductInventroy();
+        assertEquals(16, ls.size());
 
-    // @Test
-    // void testInitialProducts() {
-    //     // 16 products
-    //     List<Product> ls = model.getProductInventroy();
-    //     assertEquals(16, ls.size());
-
-    //     // all field no null, default qty = 7
-    //     for (Product product : ls) {
-    //         assertNotNull(product.getCode());
-    //         assertNotNull(product.getCost());
-    //         assertNotNull(product.getCategoryStr());
-    //         assertNotNull(product.getName());
-    //         assertEquals(7, product.getQty());
-    //     }
-    // }
+        // all field no null, default qty = 7
+        for (Product product : ls) {
+            assertNotNull(product.getCode());
+            assertNotNull(product.getCost());
+            assertNotNull(product.getCategoryStr());
+            assertNotNull(product.getName());
+            assertEquals(7, product.getQty());
+        }
+    }
 
     @Test
     void testAddToCart() {
@@ -57,7 +66,7 @@ public class vendingMachineTest {
         assertTrue(model.addToCart(20, 5).contains("not found"));
 
         // invalid quantity (>current stock)
-        assertTrue(model.addToCart(1, model.findProductByID(1).getQty()+1).contains("Stock"));
+        assertTrue(model.addToCart(1, model.findProductByID(1).getQty() + 1).contains("Stock"));
 
         // valid quantity boundary (=current stock)
         assertTrue(model.addToCart(1, model.findProductByID(1).getQty()).contains("add"));
@@ -88,7 +97,7 @@ public class vendingMachineTest {
     // ------------------------------------------
 
     @Test
-    void testUpdateProductInvalid() {
+    void testUpdateProduct() {
         // "Name", "Code", "Category", "Quantity", "Price"
 
         // product cannot be found by code & null input
@@ -120,17 +129,53 @@ public class vendingMachineTest {
                 .contains("Conflicting"));
         assertTrue(model.updateProduct(1, "juice", "Name")
                 .contains("Conflicting"));
+
+        // Invalid cateogry
+        assertTrue(model.updateProduct(1, "Snacks", "Category")
+                .contains("category"));
+
+        // valid update: cost, name, prodID, quantity, category
+        assertTrue(model.updateProduct(1, "17", "Code")
+                .contains("updated"));
+        assertTrue(model.updateProduct(17, "1", "Code")
+                .contains("updated")); // reset back
+
+        assertTrue(model.updateProduct(1, "lemonade", "Name")
+                .contains("updated"));
+        assertTrue(model.updateProduct(1, "4.4", "Price")
+                .contains("updated"));
+        assertTrue(model.updateProduct(1, "smiths", "Name")
+                .contains("updated")); // reset back
+        assertTrue(model.updateProduct(1, "0.0", "Price")
+                .contains("updated")); // reset back
+
+        assertTrue(model.updateProduct(1, "15", "Quantity")
+                .contains("updated")); // boundary case
+        assertTrue(model.updateProduct(1, "0", "Quantity")
+                .contains("updated")); // boundary case
+        assertTrue(model.updateProduct(1, "7", "Quantity")
+                .contains("updated")); // reset back
+
+        assertTrue(model.updateProduct(1, "Drinks", "Category")
+                .contains("updated"));
+        assertTrue(model.updateProduct(1, "Chips", "Category")
+                .contains("updated")); // reset back
     }
 
     @Test
-    void testUpdateUserRole() {
-        // username, role
+    void testUpdateUserRole() { // username, role
+        // -------------- INVALID ---------------------
+        // input of wrong format(username) -> handled by at UI level
+        // user not found -> handled by at UI level
 
-        // input of wrong format(String username)
-
-        // user not found
-
-        // new role is the same
+        // -------------- VALID ---------------------
+        // new role is the same as b4 (update nonetheless)
+        Owner owner = new Owner();
+        assertTrue(owner.modifyRole(system, 0, "Owner").contains("New role Owner"));
+        assertTrue(owner.modifyRole(system, 0, "User").contains("New role User"));
+        assertTrue(owner.modifyRole(system, 0, "Cashier").contains("New role Cashier"));
+        assertTrue(owner.modifyRole(system, 0, "Seller").contains("New role Seller"));
+        assertTrue(owner.modifyRole(system, 0, "Owner").contains("New role Owner")); // reset    
     }
 
     @Test

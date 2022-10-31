@@ -13,7 +13,7 @@ import static org.junit.jupiter.api.Assertions.*;
 public class databaseTesting {
 
     private static DBManage database;
-    private String url = "jdbc:sqlite:src/main/data/";
+    private String url = "jdbc:sqlite:src/main/data/test.sqlite";
     private Connection connection = null;
 
     @BeforeAll

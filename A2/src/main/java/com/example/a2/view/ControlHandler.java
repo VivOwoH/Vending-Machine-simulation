@@ -193,14 +193,26 @@ public class ControlHandler {
         submitButton.setOnAction(new EventHandler<ActionEvent>() {
             @Override
             public void handle(ActionEvent event) {
+                // have not chosen a role
+                if (box.getValue() == null) {
+                    roleMsg.setText("Please select a role first.");
+                    return;
+                }
+                
                 String role = box.getValue().toString();
-                User currentUser = system.getCurrentUser();
                 String username = userID.getText();
-                int id = system.getUserbase().getUserByUsername(username).getID();
+                User currentUser = system.getCurrentUser();
+                User targetUser = system.getUserbase().getUserByUsername(username);
+
+                // null user (not found)
+                if (currentUser == null || targetUser == null) {
+                    roleMsg.setText("User not found.");
+                    return;
+                }
 
                 if (currentUser.getRole().getClass() == Owner.class) {
                     Owner owner = (Owner) currentUser.getRole();
-                    String msg = owner.modifyRole(system, id, role);
+                    String msg = owner.modifyRole(system, targetUser.getID(), role);
                     roleMsg.setText(msg);
                 }
             }
