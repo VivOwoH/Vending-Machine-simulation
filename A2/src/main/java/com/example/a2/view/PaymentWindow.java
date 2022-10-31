@@ -164,6 +164,7 @@ public class PaymentWindow implements Window {
             saveInfoButton.setTranslateX(10);
             saveInfoButton.setTranslateY(320);
             saveInfoButton.setText("Save CC info & Quit");
+            pane.getChildren().add(saveInfoButton);
             saveInfoButton.setVisible(false);
 
             quitButton = new Button();
@@ -182,8 +183,6 @@ public class PaymentWindow implements Window {
             if (system.getCurrentUser().getUsername().equals("Anonymous")) {
                 saveMsg.setText("Anonymous user cannot save CC info");
                 saveMsg.setVisible(true);
-            } else {
-                pane.getChildren().add(saveInfoButton);
             }
 
             saveInfoButton.setOnAction(new EventHandler<ActionEvent>() {
@@ -287,6 +286,9 @@ public class PaymentWindow implements Window {
 
                     if (success) {
                         System.out.println("Transaction added");
+                        cardMsg.setText("Transaction added.");
+                        cardMsg.setVisible(true);
+
                         // stock already updated when user add to cart, just need to commit to database
                         int stock = system.getVendingMachine().findProductByID(prodID).getQty();
                         system.getVendingMachine().updateProduct(prodID, Integer.toString(stock), "Quantity");
@@ -294,6 +296,10 @@ public class PaymentWindow implements Window {
                         system.getVendingMachine().updateProductInventory(); // refresh inventory
 
                         if (methodBox.getValue() == "Card") {
+                            continueShopping.setVisible(false);
+                            methodBox.setVisible(false);
+                            confirmTransactionButton.setVisible(false);
+
                             quitButton.setVisible(true);
                             saveInfoButton.setVisible(true); // we can only save cc when transaction is successful
                         } else {
