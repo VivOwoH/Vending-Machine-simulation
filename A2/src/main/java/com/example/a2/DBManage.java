@@ -53,7 +53,8 @@ public class DBManage {
                     "name TEXT UNIQUE, " +
                     "prodID INTEGER PRIMARY KEY NOT NULL, " +
                     "quantity INTEGER DEFAULT (7), " +
-                    "Category TEXT)");
+                    "Category TEXT, " +
+                    "sold INTEGER)");
             // currency Table
             statement.executeUpdate("CREATE TABLE IF NOT EXISTS Currencies " +
                     "(amount STRING PRIMARY KEY, " +
@@ -178,10 +179,11 @@ public class DBManage {
             }
 
             String tmp = "";
-            resultStr = result.getString(1) + " | " + result.getString(2) + "\n";
+            resultStr = "";
+
             while (result.next()){
-                resultStr += tmp;
                 tmp = result.getString(1) + " | " + result.getString(2) + "\n";
+                resultStr += tmp;
             }
 
         } catch (Exception e) {
@@ -213,10 +215,11 @@ public class DBManage {
             }
 
             String tmp = "";
-            resultStr = result.getString(1) + " | " + result.getString(2) + "\n";
+            resultStr = "";
+
             while (result.next()){
-                resultStr += tmp;
                 tmp = result.getString(1) + " | " + result.getString(2) + "\n";
+                resultStr += tmp;
             }
 
         } catch (Exception e) {
@@ -252,15 +255,13 @@ public class DBManage {
             }
 
             String tmp = "";
-            resultStr = result.getString(1) + " | " + result.getString(2) + " | " +
-                    result.getString(3) + " | " + String.format("%.2f", Double.parseDouble(result.getString(4)))
-                    + " | " + result.getString(5) + "\n";
+            resultStr = "";
 
             while (result.next()){
-                resultStr += tmp;
                 tmp = result.getString(1) + " | " + result.getString(2) + " | " +
                         result.getString(3) + " | " + String.format("%.2f", Double.parseDouble(result.getString(4)))
                         + " | " + result.getString(5) + "\n";
+                resultStr += tmp;
             }
 
         } catch (Exception e) {
@@ -276,7 +277,40 @@ public class DBManage {
      * @return String made up of rows separated by \n
      */
     public String getItemSummary() {
-        return "summary";
+        String resultStr = null;
+
+        try {
+            connection = DriverManager.getConnection(url);
+            Statement statement = connection.createStatement();
+            statement.setQueryTimeout(30);
+
+            String insertStatement = "SELECT name, prodID, sold FROM Products";
+            PreparedStatement preparedStatement =
+                    connection.prepareStatement(insertStatement);
+            ResultSet result = preparedStatement.executeQuery();
+
+            if (result.isClosed()) {
+                return null;
+            }
+            if (result.getString(1) == null) {
+                return null;
+            }
+
+            String tmp = "";
+            resultStr = "";
+
+            while (result.next()){
+                tmp = result.getString(1) + " | " + result.getString(2) + " | " +
+                        result.getString(3) + "\n";
+                resultStr += tmp;
+            }
+
+        } catch (Exception e) {
+            java.lang.System.out.println("_________________________ERROR at getUsers_________________________");
+            java.lang.System.err.println(e.getMessage());
+        }
+
+        return resultStr;
     }
 
     public String getUserPassword(String userName){
@@ -445,12 +479,13 @@ public class DBManage {
             Statement statement = connection.createStatement();
             statement.setQueryTimeout(30);
 
-            String insertStatement = "INSERT INTO Products (Cost, Name,  Category) VALUES(?,?,?)";
+            String insertStatement = "INSERT INTO Products (Cost, Name,  Category, sold) VALUES(?,?,?, ?)";
             PreparedStatement preparedStatement =
                     connection.prepareStatement(insertStatement);
             preparedStatement.setDouble(1, cost);
             preparedStatement.setString(2, name);
             preparedStatement.setString(3, category);
+            preparedStatement.setString(4, String.valueOf(0));
             preparedStatement.executeUpdate();
 
             return "Product added";
