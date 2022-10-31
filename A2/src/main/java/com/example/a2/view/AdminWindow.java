@@ -107,11 +107,11 @@ public class AdminWindow implements Window{
         submitCashChange.setTranslateX(10);
         submitCashChange.setTranslateY(230);
 
-        controlHandler.updateCashHandler(this, submitCashChange, denomination, cashQty);
-
         cashMsg = new Text();
         cashMsg.setTranslateX(70);
         cashMsg.setTranslateY(240);
+
+        controlHandler.updateCashHandler(this, submitCashChange, denomination, cashQty, cashMsg);
 
         pane.getChildren().addAll(cashText, denomination, cashQty, submitCashChange, cashMsg);
 
@@ -183,9 +183,4 @@ public class AdminWindow implements Window{
         // TODO Auto-generated method stub
         
     }
-
-    public void setCashText(String s){
-        this.cashMsg.setText(s);
-    }
-    
 }
