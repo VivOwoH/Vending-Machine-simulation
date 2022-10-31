@@ -10,7 +10,6 @@ import javax.swing.JOptionPane;
 
 public class VendingMachine {
     private List<Product> productInventory;
-    private List<Currency> currencyInventory;
     private DBManage database;
     private HashMap<Integer, Integer> cart = new HashMap<>(); // Map<prodID,qty>
     public final static String[] categories = { "Drinks", "Chocolates", "Chips", "Candies" }; // pre-defined; can't be
@@ -125,6 +124,9 @@ public class VendingMachine {
 
             if (field.equals("Name") && listAllProductName().contains(newValue))
                 throw new IllegalArgumentException("Conflicting name");
+            
+            if (field.equals("Category") && !Arrays.asList(categories).contains(newValue))
+                throw new IllegalArgumentException("Unavailable category.");
 
             // ------------------ Update ---------------------------
             switch (field) {
@@ -222,9 +224,7 @@ public class VendingMachine {
             this.findProductByID(prodID).setQty(newQty);
             
             return String.format("Item add to cart! Stock: %d", newQty);
-
-        } catch (NumberFormatException e) {
-            return "Invalid input.";
+            
         } catch (IllegalArgumentException e) {
             return e.getMessage();
         }
@@ -446,10 +446,6 @@ public class VendingMachine {
 
     public List<Product> getProductInventroy() {
         return this.productInventory;
-    }
-
-    public List<Currency> getCurrencyInventory() {
-        return this.currencyInventory;
     }
 
     public HashMap<Integer, Integer> getCart() {
