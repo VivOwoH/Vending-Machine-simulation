@@ -26,6 +26,7 @@ public class SellerWindow implements Window {
     private TextField changeField;
     private ComboBox combobox;
     private Button submitChange;
+    private Text productMsg;
     private String changeOptions[] = {"Name", "Code", "Category", "Quantity", "Price"};
     private Button home;
     private Text reportTitle;
@@ -69,10 +70,15 @@ public class SellerWindow implements Window {
         submitChange = new Button("Submit");
         submitChange.setTranslateX(10);
         submitChange.setTranslateY(100);
+   
+        productMsg = new Text();
+        productMsg.setTranslateX(70);
+        productMsg.setTranslateY(120);
     
-        controlHandler.updateProductHandler(this, submitChange, idField, changeField, combobox);
+        controlHandler.updateProductHandler(this, submitChange, idField, changeField, combobox, productMsg);
 
-        pane.getChildren().addAll(updateText, idField, changeField, combobox, submitChange);
+        pane.getChildren().addAll(updateText, idField, changeField, combobox, submitChange, productMsg);
+
 
         //report
         reportTitle = new Text("Report");
