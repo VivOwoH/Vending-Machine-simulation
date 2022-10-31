@@ -27,15 +27,16 @@ public class HelloApplication extends Application {
     private PaymentWindow paymentWindow;
     private ControlHandler controlHandler;
     private Stage stage;
+    private Sys system;
 
     @Override
     public void start(Stage stage) throws IOException {
-        Sys system = new Sys(this); //use this for logic
+        system = new Sys(this); //use this for logic
 
         this.stage = stage;
         controlHandler = new ControlHandler(system);
         loginWindow = new LoginWindow(this, system);
-        adminWindow = new AdminWindow(system, controlHandler);
+        // adminWindow = new AdminWindow(system, controlHandler);
         sellerWindow = new SellerWindow(system, controlHandler);
         cashierWindow = new CashierWindow(system, controlHandler);
         homeWindow = new HomeWindow(this, system, controlHandler);
@@ -52,6 +53,10 @@ public class HelloApplication extends Application {
     public void setScene(Scene scene) {
         stage.setScene(scene);
         stage.show();
+    }
+
+    public void makeAdminWindow() {
+        adminWindow = new AdminWindow(system, controlHandler);
     }
 
     public LoginWindow getloginWindow() { return loginWindow; }
