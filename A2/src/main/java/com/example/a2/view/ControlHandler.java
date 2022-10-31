@@ -150,6 +150,41 @@ public class ControlHandler {
             }
         });
     }
+    /**
+     * Function changes the amount of cash associated with some specific denomination
+     * @param adminWindow - window input so that output text can be displayed
+     * @param submitCashChange - button for submission
+     * @param denomination - denomination input (should be in VendingMachine.denominations)
+     * @param cashQty - quantity input (should be integer)
+     */
+    public void updateCashHandler(AdminWindow adminWindow, Button submitCashChange, TextField denomination, TextField cashQty) {
+        submitCashChange.setOnAction(new EventHandler<ActionEvent>(){
+            @Override
+            public void handle(ActionEvent event){
+                try{
+                    int quantity = Integer.parseInt(cashQty.getText());
+                    String denom = denomination.getText();
+
+                    boolean in = false;
+                    for(String test : VendingMachine.denominations){
+                        if(denom.equalsIgnoreCase(test)){
+                            in = true;
+                        }
+                    }
+                    if(!in || quantity < 1 || quantity > 999){
+                        throw new Exception();
+                    }
+
+                    system.getDatabase().updateCurrency(Double.parseDouble(denom), quantity);
+                    adminWindow.setCashText(String.format("Denomination %s's quantity updated to %s", denom, quantity));
+                }
+                catch(Exception e){
+                    adminWindow.setCashText("Incorrect input");
+                }
+            }
+        });
+    }
+
 
     public void updateRoleHandler(TextField userID, Button submitButton, ComboBox box, Text roleMsg) {
         submitButton.setOnAction(new EventHandler<ActionEvent>() {
@@ -278,7 +313,13 @@ public class ControlHandler {
 
                 String type = reportType.getValue().toString();
 
-                if (type.equals("Accounts")) {
+                if(type.equals("Available change")) {
+                    box.getChildren().clear();
+                    Text header = new Text("Denomination | Quantity");
+                    Text report = new Text(system.getCurrencyReport());
+                    box.getChildren().addAll(header, report);
+                }
+                else if (type.equals("Accounts")) {
                     box.getChildren().clear();
                     Text header = new Text("Username | Role");
                     Text report = new Text(system.getUsersReport());

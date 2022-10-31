@@ -47,6 +47,7 @@ public class Sys{
     public DBManage getDatabase(){
         return database;
     }
+    public String getCurrencyReport() { return database.getCurrencyReport();}
 
     public String getUsersReport() {
         return database.getUsersReport();
@@ -77,5 +78,4 @@ public class Sys{
     public CashierWindow getCashierWindow() {return app.getCashierWindow();}
 
     public HomeWindow getHomeWindow() { return app.getHomeWindow(); }
-
 }
