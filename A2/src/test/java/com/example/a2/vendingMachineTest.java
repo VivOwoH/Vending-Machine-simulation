@@ -165,8 +165,8 @@ public class vendingMachineTest {
     @Test
     void testUpdateUserRole() { // username, role
         // -------------- INVALID ---------------------
-        // input of wrong format(username) -> handled by at UI level
-        // user not found -> handled by at UI level
+        // input of wrong format(username) -> handled at UI level
+        // user not found -> handled at UI level
 
         // -------------- VALID ---------------------
         // new role is the same as b4 (update nonetheless)
@@ -175,16 +175,17 @@ public class vendingMachineTest {
         assertTrue(owner.modifyRole(system, 0, "User").contains("New role User"));
         assertTrue(owner.modifyRole(system, 0, "Cashier").contains("New role Cashier"));
         assertTrue(owner.modifyRole(system, 0, "Seller").contains("New role Seller"));
-        assertTrue(owner.modifyRole(system, 0, "Owner").contains("New role Owner")); // reset    
+        assertTrue(owner.modifyRole(system, 0, "Owner").contains("New role Owner")); // reset
     }
 
-    @Test
-    void testUpdateCurrencies() {
-        // input of wrong format (currencies, qty)
+    // handled at UI level
+    // @Test
+    // void testUpdateCurrencies() {
+    // // input of wrong format (currencies, qty)
 
-        // invalid currencies not in list (currencies)
+    // // invalid currencies not in list (currencies)
 
-        // 0 or negative input (qty)
-    }
+    // // 0 or negative input (qty)
+    // }
 
 }

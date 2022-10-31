@@ -10,7 +10,6 @@ import javax.swing.JOptionPane;
 
 public class VendingMachine {
     private List<Product> productInventory;
-    private List<Currency> currencyInventory;
     private DBManage database;
     private HashMap<Integer, Integer> cart = new HashMap<>(); // Map<prodID,qty>
     public final static String[] categories = { "Drinks", "Chocolates", "Chips", "Candies" }; // pre-defined; can't be
@@ -447,10 +446,6 @@ public class VendingMachine {
 
     public List<Product> getProductInventroy() {
         return this.productInventory;
-    }
-
-    public List<Currency> getCurrencyInventory() {
-        return this.currencyInventory;
     }
 
     public HashMap<Integer, Integer> getCart() {

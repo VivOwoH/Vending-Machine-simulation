@@ -90,15 +90,12 @@ public class ControlHandler {
                 switch (role) {
                     case "Owner":
                         window = system.getAdminWinodw();
-                        System.out.println("Display owner window");
                         break;
                     case "Cashier":
                         window = system.getCashierWindow();
-                        System.out.println("Display cashier window");
                         break;
                     case "Seller":
                         window = system.getSellerWindow();
-                        System.out.println("Display seller window");
                         break;
                     default:
                         System.out.println("Something went wrong when switching admin window.");
@@ -174,15 +171,21 @@ public class ControlHandler {
                             in = true;
                         }
                     }
-                    if(!in || quantity < 1 || quantity > 999){
-                        throw new Exception();
+                    if (!in) {
+                        throw new IllegalArgumentException("Invalid denomination.");
+                    } else if (quantity < 1 || quantity > 999){
+                        throw new IllegalArgumentException("Quantity out of range (1~999).");
                     }
 
                     system.getDatabase().updateCurrency(Double.parseDouble(denom), quantity);
                     cashMsg.setText(String.format("Denomination %s's quantity updated to %s", denom, quantity));
-                }
-                catch(Exception e){
-                    cashMsg.setText("Incorrect input");
+                    
+                } catch (NumberFormatException e) {
+                    cashMsg.setText("Input of wrong format.");
+                } catch (IllegalArgumentException e) {
+                    cashMsg.setText(e.getMessage());
+                } catch(Exception e){
+                    cashMsg.setText("Invalid.");
                 }
             }
         });
@@ -198,7 +201,7 @@ public class ControlHandler {
                     roleMsg.setText("Please select a role first.");
                     return;
                 }
-                
+
                 String role = box.getValue().toString();
                 String username = userID.getText();
                 User currentUser = system.getCurrentUser();
