@@ -26,13 +26,13 @@ public class SellerWindow implements Window {
     private TextField changeField;
     private ComboBox combobox;
     private Button submitChange;
+    private Text productMsg;
     private String changeOptions[] = {"Name", "Code", "Category", "Quantity", "Price"};
     private Button home;
     private Text reportTitle;
     private ScrollPane reportPane;
     private ComboBox reportType;
-    private String reportOptionsCashier[] = {"Available change", "Transactions"};
-    private String reportOptionsOwner[] = {"Available change", "Transactions", "Accounts", "Cancelled transactions"};
+    private String reportOptionsSeller[] = {"Item details", "Item summary"};
 
     public SellerWindow(Sys system, ControlHandler controlHandler) {
         pane = new Pane();
@@ -70,10 +70,15 @@ public class SellerWindow implements Window {
         submitChange = new Button("Submit");
         submitChange.setTranslateX(10);
         submitChange.setTranslateY(100);
+   
+        productMsg = new Text();
+        productMsg.setTranslateX(70);
+        productMsg.setTranslateY(120);
     
-        controlHandler.updateProductHandler(this, submitChange, idField, changeField, combobox);
+        controlHandler.updateProductHandler(this, submitChange, idField, changeField, combobox, productMsg);
 
-        pane.getChildren().addAll(updateText, idField, changeField, combobox, submitChange);
+        pane.getChildren().addAll(updateText, idField, changeField, combobox, submitChange, productMsg);
+
 
         //report
         reportTitle = new Text("Report");
@@ -92,7 +97,7 @@ public class SellerWindow implements Window {
     @Override
     public void draw() {
         //report
-        reportType = new ComboBox(FXCollections.observableArrayList(reportOptionsOwner)); //depends on role
+        reportType = new ComboBox(FXCollections.observableArrayList(reportOptionsSeller)); //depends on role
         reportType.setTranslateX(10);
         reportType.setTranslateY(300);
         reportType.setPromptText("Report type");

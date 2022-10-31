@@ -9,11 +9,11 @@ import javafx.collections.FXCollections;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.ComboBox;
+import javafx.scene.control.ScrollPane;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.Pane;
-import javafx.scene.text.Text;
 import javafx.scene.layout.VBox;
-import javafx.scene.control.ScrollPane;
+import javafx.scene.text.Text;
 
 public class AdminWindow implements Window{
 
@@ -29,6 +29,7 @@ public class AdminWindow implements Window{
     private TextField idField;
     private TextField changeField;
     private ComboBox combobox;
+    private Text productMsg;
     private String changeOptions[] = {"Name", "Code", "Category", "Quantity", "Price"};
     private ComboBox roleComboBox;
     private Button submitRoleChange;
@@ -46,8 +47,7 @@ public class AdminWindow implements Window{
     private Text reportTitle;
     private ScrollPane reportPane;
     private ComboBox reportType;
-    private String reportOptionsCashier[] = {"Available change", "Transactions"};
-    private String reportOptionsOwner[] = {"Available change", "Transactions", "Accounts", "Cancelled transactions"};
+    private String reportOptionsOwner[] = {"Available change", "Transactions", "Accounts", "Cancelled transactions", "Item details", "Item summary"};
 
     public AdminWindow(Sys system, ControlHandler controlHandler) {
         pane = new Pane();
@@ -85,10 +85,14 @@ public class AdminWindow implements Window{
         submitChange = new Button("Submit");
         submitChange.setTranslateX(10);
         submitChange.setTranslateY(100);
-    
-        controlHandler.updateProductHandler(this, submitChange, idField, changeField, combobox);
 
-        pane.getChildren().addAll(updateText, idField, changeField, combobox, submitChange);
+        productMsg = new Text();
+        productMsg.setTranslateX(70);
+        productMsg.setTranslateY(120);
+    
+        controlHandler.updateProductHandler(this, submitChange, idField, changeField, combobox, productMsg);
+
+        pane.getChildren().addAll(updateText, idField, changeField, combobox, submitChange, productMsg);
 
         //update notes and coins
         cashText = new Text("Update notes/coins");
