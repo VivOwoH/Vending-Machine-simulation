@@ -90,15 +90,12 @@ public class ControlHandler {
                 switch (role) {
                     case "Owner":
                         window = system.getAdminWinodw();
-                        System.out.println("Display owner window");
                         break;
                     case "Cashier":
                         window = system.getCashierWindow();
-                        System.out.println("Display cashier window");
                         break;
                     case "Seller":
                         window = system.getSellerWindow();
-                        System.out.println("Display seller window");
                         break;
                     default:
                         System.out.println("Something went wrong when switching admin window.");
@@ -174,15 +171,21 @@ public class ControlHandler {
                             in = true;
                         }
                     }
-                    if(!in || quantity < 1 || quantity > 999){
-                        throw new Exception();
+                    if (!in) {
+                        throw new IllegalArgumentException("Invalid denomination.");
+                    } else if (quantity < 1 || quantity > 999){
+                        throw new IllegalArgumentException("Quantity out of range (1~999).");
                     }
 
                     system.getDatabase().updateCurrency(Double.parseDouble(denom), quantity);
                     cashMsg.setText(String.format("Denomination %s's quantity updated to %s", denom, quantity));
-                }
-                catch(Exception e){
-                    cashMsg.setText("Incorrect input");
+                    
+                } catch (NumberFormatException e) {
+                    cashMsg.setText("Input of wrong format.");
+                } catch (IllegalArgumentException e) {
+                    cashMsg.setText(e.getMessage());
+                } catch(Exception e){
+                    cashMsg.setText("Invalid.");
                 }
             }
         });
@@ -193,14 +196,26 @@ public class ControlHandler {
         submitButton.setOnAction(new EventHandler<ActionEvent>() {
             @Override
             public void handle(ActionEvent event) {
+                // have not chosen a role
+                if (box.getValue() == null) {
+                    roleMsg.setText("Please select a role first.");
+                    return;
+                }
+
                 String role = box.getValue().toString();
-                User currentUser = system.getCurrentUser();
                 String username = userID.getText();
-                int id = system.getUserbase().getUserByUsername(username).getID();
+                User currentUser = system.getCurrentUser();
+                User targetUser = system.getUserbase().getUserByUsername(username);
+
+                // null user (not found)
+                if (currentUser == null || targetUser == null) {
+                    roleMsg.setText("User not found.");
+                    return;
+                }
 
                 if (currentUser.getRole().getClass() == Owner.class) {
                     Owner owner = (Owner) currentUser.getRole();
-                    String msg = owner.modifyRole(system, id, role);
+                    String msg = owner.modifyRole(system, targetUser.getID(), role);
                     roleMsg.setText(msg);
                 }
             }
