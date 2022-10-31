@@ -359,6 +359,7 @@ public class HomeWindow implements Window {
         // }
         //
         // cancelled.setVisible(true);
+        sys.getDatabase().addCancelledTransaction("user cancelled");
         sys.setCurrentUser(null);
         sys.setScene(app.getloginWindow().scene);
     }

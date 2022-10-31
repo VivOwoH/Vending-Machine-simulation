@@ -62,7 +62,7 @@ public class DBManage {
             statement.executeUpdate("CREATE TABLE IF NOT EXISTS Transactions " +
                     "(transID INTEGER PRIMARY KEY, " +
                     "userID REFERENCES Users(userID), " +
-                    "prodID REFERENCES Products(prodID) NOT NULL," +
+                    "prodID REFERENCES Products(prodID)," +
                     "success BIT NOT NULL," +
                     "cancelReason VARCHAR(50)," +
                     "cash FLOAT," +
@@ -489,6 +489,37 @@ public class DBManage {
         }
     }
 
+    public void addCancelledTransaction(String reason) {
+        try {
+            connection = DriverManager.getConnection(url);
+            Statement statement = connection.createStatement();
+            statement.setQueryTimeout(30);
+
+            Timestamp timestamp = new Timestamp(java.lang.System.currentTimeMillis());
+
+            String insertStatement = "INSERT INTO Transactions (date, success, cancelReason) VALUES(?,?,?)";
+            PreparedStatement preparedStatement =
+                connection.prepareStatement(insertStatement);
+            preparedStatement.setTimestamp(1, timestamp);
+            preparedStatement.setInt(2, 0);
+            preparedStatement.setString(3, reason);
+            preparedStatement.executeUpdate();
+
+        } catch (Exception e) {
+            java.lang.System.out.println("_________________________ERROR at addCancelledTransaction_________________________");
+            java.lang.System.err.println(e.getMessage());
+        } finally {
+            try {
+                if (connection != null) {
+                    connection.close();
+                }
+            } catch (SQLException e) {
+                // connection close failed.
+                java.lang.System.err.println(e.getMessage());
+            }
+        }
+    }
+
     // add purchase history (customer has account)(the time of transaction will be recorded when this function is called)
     public void addTransaction(int prodID, boolean success, int userID, int quantity, double cash, double change){
         try {
@@ -559,9 +590,9 @@ public class DBManage {
                 String userID = list.getString("userID");
                 Date date = new Date(list.getTimestamp("date").getTime());
                 String formattedDate = new SimpleDateFormat("dd/MM/yyyy, hh:mm").format(date);
-                // int quantity = list.getInt("quantity");
+                String reason = list.getString("cancelReason");
 
-                returnResult += String.format("%s | %s\n", formattedDate, userID);
+                returnResult += String.format("%s | %s | %s\n", formattedDate, userID, reason);
             }
         } catch (Exception e) {
             java.lang.System.out.println("_________________________ERROR at getCancelledTransaction_________________________");
@@ -594,9 +625,12 @@ public class DBManage {
 
             history = "";
             while (list.next()) {
-                String prodID = list.getString("prodID");
                 Date date = new Date(list.getTimestamp("date").getTime());
                 String formattedDate = new SimpleDateFormat("dd/MM/yyyy, hh:mm").format(date);
+                if (list.getInt("success") == 0) {
+                    history += String.format("%s | N/A | N/A | N/A | CANCELLED\n", formattedDate);
+                }
+                String prodID = list.getString("prodID");
                 float cash = list.getFloat("cash");
                 if (!list.wasNull()) { 
                     float change = list.getFloat("change");
