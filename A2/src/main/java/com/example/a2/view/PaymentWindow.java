@@ -52,6 +52,7 @@ public class PaymentWindow implements Window {
     private PasswordField cardNumber;
     private ScrollPane scrollPane;
     private Button saveInfoButton;
+    private Button quitButton;
     private Text saveMsg;
 
     private double inputTotal = 0;
@@ -148,7 +149,15 @@ public class PaymentWindow implements Window {
             saveInfoButton = new Button();
             saveInfoButton.setTranslateX(10);
             saveInfoButton.setTranslateY(320);
-            saveInfoButton.setText("Save CC info for next purchases");
+            saveInfoButton.setText("Save CC info & Quit");
+            saveInfoButton.setVisible(false);
+
+            quitButton = new Button();
+            quitButton.setTranslateX(150);
+            quitButton.setTranslateY(320);
+            quitButton.setText("Quit without saving");
+            pane.getChildren().add(quitButton);
+            quitButton.setVisible(false);
 
             saveMsg = new Text();
             saveMsg.setTranslateX(10);
@@ -156,21 +165,21 @@ public class PaymentWindow implements Window {
             pane.getChildren().add(saveMsg);
 
             // check if current user is anonymous user, if so don't give same cc info button
-            if (system.getDatabase().getUserID(system.getCurrentUser().getUsername()) == 1) {
+            if (system.getCurrentUser().getUsername().equals("Anonymous")) {
                 saveMsg.setText("Anonymous user cannot save CC info");
                 saveMsg.setVisible(true);
             } else {
                 pane.getChildren().add(saveInfoButton);
             }
-
+            
             saveInfoButton.setOnAction(new EventHandler<ActionEvent>() {
                 @Override
                 public void handle(ActionEvent event) {
                     try {
                         int cardN = Integer.parseInt(cardNumber.getText());
                         system.getDatabase().saveCreditCardInfo(cardHolder.getText(), cardN, system.getCurrentUser().getID());
-                        saveMsg.setText("CC info Saved!");
-                        saveMsg.setVisible(true);
+                        system.setCurrentUser(null);
+                        app.setScene(app.getloginWindow().scene);
                     } catch (Exception e){
                         cardMsg.setText("Card number must only contain numbers");
                         cardMsg.setVisible(true);
@@ -178,18 +187,24 @@ public class PaymentWindow implements Window {
                 }
             });
 
+            quitButton.setOnAction(new EventHandler<ActionEvent>() {
+                @Override
+                public void handle(ActionEvent event) {
+                    // auto logout user after all products added
+                    system.setCurrentUser(null);
+                    app.setScene(app.getloginWindow().scene);
+                }  
+            });
+
             // autofill card info if exists
             ArrayList<String> nameNumber = system.getDatabase().getCCInfo(system.getCurrentUser().getUsername());
-            try {
+            if (nameNumber.get(0) != null && nameNumber.get(1) != null) {
                 String ccName = nameNumber.get(0);
                 String ccNumber = nameNumber.get(1);
 
                 cardHolder.setText(ccName);
                 cardNumber.setText(ccNumber);
-            } catch (Exception e){
-                // ignore, cause it just means no name and number is saved
             }
-
         }
 
     }
@@ -262,9 +277,10 @@ public class PaymentWindow implements Window {
                         system.getVendingMachine().updateProduct(prodID, Integer.toString(stock), "Quantity");
 
                         system.getVendingMachine().updateProductInventory(); // refresh inventory
-                        // auto logout user after all products added
-                        system.setCurrentUser(null);
-                        app.setScene(app.getloginWindow().scene);
+                        
+                        quitButton.setVisible(true);
+                        saveInfoButton.setVisible(true); // we can only save cc when transaction is successful  
+                        
                     } else { // TODO: handle edge case
                         System.out.println("Either not enough money or machine can't cover the change."); //should be javafx
                     }
