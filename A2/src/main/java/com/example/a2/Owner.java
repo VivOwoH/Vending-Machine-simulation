@@ -22,9 +22,9 @@ public class Owner implements Role {
                         System.out.println("Modify role: Something went wrong.");
                         return null;
                 }
+                system.getDatabase().updateUserRole(newRole, userID);
             }
         }
-        System.out.println(String.format("New role %s set for user:%d", newRole, userID));
         return String.format("New role %s set for user:%d", newRole, userID);
     };
 

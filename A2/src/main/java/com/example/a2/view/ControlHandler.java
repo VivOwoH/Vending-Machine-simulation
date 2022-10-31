@@ -138,14 +138,32 @@ public class ControlHandler {
 
                             view.setFitHeight(50);
                             view.setFitWidth(50);
-                            ((Button)n).setGraphic(view);
+                            ((Button) n).setGraphic(view);
                         }
-                        
+
                     } else if (n instanceof Text) {
                         Product product = system.getVendingMachine().findProductByID(productId);
                         ((Text) n).setText(String.format("%s \n%.2f",
                                 product.getName(), product.getCost()));
                     }
+                }
+            }
+        });
+    }
+
+    public void updateRoleHandler(TextField userID, Button submitButton, ComboBox box, Text roleMsg) {
+        submitButton.setOnAction(new EventHandler<ActionEvent>() {
+            @Override
+            public void handle(ActionEvent event) {
+                String role = box.getValue().toString();
+                User currentUser = system.getCurrentUser();
+                String username = userID.getText();
+                int id = system.getUserbase().getUserByUsername(username).getID();
+
+                if (currentUser.getRole().getClass() == Owner.class) {
+                    Owner owner = (Owner) currentUser.getRole();
+                    String msg = owner.modifyRole(system, id, role);
+                    roleMsg.setText(msg);
                 }
             }
         });
@@ -225,17 +243,17 @@ public class ControlHandler {
         String cardNumberTemp = cardNum.getText();
 
         try {
-           int cardNumber = Integer.parseInt(cardNumberTemp);
+            int cardNumber = Integer.parseInt(cardNumberTemp);
 
-           // check if exist in system
-           if (system.getDatabase().creditCardIsValid(cardHolder, cardNumber)){
-               purchaseCardFlag = true;
-           } else {
-               purchaseCardFlag = false;
-               show.setVisible(true);
-               show.setText("Invalid Details");
-           }
-        } catch (Exception e){
+            // check if exist in system
+            if (system.getDatabase().creditCardIsValid(cardHolder, cardNumber)) {
+                purchaseCardFlag = true;
+            } else {
+                purchaseCardFlag = false;
+                show.setVisible(true);
+                show.setText("Invalid Details");
+            }
+        } catch (Exception e) {
             show.setVisible(true);
             show.setText("Invalid Details");
             purchaseCardFlag = false;
@@ -259,12 +277,12 @@ public class ControlHandler {
             public void handle(ActionEvent event) {
 
                 String type = reportType.getValue().toString();
-                
+
                 if (type.equals("Accounts")) {
                     box.getChildren().clear();
                     Text header = new Text("Username | Role");
                     Text report = new Text(system.getUsersReport());
-                    box.getChildren().addAll(header,report);
+                    box.getChildren().addAll(header, report);
                 } else if (type.equals("Transactions")) {
                     box.getChildren().clear();
                     Text header = new Text("DateTime | ProductID | Paid | Change | Method");

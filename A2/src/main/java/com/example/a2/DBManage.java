@@ -317,6 +317,37 @@ public class DBManage {
         }
     }
 
+    public String updateUserRole(String role, int userID) {
+        try {
+            connection = DriverManager.getConnection(url);
+            Statement statement = connection.createStatement();
+            statement.setQueryTimeout(30);
+
+            String insertStatement = "UPDATE Users SET role=? WHERE userID=?";
+            PreparedStatement preparedStatement =
+                    connection.prepareStatement(insertStatement);
+            preparedStatement.setString(1, role);
+            preparedStatement.setInt(2, userID);
+            preparedStatement.executeUpdate();
+ 
+            return "Role updated";
+
+        } catch (Exception e) {
+            java.lang.System.out.println("_________________________ERROR at updateUserRole_________________________");
+            java.lang.System.err.println(e.getMessage());
+        } finally {
+            try {
+                if (connection != null) {
+                    connection.close();
+                }
+            } catch (SQLException e) {
+                // connection close failed.
+                java.lang.System.err.println(e.getMessage());
+            }
+        }
+        return null;
+    }
+
     // add product to database
     public String addProduct(double cost, String name, String category){
         try {
