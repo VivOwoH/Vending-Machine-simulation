@@ -285,6 +285,7 @@ public class PaymentWindow implements Window {
                             prodID, qty, system.getDatabase());
 
                     if (success) {
+                        system.getDatabase().updateSold(prodID, qty);
                         System.out.println("Transaction added");
                         cardMsg.setText("Transaction added.");
                         cardMsg.setVisible(true);

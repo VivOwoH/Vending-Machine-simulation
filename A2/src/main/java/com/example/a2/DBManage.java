@@ -576,6 +576,47 @@ public class DBManage {
         }
     }
 
+    /**
+     * replaces sold associated w/ prodID with the old value + the input
+     * @param sold - amount to increment by
+     */
+    public String updateSold(int prodID, int sold){
+        try {
+            connection = DriverManager.getConnection(url);
+            Statement statement = connection.createStatement();
+            statement.setQueryTimeout(30);
+
+            String insertStatement = "UPDATE Products SET sold=sold + ? WHERE prodID=?";
+            PreparedStatement preparedStatement =
+                    connection.prepareStatement(insertStatement);
+            preparedStatement.setInt(1, sold);
+            preparedStatement.setInt(2, prodID);
+
+            preparedStatement.executeUpdate();
+
+            return "Product updated";
+
+        } catch (Exception e) {
+            if (e.getMessage().contains("UNIQUE")) {
+                String err = "Product violates UNIQUE constraint.";
+                System.out.println(err);
+                return err;
+            }
+            java.lang.System.out.println("_________________________ERROR updating product_________________________");
+            java.lang.System.err.println(e.getMessage());
+        } finally {
+            try {
+                if (connection != null) {
+                    connection.close();
+                }
+            } catch (SQLException e) {
+                // connection close failed.
+                java.lang.System.err.println(e.getMessage());
+            }
+        }
+        return null;
+    }
+
     public void addCancelledTransaction(String reason) {
         try {
             connection = DriverManager.getConnection(url);
