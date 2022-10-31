@@ -286,9 +286,6 @@ public class PaymentWindow implements Window {
 
                     if (success) {
                         System.out.println("Transaction added");
-                        cardMsg.setText("Transaction added.");
-                        cardMsg.setVisible(true);
-
                         // stock already updated when user add to cart, just need to commit to database
                         int stock = system.getVendingMachine().findProductByID(prodID).getQty();
                         system.getVendingMachine().updateProduct(prodID, Integer.toString(stock), "Quantity");
@@ -299,6 +296,9 @@ public class PaymentWindow implements Window {
                             continueShopping.setVisible(false);
                             methodBox.setVisible(false);
                             confirmTransactionButton.setVisible(false);
+
+                            cardMsg.setText("Transaction added.");
+                            cardMsg.setVisible(true);
 
                             quitButton.setVisible(true);
                             saveInfoButton.setVisible(true); // we can only save cc when transaction is successful
