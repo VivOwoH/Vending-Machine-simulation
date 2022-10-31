@@ -55,11 +55,6 @@ public class HelloApplication extends Application {
         stage.show();
     }
 
-
-    public void makeAdminWindow() {
-        adminWindow = new AdminWindow(system, controlHandler);
-    }
-
     public void reset() {
         Sys system = new Sys(this);
 

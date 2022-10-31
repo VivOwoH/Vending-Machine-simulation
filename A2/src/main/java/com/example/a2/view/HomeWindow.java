@@ -126,6 +126,7 @@ public class HomeWindow implements Window {
         // System.out.println(sys.getCurrentUser());
         
         // change to admin (null role = normal user)
+
         if (sys.getCurrentUser() != null && sys.getCurrentUser().getRole() != null) {
             if (sys.getCurrentUser().getRole().getClass() == Owner.class) {
                 roleButton = new Button("Owner");
@@ -142,6 +143,11 @@ public class HomeWindow implements Window {
             roleButton.setTranslateX(420);
             roleButton.setTranslateY(135);
             pane.getChildren().add(roleButton);
+        } else {
+            if (roleButton == null) {
+                return;
+            }
+            roleButton.setVisible(false);
         }
     }
 
