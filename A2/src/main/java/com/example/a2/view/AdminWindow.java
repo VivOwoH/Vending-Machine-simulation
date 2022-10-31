@@ -96,7 +96,7 @@ public class AdminWindow implements Window{
         denomination = new TextField();
         denomination.setTranslateX(10);
         denomination.setTranslateY(170);
-        denomination.setPromptText("Denomination");
+        denomination.setPromptText("Denomination (only double value)");
         
         cashQty = new TextField();
         cashQty.setTranslateX(10);
