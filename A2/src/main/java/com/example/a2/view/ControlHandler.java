@@ -294,8 +294,14 @@ public class ControlHandler {
             public void handle(ActionEvent event) {
 
                 String type = reportType.getValue().toString();
-                
-                if (type.equals("Accounts")) {
+
+                if(type.equals("Available change")) {
+                    box.getChildren().clear();
+                    Text header = new Text("Denomination | Quantity");
+                    Text report = new Text(system.getCurrencyReport());
+                    box.getChildren().addAll(header, report);
+                }
+                else if (type.equals("Accounts")) {
                     box.getChildren().clear();
                     Text header = new Text("Username | Role");
                     Text report = new Text(system.getUsersReport());

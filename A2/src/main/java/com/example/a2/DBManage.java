@@ -189,6 +189,41 @@ public class DBManage {
         return resultStr;
     }
 
+    public String getCurrencyReport() {
+        String resultStr = null;
+
+        try {
+            connection = DriverManager.getConnection(url);
+            Statement statement = connection.createStatement();
+            statement.setQueryTimeout(30);
+
+            String insertStatement = "SELECT amount, quantity FROM Currencies";
+            PreparedStatement preparedStatement =
+                    connection.prepareStatement(insertStatement);
+            ResultSet result = preparedStatement.executeQuery();
+
+            if (result.isClosed()) {
+                return null;
+            }
+            if (result.getString(1) == null) {
+                return null;
+            }
+
+            String tmp = "";
+            resultStr = result.getString(1) + " | " + result.getString(2) + "\n";
+            while (result.next()){
+                resultStr += tmp;
+                tmp = result.getString(1) + " | " + result.getString(2) + "\n";
+            }
+
+        } catch (Exception e) {
+            java.lang.System.out.println("_________________________ERROR at getUsers_________________________");
+            java.lang.System.err.println(e.getMessage());
+        }
+
+        return resultStr;
+    }
+
     public String getUserPassword(String userName){
         String resultPassword = null;
 
