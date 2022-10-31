@@ -53,7 +53,8 @@ public class DBManage {
                     "name TEXT UNIQUE, " +
                     "prodID INTEGER PRIMARY KEY NOT NULL, " +
                     "quantity INTEGER DEFAULT (7), " +
-                    "Category TEXT)");
+                    "Category TEXT, " +
+                    "sold INTEGER)");
             // currency Table
             statement.executeUpdate("CREATE TABLE IF NOT EXISTS Currencies " +
                     "(amount STRING PRIMARY KEY, " +
@@ -178,10 +179,11 @@ public class DBManage {
             }
 
             String tmp = "";
-            resultStr = result.getString(1) + " | " + result.getString(2) + "\n";
+            resultStr = "";
+
             while (result.next()){
-                resultStr += tmp;
                 tmp = result.getString(1) + " | " + result.getString(2) + "\n";
+                resultStr += tmp;
             }
 
         } catch (Exception e) {
@@ -213,10 +215,94 @@ public class DBManage {
             }
 
             String tmp = "";
-            resultStr = result.getString(1) + " | " + result.getString(2) + "\n";
+            resultStr = "";
+
             while (result.next()){
-                resultStr += tmp;
                 tmp = result.getString(1) + " | " + result.getString(2) + "\n";
+                resultStr += tmp;
+            }
+
+        } catch (Exception e) {
+            java.lang.System.out.println("_________________________ERROR at getUsers_________________________");
+            java.lang.System.err.println(e.getMessage());
+        }
+
+        return resultStr;
+    }
+
+    /**
+     * Function gets all products in the system as well as all their details
+     * @return String made up of rows separated by \n
+     */
+    public String getItemDetails() {
+        String resultStr = null;
+
+        try {
+            connection = DriverManager.getConnection(url);
+            Statement statement = connection.createStatement();
+            statement.setQueryTimeout(30);
+
+            String insertStatement = "SELECT name, prodID, quantity, cost, Category FROM Products";
+            PreparedStatement preparedStatement =
+                    connection.prepareStatement(insertStatement);
+            ResultSet result = preparedStatement.executeQuery();
+
+            if (result.isClosed()) {
+                return null;
+            }
+            if (result.getString(1) == null) {
+                return null;
+            }
+
+            String tmp = "";
+            resultStr = "";
+
+            while (result.next()){
+                tmp = result.getString(1) + " | " + result.getString(2) + " | " +
+                        result.getString(3) + " | " + String.format("%.2f", Double.parseDouble(result.getString(4)))
+                        + " | " + result.getString(5) + "\n";
+                resultStr += tmp;
+            }
+
+        } catch (Exception e) {
+            java.lang.System.out.println("_________________________ERROR at getUsers_________________________");
+            java.lang.System.err.println(e.getMessage());
+        }
+
+        return resultStr;
+    }
+
+    /**
+     * Functions gets all products in a system as well as how many of them have sold so far
+     * @return String made up of rows separated by \n
+     */
+    public String getItemSummary() {
+        String resultStr = null;
+
+        try {
+            connection = DriverManager.getConnection(url);
+            Statement statement = connection.createStatement();
+            statement.setQueryTimeout(30);
+
+            String insertStatement = "SELECT name, prodID, sold FROM Products";
+            PreparedStatement preparedStatement =
+                    connection.prepareStatement(insertStatement);
+            ResultSet result = preparedStatement.executeQuery();
+
+            if (result.isClosed()) {
+                return null;
+            }
+            if (result.getString(1) == null) {
+                return null;
+            }
+
+            String tmp = "";
+            resultStr = "";
+
+            while (result.next()){
+                tmp = result.getString(1) + " | " + result.getString(2) + " | " +
+                        result.getString(3) + "\n";
+                resultStr += tmp;
             }
 
         } catch (Exception e) {
@@ -393,12 +479,13 @@ public class DBManage {
             Statement statement = connection.createStatement();
             statement.setQueryTimeout(30);
 
-            String insertStatement = "INSERT INTO Products (Cost, Name,  Category) VALUES(?,?,?)";
+            String insertStatement = "INSERT INTO Products (Cost, Name,  Category, sold) VALUES(?,?,?, ?)";
             PreparedStatement preparedStatement =
                     connection.prepareStatement(insertStatement);
             preparedStatement.setDouble(1, cost);
             preparedStatement.setString(2, name);
             preparedStatement.setString(3, category);
+            preparedStatement.setString(4, String.valueOf(0));
             preparedStatement.executeUpdate();
 
             return "Product added";
@@ -487,6 +574,47 @@ public class DBManage {
                 java.lang.System.err.println(e.getMessage());
             }
         }
+    }
+
+    /**
+     * replaces sold associated w/ prodID with the old value + the input
+     * @param sold - amount to increment by
+     */
+    public String updateSold(int prodID, int sold){
+        try {
+            connection = DriverManager.getConnection(url);
+            Statement statement = connection.createStatement();
+            statement.setQueryTimeout(30);
+
+            String insertStatement = "UPDATE Products SET sold=sold + ? WHERE prodID=?";
+            PreparedStatement preparedStatement =
+                    connection.prepareStatement(insertStatement);
+            preparedStatement.setInt(1, sold);
+            preparedStatement.setInt(2, prodID);
+
+            preparedStatement.executeUpdate();
+
+            return "Product updated";
+
+        } catch (Exception e) {
+            if (e.getMessage().contains("UNIQUE")) {
+                String err = "Product violates UNIQUE constraint.";
+                System.out.println(err);
+                return err;
+            }
+            java.lang.System.out.println("_________________________ERROR updating product_________________________");
+            java.lang.System.err.println(e.getMessage());
+        } finally {
+            try {
+                if (connection != null) {
+                    connection.close();
+                }
+            } catch (SQLException e) {
+                // connection close failed.
+                java.lang.System.err.println(e.getMessage());
+            }
+        }
+        return null;
     }
 
     public void addCancelledTransaction(String reason) {
