@@ -114,8 +114,4 @@ public class CashierWindow implements Window {
         // TODO Auto-generated method stub
 
     }
-
-    public void setCashText(String s){
-        this.cashMsg.setText(s);
-    }
 }
