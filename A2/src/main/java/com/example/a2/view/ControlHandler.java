@@ -157,7 +157,7 @@ public class ControlHandler {
      * @param denomination - denomination input (should be in VendingMachine.denominations)
      * @param cashQty - quantity input (should be integer)
      */
-    public void updateCashHandler(AdminWindow adminWindow, Button submitCashChange, TextField denomination, TextField cashQty) {
+    public void updateCashHandler(Window adminWindow, Button submitCashChange, TextField denomination, TextField cashQty, Text cashMsg) {
         submitCashChange.setOnAction(new EventHandler<ActionEvent>(){
             @Override
             public void handle(ActionEvent event){
@@ -176,10 +176,10 @@ public class ControlHandler {
                     }
 
                     system.getDatabase().updateCurrency(Double.parseDouble(denom), quantity);
-                    adminWindow.setCashText(String.format("Denomination %s's quantity updated to %s", denom, quantity));
+                    cashMsg.setText(String.format("Denomination %s's quantity updated to %s", denom, quantity));
                 }
                 catch(Exception e){
-                    adminWindow.setCashText("Incorrect input");
+                    cashMsg.setText("Incorrect input");
                 }
             }
         });

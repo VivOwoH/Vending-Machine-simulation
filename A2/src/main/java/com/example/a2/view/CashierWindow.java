@@ -54,7 +54,7 @@ public class CashierWindow implements Window {
         denomination = new TextField();
         denomination.setTranslateX(10);
         denomination.setTranslateY(170);
-        denomination.setPromptText("Denimination");
+        denomination.setPromptText("Denomination (only double value)");
         
         cashQty = new TextField();
         cashQty.setTranslateX(10);
@@ -68,6 +68,8 @@ public class CashierWindow implements Window {
         cashMsg = new Text();
         cashMsg.setTranslateX(70);
         cashMsg.setTranslateY(240);
+
+        controlHandler.updateCashHandler(this, submitCashChange, denomination, cashQty, cashMsg);
 
         pane.getChildren().addAll(cashText, denomination, cashQty, submitCashChange, cashMsg);
 
@@ -111,5 +113,9 @@ public class CashierWindow implements Window {
     public void run() {
         // TODO Auto-generated method stub
 
+    }
+
+    public void setCashText(String s){
+        this.cashMsg.setText(s);
     }
 }
