@@ -27,12 +27,18 @@ public class AdminWindow implements Window{
     private TextField idField;
     private TextField changeField;
     private ComboBox combobox;
-    private Button submitChange;
     private String changeOptions[] = {"Name", "Code", "Category", "Quantity", "Price"};
+    private ComboBox roleComboBox;
+    private Button submitRoleChange;
+    private Button submitChange;
+    private TextField userID;
+    private Text roleMsg;
+    private String roleOptions[] = {"Owner", "User", "Cashier", "Seller"};
     private Button home;
     private TextField denomination;
     private TextField cashQty;
     private Text cashText;
+    private Text roleText;
     private Button submitCashChange;
     private Text cashMsg;
     private Text reportTitle;
@@ -90,7 +96,7 @@ public class AdminWindow implements Window{
         denomination = new TextField();
         denomination.setTranslateX(10);
         denomination.setTranslateY(170);
-        denomination.setPromptText("Denomination");
+        denomination.setPromptText("Denomination (only double value)");
         
         cashQty = new TextField();
         cashQty.setTranslateX(10);
@@ -108,6 +114,33 @@ public class AdminWindow implements Window{
         cashMsg.setTranslateY(240);
 
         pane.getChildren().addAll(cashText, denomination, cashQty, submitCashChange, cashMsg);
+
+        //update roles
+        roleText = new Text("Update user roles");
+        roleText.setTranslateX(10);
+        roleText.setTranslateY(550);
+
+        userID = new TextField();
+        userID.setTranslateX(10);
+        userID.setTranslateY(570);
+        userID.setPromptText("Username");
+
+        roleComboBox = new ComboBox(FXCollections.observableArrayList(roleOptions));
+        roleComboBox.setTranslateX(180);
+        roleComboBox.setTranslateY(570);
+        roleComboBox.setPromptText("Available roles");
+
+        submitRoleChange = new Button("Submit");
+        submitRoleChange.setTranslateX(10);
+        submitRoleChange.setTranslateY(600);
+
+        roleMsg = new Text();
+        roleMsg.setTranslateX(10);
+        roleMsg.setTranslateY(640);
+
+        controlHandler.updateRoleHandler(userID, submitRoleChange, roleComboBox, roleMsg);
+
+        pane.getChildren().addAll(roleText, userID, roleMsg, roleComboBox, submitRoleChange);
 
         //report
         reportTitle = new Text("Report");

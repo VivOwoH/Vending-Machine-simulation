@@ -23,6 +23,16 @@ public class Userbase {
         return null;
     }
 
+    public User getUserByUsername(String username) {
+        for (User user : users) {
+            if (user.getUsername().equals(username)) {
+                return user;
+            }
+        }
+        System.out.println("Cannot find user.");
+        return null;
+    }
+
     public void updateUserList() {
         this.users.clear();
         this.users = database.getUsers();
