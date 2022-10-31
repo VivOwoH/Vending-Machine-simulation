@@ -47,7 +47,7 @@ public class PaymentWindow implements Window {
     private Text cashMsg;
     private Text cardMsg;
     private ComboBox methodBox;
-    private String methods[] = {"Cash", "Card"};
+    private String methods[] = { "Cash", "Card" };
     private TextField cardHolder;
     private PasswordField cardNumber;
     private ScrollPane scrollPane;
@@ -105,11 +105,21 @@ public class PaymentWindow implements Window {
         refreshCart();
 
         if (methodBox.getValue() == "Cash") {
-            if (cardHolder != null) { cardHolder.setVisible(false); }
-            if (cardNumber != null) { cardNumber.setVisible(false); }
-            if (cardMsg != null) {cardMsg.setVisible(false);}
-            if (saveMsg != null) {saveMsg.setVisible(false);}
-            if (saveInfoButton!= null) {saveInfoButton.setVisible(false);}
+            if (cardHolder != null) {
+                cardHolder.setVisible(false);
+            }
+            if (cardNumber != null) {
+                cardNumber.setVisible(false);
+            }
+            if (cardMsg != null) {
+                cardMsg.setVisible(false);
+            }
+            if (saveMsg != null) {
+                saveMsg.setVisible(false);
+            }
+            if (saveInfoButton != null) {
+                saveInfoButton.setVisible(false);
+            }
 
             inputMoney = new TextField();
             inputMoney.setTranslateX(10);
@@ -125,8 +135,12 @@ public class PaymentWindow implements Window {
             controlHandler.cashHandle(inputMoney, cashMsg);
 
         } else if (methodBox.getValue() == "Card") {
-            if (inputMoney != null) { inputMoney.setVisible(false); }
-            if (cashMsg != null) { cashMsg.setVisible(false); }
+            if (inputMoney != null) {
+                inputMoney.setVisible(false);
+            }
+            if (cashMsg != null) {
+                cashMsg.setVisible(false);
+            }
 
             cardHolder = new TextField();
             cardHolder.setTranslateX(10);
@@ -171,16 +185,17 @@ public class PaymentWindow implements Window {
             } else {
                 pane.getChildren().add(saveInfoButton);
             }
-            
+
             saveInfoButton.setOnAction(new EventHandler<ActionEvent>() {
                 @Override
                 public void handle(ActionEvent event) {
                     try {
                         int cardN = Integer.parseInt(cardNumber.getText());
-                        system.getDatabase().saveCreditCardInfo(cardHolder.getText(), cardN, system.getCurrentUser().getID());
+                        system.getDatabase().saveCreditCardInfo(cardHolder.getText(), cardN,
+                                system.getCurrentUser().getID());
                         system.setCurrentUser(null);
                         app.setScene(app.getloginWindow().scene);
-                    } catch (Exception e){
+                    } catch (Exception e) {
                         cardMsg.setText("Card number must only contain numbers");
                         cardMsg.setVisible(true);
                     }
@@ -193,7 +208,7 @@ public class PaymentWindow implements Window {
                     // auto logout user after all products added
                     system.setCurrentUser(null);
                     app.setScene(app.getloginWindow().scene);
-                }  
+                }
             });
 
             // autofill card info if exists
@@ -277,12 +292,18 @@ public class PaymentWindow implements Window {
                         system.getVendingMachine().updateProduct(prodID, Integer.toString(stock), "Quantity");
 
                         system.getVendingMachine().updateProductInventory(); // refresh inventory
-                        
-                        quitButton.setVisible(true);
-                        saveInfoButton.setVisible(true); // we can only save cc when transaction is successful  
-                        
+
+                        if (methodBox.getValue() == "Card") {
+                            quitButton.setVisible(true);
+                            saveInfoButton.setVisible(true); // we can only save cc when transaction is successful
+                        } else {
+                            system.setCurrentUser(null);
+                            app.setScene(app.getloginWindow().scene);
+                        }
+
                     } else { // TODO: handle edge case
-                        System.out.println("Either not enough money or machine can't cover the change."); //should be javafx
+                        System.out.println("Either not enough money or machine can't cover the change."); // should be
+                                                                                                          // javafx
                     }
                 }
             }
