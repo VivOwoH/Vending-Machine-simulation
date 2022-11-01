@@ -5,11 +5,16 @@ import java.util.Map.Entry;
 
 import com.example.a2.products.Product;
 
+import javafx.animation.KeyFrame;
+import javafx.animation.Timeline;
+import javafx.util.Duration;
+
 import javax.swing.ImageIcon;
 import javax.swing.JOptionPane;
 
 public class VendingMachine {
     private List<Product> productInventory;
+    private Sys system;
     private DBManage database;
     private HashMap<Integer, Integer> cart = new HashMap<>(); // Map<prodID,qty>
     public final static String[] categories = { "Drinks", "Chocolates", "Chips", "Candies" }; // pre-defined; can't be
@@ -23,8 +28,10 @@ public class VendingMachine {
 
     private Timer idleTimer;
     private TimerTask cancelTransactionTask;
-    private long idleLimit = 120000;
+    // private long idleLimit = 120000;
+    private long idleLimit = 12000;
     private boolean timerRunning = false;
+    private boolean timeout = false;
     // private Alert alert;
 
     static {
@@ -52,7 +59,8 @@ public class VendingMachine {
     }
 
     // ------------------------------------------
-    public VendingMachine(DBManage database) {
+    public VendingMachine(DBManage database, Sys system) {
+        this.system = system;
         this.database = database;
         updateProductInventory();
 
@@ -63,13 +71,37 @@ public class VendingMachine {
         cancelTransactionTask = new TimerTask() {
             public void run() {
                 clearCart();
+                cancelTimer();
 
                 ImageIcon icon = new ImageIcon(getClass().getResource("/alert.png"));
                 icon = new ImageIcon(icon.getImage().getScaledInstance(50, 50, java.awt.Image.SCALE_SMOOTH));
                 JOptionPane.showMessageDialog(null, "No activity for too long. Transaction cancelled.", "Alert",
                         JOptionPane.INFORMATION_MESSAGE, icon);
+                
+                //logout
+                timeout = true;
             }
         };
+    }
+
+    public void run() {
+        Timeline timeline = new Timeline(new KeyFrame(Duration.millis(1000),
+                t -> this.checkTimeout()));
+        timeline.setCycleCount(Timeline.INDEFINITE);
+        timeline.play();
+    }
+
+    private void checkTimeout() {
+        if (timeout) {
+            logout();
+            timeout = false;
+            database.addCancelledTransaction("timeout");
+        }
+    }
+
+    private void logout() {
+        system.setCurrentUser(null);
+        system.setScene(system.getLoginWindow().getScene());
     }
 
     public void updateProductInventory() {

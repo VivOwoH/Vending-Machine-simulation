@@ -101,7 +101,7 @@ public class ControlHandler {
                         System.out.println("Something went wrong when switching admin window.");
                 }
                 system.setScene(window.getScene());
-                vendingMachine.triggerTimer();
+                vendingMachine.cancelTimer();
             }
         });
     }
@@ -269,6 +269,7 @@ public class ControlHandler {
         b.setOnAction(new EventHandler<ActionEvent>() {
             @Override
             public void handle(ActionEvent event) {
+                vendingMachine.triggerTimer();
                 HomeWindow home = system.getHomeWindow();
                 system.setScene(home.getScene());
             }
