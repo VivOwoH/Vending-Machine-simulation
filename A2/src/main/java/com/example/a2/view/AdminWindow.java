@@ -170,15 +170,7 @@ public class AdminWindow implements Window{
     @Override
     public void draw() {
         //report
-        if (system.getCurrentUser() == null) {
-            return;
-        } else if (system.getCurrentUser().getRole() instanceof Owner){
-            reportType = new ComboBox(FXCollections.observableArrayList(reportOptionsOwner));
-        } else if (system.getCurrentUser().getRole() instanceof Cashier) {
-            reportType = new ComboBox(FXCollections.observableArrayList(reportOptionsCashier));
-        } else {
-            return;
-        }
+        reportType = new ComboBox(FXCollections.observableArrayList(reportOptionsOwner));
         reportType.setTranslateX(10);
         reportType.setTranslateY(300);
         reportType.setPromptText("Report type");
