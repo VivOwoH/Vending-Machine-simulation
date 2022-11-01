@@ -1,9 +1,7 @@
 package com.example.a2;
 
 import com.example.a2.products.Product;
-import org.junit.jupiter.api.AfterAll;
-import org.junit.jupiter.api.BeforeAll;
-import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.*;
 
 import java.sql.*;
 import java.util.ArrayList;
@@ -13,7 +11,7 @@ import static org.junit.jupiter.api.Assertions.*;
 public class databaseTesting {
 
     private static DBManage database;
-    private String url = "jdbc:sqlite:src/main/data/test.sqlite";
+    private final String url = "jdbc:sqlite:src/main/data/test.sqlite";
     private Connection connection = null;
 
     @BeforeAll
@@ -24,13 +22,11 @@ public class databaseTesting {
     }
 
     @Test
-        // test if users are being added
+    // test if users are being added
     void addUserTest() {
-
         try {
             connection = DriverManager.getConnection(url);
 
-            database.addUser("Admin", "password", "Owner");
             database.addUser("user1", "password1", "User");
             database.addUser("user2", "password2", "User");
             database.addUser("user3", "password3", "User");
@@ -42,7 +38,7 @@ public class databaseTesting {
             int size = productList.getInt("total");
             preparedStatement.close();
 
-            assertEquals(5, size);
+            assertEquals(4, size);
 
 
         } catch (Exception e){
@@ -65,11 +61,9 @@ public class databaseTesting {
         // test if transactions are being added
     void addTransactionTest() {
 
-        database.addTransaction(1, true, 1, 1, 0, 0);
-        database.addTransaction(2, true, 1, 1, 0, 0);
-        database.addTransaction(3, true, 1, 1, 0, 0);
-
-        ArrayList<Transaction> tran1 = database.getLastFiveTransactionsByUserID(1);
+        database.addTransaction(1, true, 0, 1, 10, 0.50);
+        database.addTransaction(2, true, 0, 1,11, 0.50);
+        database.addTransaction(3, true, 0, 1,12, 0.50);
 
         try {
             connection = DriverManager.getConnection(url);
@@ -81,12 +75,10 @@ public class databaseTesting {
             int size = productList.getInt("total");
             preparedStatement.close();
 
-
             assertEquals(3, size);
 
         } catch (Exception e){
             // assume can connect as db was created
-
             System.out.println(e);
             assertNotNull(e);
         } finally {
@@ -106,10 +98,60 @@ public class databaseTesting {
         // test if correct number of products has been initialised
     void productInitTest() {
         ArrayList<Product> products = database.getProducts();
-
         assertEquals(16, products.size());
     }
 
+    @Test
+    void getCurrencyTest() {
+        // every currency gets instantiated as 5
+        int quantity = database.getCurrencyQuantity(5.0);
+        assertEquals(5, quantity);
+    }
+
+    @Test
+    void getPasswordTest(){
+        DBManage tempDB = new DBManage("test3.sqlite");
+        tempDB.createDB();
+        tempDB.addUser("user4", "password4", "User");
+        String password = tempDB.getUserPassword("user4");
+        assertEquals("password4", password);
+        tempDB.deleteDB();
+    }
+
+    @Test
+    void getUserIDTest(){
+        DBManage tempDB = new DBManage("test3.sqlite");
+        tempDB.createDB();
+        tempDB.addUser("user4", "password4", "User");
+        assertEquals(1, tempDB.getUserID("user4"));
+        tempDB.deleteDB();
+    }
+
+    @Test
+    void transactionHistoryTest(){
+        DBManage tempDB = new DBManage("test3.sqlite");
+        tempDB.createDB();
+        tempDB.addTransaction(1,true,0,1,1,1);
+        String history = tempDB.getTransactionHistory().substring(18);
+        assertEquals("| 1 | 1.00 | 1.00 | CASH\n", history);
+        tempDB.deleteDB();
+    }
+
+    @Test
+    void getLastFiveTransactions(){
+        DBManage tempDB = new DBManage("test3.sqlite");
+        tempDB.createDB();
+        tempDB.addTransaction(1,true,0,1,1,1);
+        tempDB.addTransaction(3,true,0,1,1,1);
+        tempDB.addTransaction(2,true,0,1,1,1);
+
+        ArrayList<Transaction> transactions = tempDB.getLastFiveTransactionsByUserID(0);
+
+        assertEquals(1, transactions.get(2).getProdID());
+        assertEquals(3, transactions.get(1).getProdID());
+        assertEquals(2, transactions.get(0).getProdID());
+        tempDB.deleteDB();
+    }
 
     @AfterAll
     static void completeTest() {
