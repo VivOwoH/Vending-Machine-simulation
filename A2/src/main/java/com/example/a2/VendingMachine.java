@@ -85,10 +85,14 @@ public class VendingMachine {
     }
 
     public void run() {
-        Timeline timeline = new Timeline(new KeyFrame(Duration.millis(1000),
+        try {
+            Timeline timeline = new Timeline(new KeyFrame(Duration.millis(1000),
                 t -> this.checkTimeout()));
-        timeline.setCycleCount(Timeline.INDEFINITE);
-        timeline.play();
+            timeline.setCycleCount(Timeline.INDEFINITE);
+            timeline.play();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
     private void checkTimeout() {
@@ -167,6 +171,7 @@ public class VendingMachine {
                     break;
                 case "Code":
                     database.updateProduct(Integer.parseInt(newValue), prodID);
+                    this.updateProductInventory();
                     return String.format("Product %d updated.", prodID);
                 case "Category":
                     selectedProduct.setCategoryStr(newValue);
