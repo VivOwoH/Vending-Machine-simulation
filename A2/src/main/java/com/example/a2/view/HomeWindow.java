@@ -119,7 +119,9 @@ public class HomeWindow implements Window {
 
     // whatever that needs to be updated upon scene change goes here
     public void reconfiguration() {
-        this.cfgRoleButton();
+        cfgRoleButton();
+        sys.getVendingMachine().updateProductInventory();
+        cfgProductPane(sys.getVendingMachine().getProductInventroy());
     }
 
     public void cfgRoleButton() {
