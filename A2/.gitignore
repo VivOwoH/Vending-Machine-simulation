@@ -45,3 +45,5 @@ bin/
 ### DB ###
 /src/main/data/database.sqlite
 /src/main/data/test.sqlite
+/src/main/data/test2.sqlite
+/src/main/data/test3.sqlite

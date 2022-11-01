@@ -112,11 +112,30 @@ public class DBManage {
     }
 
     public void deleteDB() {
-        File myObj = new File("src/main/data/" + fileName);
-        if (myObj.delete()) {
-            System.out.println("Deleted the file: " + myObj.getName());
-        } else {
-            System.out.println("Failed to delete the file.");
+        try {
+            connection = DriverManager.getConnection(url);
+            Statement statement = connection.createStatement();
+            statement.setQueryTimeout(30);
+
+            // clear all tables
+            statement.executeUpdate("DELETE FROM credit_card");
+            statement.executeUpdate("DELETE FROM currencies");
+            statement.executeUpdate("DELETE FROM Products");
+            statement.executeUpdate("DELETE FROM transactions");
+            statement.executeUpdate("DELETE FROM users");
+
+        } catch (Exception e) {
+            java.lang.System.out.println("_________________________ERROR at addUser_________________________");
+            java.lang.System.err.println(e.getMessage());
+        } finally {
+            try {
+                if (connection != null) {
+                    connection.close();
+                }
+            } catch (SQLException e) {
+                // connection close failed.
+                java.lang.System.err.println(e.getMessage());
+            }
         }
     }
 
