@@ -953,8 +953,7 @@ public class DBManage {
                 String password = userList.getString("password");
                 int userID = userList.getInt("userID");
 
-                // Don't remove this -> this populates product inventory that shows on UI
-                // all category cases to create different subclasses of Product
+                // Don't remove this -> this updates Users that shows on UI
                 switch (userList.getString("role")) {
                     case "User":
                         users.add(new User(username, password, userID));

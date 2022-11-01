@@ -88,6 +88,20 @@ public class databaseTesting {
         }
     }
 
+    @Test
+    void getUsers() {
+        // all roles of users
+        database.addUser("seller", "1", "Seller");
+        database.addUser("cashier", "2", "Cashier");
+        database.addUser("user", "3", "User");
+
+        ArrayList<User> list = database.getUsers();
+        assertEquals(4, list.size());
+        assertEquals(Owner.class, list.get(0).getRole().getClass());
+        assertEquals(Seller.class, list.get(1).getRole().getClass());
+        assertEquals(Cashier.class, list.get(2).getRole().getClass());
+        assertEquals(null, list.get(3).getRole());
+    }
 
     @Test
     // test if transactions are being added (also cancelled transactions added)
@@ -110,7 +124,7 @@ public class databaseTesting {
             PreparedStatement preparedStatement2 = connection.prepareStatement(insertStatement2);
             ResultSet productList = preparedStatement.executeQuery();
             ResultSet productList2 = preparedStatement2.executeQuery();
-            
+
             int size = productList.getInt("total");
             int sizeCancelled = productList2.getInt("total2");
 
@@ -138,13 +152,14 @@ public class databaseTesting {
         // TODO: report does not print userID now, need to change this text when fixed
         // also test getCancelledTransaction here
 
-        Timestamp timestamp = new Timestamp(java.lang.System.currentTimeMillis()); // should work if tests don't run too long
+        Timestamp timestamp = new Timestamp(java.lang.System.currentTimeMillis()); // should work if tests don't run too
+                                                                                   // long
 
         Date date = new Date(timestamp.getTime());
         String formattedDate = new SimpleDateFormat("dd/MM/yyyy, hh:mm").format(date);
-        
-        String expectedReport = String.format("%s | null | user cancelled\n", formattedDate) + 
-                                String.format("%s | null | timeout\n", formattedDate);
+
+        String expectedReport = String.format("%s | null | user cancelled\n", formattedDate) +
+                String.format("%s | null | timeout\n", formattedDate);
         assertEquals(expectedReport, database.getCancelledTransactions());
 
     }
@@ -158,7 +173,7 @@ public class databaseTesting {
 
     @Test
     void addRemoveProductTest() {
-        // initially 16 products 
+        // initially 16 products
         assertTrue(database.addProduct(0, "pringles", "Chips").contains("already"));
         assertTrue(database.addProduct(0, "test", "Drinks").contains("added"));
 
@@ -171,7 +186,7 @@ public class databaseTesting {
 
             PreparedStatement preparedStatement = connection.prepareStatement(insertStatement);
             ResultSet productList = preparedStatement.executeQuery();
-            
+
             int size = productList.getInt("total");
 
             preparedStatement.close();
@@ -226,8 +241,18 @@ public class databaseTesting {
         DBManage tempDB = new DBManage("test3.sqlite");
         tempDB.createDB();
         tempDB.addTransaction(1, true, 0, 1, 1, 1);
-        String history = tempDB.getTransactionHistory().substring(18);
-        assertEquals("| 1 | 1.00 | 1.00 | CASH\n", history);
+        tempDB.addCancelledTransaction("user cancelled");
+
+        Timestamp timestamp = new Timestamp(java.lang.System.currentTimeMillis()); // should work if tests don't run too
+                                                                                   // long
+        Date date = new Date(timestamp.getTime());
+        String formattedDate = new SimpleDateFormat("dd/MM/yyyy, hh:mm").format(date);
+
+        String history = tempDB.getTransactionHistory();
+
+        String expectedReport = String.format("%s | 1 | 1.00 | 1.00 | CASH\n", formattedDate) + 
+                                String.format("%s | N/A | N/A | N/A | CANCELLED\n", formattedDate);
+        assertEquals(expectedReport, history);
         tempDB.deleteDB();
     }
 
@@ -272,7 +297,7 @@ public class databaseTesting {
 
             assertEquals(7, newQty);
 
-            preparedStatement2.close();   
+            preparedStatement2.close();
 
         } catch (Exception e) {
             // assume can connect as db was created
@@ -302,7 +327,7 @@ public class databaseTesting {
     @Test
     void testValidCredit() {
         database.loadCreditConfig();
-        
+
         // invalid
         assertFalse(database.creditCardIsValid("test", 0));
         // valid
@@ -317,7 +342,7 @@ public class databaseTesting {
         assertEquals(100, database.getCurrencyQuantity(0.05));
 
         database.updateCurrency(0.05, 5); // reset back
-        String[] denominations = new String[]{"100", "50", "20", "10", "5", "2", "1", "0.5", "0.2", "0.1", "0.05"};
+        String[] denominations = new String[] { "100", "50", "20", "10", "5", "2", "1", "0.5", "0.2", "0.1", "0.05" };
 
         // also test getCurrencyReport here
         String expectedReport = "";
@@ -329,27 +354,59 @@ public class databaseTesting {
 
     @Test
     void getItemDetailsTest() {
-        // we use this test file because products haven't been touched
+        // we use this test file because no update
         DBManage tempDB = new DBManage("test3.sqlite");
         tempDB.createDB();
 
         String[] categories = { "Chips", "Candies", "Drinks", "Chocolates" };
-        String[] products = { "smiths", "pringles", "kettles", "thins", 
-            "mentos", "sourpatch", "skittles", 
-            "water", "sprite", "coke", "pepsi", "juice",
-            "mars", "m&m", "bounty", "snicker"};
+        String[] products = { "smiths", "pringles", "kettles", "thins",
+                "mentos", "sourpatch", "skittles",
+                "water", "sprite", "coke", "pepsi", "juice",
+                "mars", "m&m", "bounty", "snicker" };
         String expectedReport = "";
         for (int i = 1; i < 17; i++) {
             String category = "";
-            if (i >= 1 && i <= 4) { category = categories[0]; }
-            else if (i >= 5 && i <= 7) { category = categories[1]; }
-            else if (i >= 8 && i <= 12) { category = categories[2]; }
-            else if (i >= 13 && i <= 16) { category = categories[3]; }
-            expectedReport += products[i-1] + " | " + i + " | " + 7  + " | " +
-                                 "0.00" + " | " + category + "\n";
+            if (i >= 1 && i <= 4) {
+                category = categories[0];
+            } else if (i >= 5 && i <= 7) {
+                category = categories[1];
+            } else if (i >= 8 && i <= 12) {
+                category = categories[2];
+            } else if (i >= 13 && i <= 16) {
+                category = categories[3];
+            }
+            expectedReport += products[i - 1] + " | " + i + " | " + 7 + " | " +
+                    "0.00" + " | " + category + "\n";
         }
         assertEquals(expectedReport, tempDB.getItemDetails());
+    }
 
+    @Test
+    void getItemSummaryTest() {
+        // we use this test file because no update
+        DBManage tempDB = new DBManage("test3.sqlite");
+        tempDB.createDB();
+
+        String[] products = { "smiths", "pringles", "kettles", "thins",
+                "mentos", "sourpatch", "skittles",
+                "water", "sprite", "coke", "pepsi", "juice",
+                "mars", "m&m", "bounty", "snicker" };
+
+        String expectedReport = "";
+        for (int i = 1; i < 17; i++) {
+            expectedReport += products[i - 1] + " | " + i + " | " + 0 + "\n";
+        }
+        assertEquals(expectedReport, tempDB.getItemSummary());
+    }
+
+    @Test
+    void getUsersReportTest() {
+        // we use this test file because no update
+        DBManage tempDB = new DBManage("test3.sqlite");
+        tempDB.createDB();
+
+        String expectedReport = "admin | Owner\n";
+        assertEquals(expectedReport, tempDB.getUsersReport());
     }
 
     @AfterAll
