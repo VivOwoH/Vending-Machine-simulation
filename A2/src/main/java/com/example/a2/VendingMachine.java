@@ -151,6 +151,7 @@ public class VendingMachine {
 
             database.updateProduct(selectedProduct.getCost(), selectedProduct.getName(),
                     selectedProduct.getQty(), selectedProduct.getCategoryStr(), selectedProduct.getCode());
+            this.updateProductInventory();
             return String.format("Product %d updated.", selectedProduct.getCode());
 
         } catch (NumberFormatException e) {

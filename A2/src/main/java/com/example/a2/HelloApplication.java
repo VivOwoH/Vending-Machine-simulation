@@ -78,10 +78,7 @@ public class HelloApplication extends Application {
     public AdminWindow getAdminWindow() { return adminWindow; }
     public SellerWindow getSellerWindow() { return sellerWindow; }
     public CashierWindow getCashierWindow() { return cashierWindow; }
-    public HomeWindow getHomeWindow() { 
-        homeWindow.reconfiguration();
-        return homeWindow; 
-    }
+    public HomeWindow getHomeWindow() { return homeWindow; }
     public PaymentWindow getPaymentWindow() { return paymentWindow; }
 
 

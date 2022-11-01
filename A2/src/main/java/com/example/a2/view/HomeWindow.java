@@ -120,7 +120,6 @@ public class HomeWindow implements Window {
     // whatever that needs to be updated upon scene change goes here
     public void reconfiguration() {
         cfgRoleButton();
-        sys.getVendingMachine().updateProductInventory();
         cfgProductPane(sys.getVendingMachine().getProductInventroy());
     }
 
@@ -411,6 +410,7 @@ public class HomeWindow implements Window {
 
     @Override
     public Scene getScene() {
+        this.reconfiguration();
         return scene;
     }
 
