@@ -3,6 +3,7 @@ package com.example.a2;
 import com.example.a2.view.AdminWindow;
 import com.example.a2.view.CashierWindow;
 import com.example.a2.view.HomeWindow;
+import com.example.a2.view.LoginWindow;
 import com.example.a2.view.PaymentWindow;
 import com.example.a2.view.SellerWindow;
 
@@ -21,8 +22,9 @@ public class Sys{
         this.database = new DBManage("database.sqlite");
         database.createDB();
         database.loadCreditConfig();
-        this.vendingMachine = new VendingMachine(database);
+        this.vendingMachine = new VendingMachine(database, this);
         this.userbase = new Userbase(database, "admin", "admin", 0);
+        vendingMachine.run();
     }
 
     /*
@@ -93,6 +95,8 @@ public class Sys{
     public SellerWindow getSellerWindow() {return app.getSellerWindow();}
     
     public CashierWindow getCashierWindow() {return app.getCashierWindow();}
+
+    public LoginWindow getLoginWindow() {return app.getloginWindow();}
 
     public HomeWindow getHomeWindow() { return app.getHomeWindow(); }
 }
