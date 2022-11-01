@@ -85,17 +85,102 @@ public class PaymentWindow implements Window {
         methodBox.setTranslateX(10);
         methodBox.setTranslateY(70);
         methodBox.setPromptText("Select payment method");
-        pane.getChildren().add(methodBox);
         controlHandler.methodBoxHandle(methodBox);
+        pane.getChildren().add(methodBox);
 
         // cancel Transaction
         cfgCancelButton();
         pane.getChildren().add(cancelButton);
+
+        // configure all buttons
+        cfgButtons();
     }
 
     @Override
     public Scene getScene() {
         return scene;
+    }
+
+    public void cfgButtons() {
+        inputMoney = new TextField();
+        inputMoney.setTranslateX(10);
+        inputMoney.setTranslateY(210);
+        inputMoney.setPromptText("insert cash/coins");
+        inputMoney.setVisible(false);
+        pane.getChildren().add(inputMoney);
+
+        cashMsg = new Text();
+        cashMsg.setTranslateX(15);
+        cashMsg.setTranslateY(250);
+        cashMsg.setVisible(false);
+        pane.getChildren().add(cashMsg);
+
+        controlHandler.cashHandle(inputMoney, cashMsg);
+
+        cardHolder = new TextField();
+        cardHolder.setTranslateX(10);
+        cardHolder.setTranslateY(210);
+        cardHolder.setPromptText("Cardholder name");
+        cardHolder.setVisible(false);
+        pane.getChildren().add(cardHolder);
+
+        cardNumber = new PasswordField();
+        cardNumber.setTranslateX(10);
+        cardNumber.setTranslateY(240);
+        cardNumber.setPromptText("Card number");
+        cardNumber.setVisible(false);
+        pane.getChildren().add(cardNumber);
+
+        cardMsg = new Text();
+        cardMsg.setTranslateX(15);
+        cardMsg.setTranslateY(280);
+        cardMsg.setVisible(false); // test
+        pane.getChildren().add(cardMsg);
+
+        saveInfoButton = new Button();
+        saveInfoButton.setTranslateX(10);
+        saveInfoButton.setTranslateY(320);
+        saveInfoButton.setText("Save CC info & Quit");
+        saveInfoButton.setVisible(false);
+        pane.getChildren().add(saveInfoButton);
+
+        quitButton = new Button();
+        quitButton.setTranslateX(150);
+        quitButton.setTranslateY(320);
+        quitButton.setText("Quit without saving");
+        quitButton.setVisible(false);
+        pane.getChildren().add(quitButton);
+
+        saveMsg = new Text();
+        saveMsg.setTranslateX(10);
+        saveMsg.setTranslateY(370);
+        saveMsg.setVisible(false);
+        pane.getChildren().add(saveMsg);
+
+        saveInfoButton.setOnAction(new EventHandler<ActionEvent>() {
+            @Override
+            public void handle(ActionEvent event) {
+                try {
+                    int cardN = Integer.parseInt(cardNumber.getText());
+                    system.getDatabase().saveCreditCardInfo(cardHolder.getText(), cardN,
+                            system.getCurrentUser().getID());
+                    system.setCurrentUser(null);
+                    app.setScene(app.getloginWindow().scene);
+                } catch (Exception e) {
+                    cardMsg.setText("Card number must only contain numbers");
+                    cardMsg.setVisible(true);
+                }
+            }
+        });
+
+        quitButton.setOnAction(new EventHandler<ActionEvent>() {
+            @Override
+            public void handle(ActionEvent event) {
+                // auto logout user after all products added
+                system.setCurrentUser(null);
+                app.setScene(app.getloginWindow().scene);
+            }
+        });
     }
 
     @Override
@@ -110,110 +195,30 @@ public class PaymentWindow implements Window {
         refreshCart();
 
         if (methodBox.getValue() == "Cash") {
-            if (cardHolder != null) {
-                cardHolder.setVisible(false);
-            }
-            if (cardNumber != null) {
-                cardNumber.setVisible(false);
-            }
-            if (cardMsg != null) {
-                cardMsg.setVisible(false);
-            }
-            if (saveMsg != null) {
-                saveMsg.setVisible(false);
-            }
-            if (saveInfoButton != null) {
-                saveInfoButton.setVisible(false);
-            }
-
-            inputMoney = new TextField();
-            inputMoney.setTranslateX(10);
-            inputMoney.setTranslateY(210);
-            inputMoney.setPromptText("insert cash/coins");
-            pane.getChildren().add(inputMoney);
-
-            cashMsg = new Text();
-            cashMsg.setTranslateX(15);
-            cashMsg.setTranslateY(250);
-            pane.getChildren().add(cashMsg);
-
-            controlHandler.cashHandle(inputMoney, cashMsg);
+            if (cardHolder != null) { cardHolder.setVisible(false); }
+            if (cardNumber != null) { cardNumber.setVisible(false); }
+            if (cardMsg != null) { cardMsg.setVisible(false); }
+            if (saveMsg != null) { saveMsg.setVisible(false); }
+            if (saveInfoButton != null) { saveInfoButton.setVisible(false); }
+            
+            if (inputMoney != null) { inputMoney.setVisible(true); }
+            if (cashMsg != null) { cashMsg.setVisible(true); }
 
         } else if (methodBox.getValue() == "Card") {
-            if (inputMoney != null) {
-                inputMoney.setVisible(false);
-            }
-            if (cashMsg != null) {
-                cashMsg.setVisible(false);
-            }
+            if (cardHolder != null) { cardHolder.setVisible(true); }
+            if (cardNumber != null) { cardNumber.setVisible(true); }
+            if (cardMsg != null) { cardMsg.setVisible(true); }
+            if (saveMsg != null) { saveMsg.setVisible(false); }
+            if (saveInfoButton != null) { saveInfoButton.setVisible(false); }
 
-            cardHolder = new TextField();
-            cardHolder.setTranslateX(10);
-            cardHolder.setTranslateY(210);
-            cardHolder.setPromptText("Cardholder name");
-            pane.getChildren().add(cardHolder);
-
-            cardNumber = new PasswordField();
-            cardNumber.setTranslateX(10);
-            cardNumber.setTranslateY(240);
-            cardNumber.setPromptText("Card number");
-            pane.getChildren().add(cardNumber);
-
-            cardMsg = new Text();
-            cardMsg.setTranslateX(15);
-            cardMsg.setTranslateY(280);
-            cardMsg.setVisible(false); // test
-            pane.getChildren().add(cardMsg);
-
-            saveInfoButton = new Button();
-            saveInfoButton.setTranslateX(10);
-            saveInfoButton.setTranslateY(320);
-            saveInfoButton.setText("Save CC info & Quit");
-            pane.getChildren().add(saveInfoButton);
-            saveInfoButton.setVisible(false);
-
-            quitButton = new Button();
-            quitButton.setTranslateX(150);
-            quitButton.setTranslateY(320);
-            quitButton.setText("Quit without saving");
-            pane.getChildren().add(quitButton);
-            quitButton.setVisible(false);
-
-            saveMsg = new Text();
-            saveMsg.setTranslateX(10);
-            saveMsg.setTranslateY(370);
-            pane.getChildren().add(saveMsg);
+            if (inputMoney != null) { inputMoney.setVisible(false); }
+            if (cashMsg != null) { cashMsg.setVisible(false); }
 
             // check if current user is anonymous user, if so don't give same cc info button
             if (system.getCurrentUser().getUsername().equals("Anonymous")) {
                 saveMsg.setText("Anonymous user cannot save CC info");
                 saveMsg.setVisible(true);
             }
-
-            saveInfoButton.setOnAction(new EventHandler<ActionEvent>() {
-                @Override
-                public void handle(ActionEvent event) {
-                    try {
-                        int cardN = Integer.parseInt(cardNumber.getText());
-                        system.getDatabase().saveCreditCardInfo(cardHolder.getText(), cardN,
-                                system.getCurrentUser().getID());
-                        system.setCurrentUser(null);
-                        app.setScene(app.getloginWindow().scene);
-                    } catch (Exception e) {
-                        cardMsg.setText("Card number must only contain numbers");
-                        cardMsg.setVisible(true);
-                    }
-                }
-            });
-
-            quitButton.setOnAction(new EventHandler<ActionEvent>() {
-                @Override
-                public void handle(ActionEvent event) {
-                    // auto logout user after all products added
-                    system.setCurrentUser(null);
-                    app.setScene(app.getloginWindow().scene);
-                }
-            });
 
             // autofill card info if exists
             ArrayList<String> nameNumber = system.getDatabase().getCCInfo(system.getCurrentUser().getUsername());
@@ -341,7 +346,7 @@ public class PaymentWindow implements Window {
         // we only put through cancelled transactions if not empty cart
         if (system.getVendingMachine().getCart().size() > 0) {
             system.getDatabase().addCancelledTransaction("user cancelled");
-        }   
+        }
         system.getVendingMachine().clearCart();
         system.setCurrentUser(null);
         system.setScene(app.getloginWindow().scene);
