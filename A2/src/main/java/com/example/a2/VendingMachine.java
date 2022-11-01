@@ -180,7 +180,7 @@ public class VendingMachine {
                     selectedProduct.setQty(Integer.parseInt(newValue));
                     break;
                 case "Price":
-                    selectedProduct.setCost(Double.parseDouble(newValue));
+                    selectedProduct.setCost(Math.round(Double.parseDouble(newValue) * 20.0) / 20.0);
                     break;
                 default:
                     System.out.println("Error, invalid field.");
