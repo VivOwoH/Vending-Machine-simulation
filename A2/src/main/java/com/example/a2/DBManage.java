@@ -1110,7 +1110,7 @@ public class DBManage {
         return false;
     }
 
-    public void saveCreditCardInfo(String cardName, int cardNumber, int userID) {
+    public String saveCreditCardInfo(String cardName, int cardNumber, int userID) {
         try {
             connection = DriverManager.getConnection(url);
             Statement statement = connection.createStatement();
@@ -1126,6 +1126,8 @@ public class DBManage {
             preparedStatement.setInt(3, userID);
             preparedStatement.executeUpdate();
 
+            return "CC added.";
+
         } catch (Exception e) {
             java.lang.System.out.println("_________________________ERROR at saveCreditCardInfo_________________");
             java.lang.System.err.println(e.getMessage());
@@ -1139,6 +1141,7 @@ public class DBManage {
                 java.lang.System.err.println(e.getMessage());
             }
         }
+        return null;
     }
 
     // return array where first position is cc name and second is cc num

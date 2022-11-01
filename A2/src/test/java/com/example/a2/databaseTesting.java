@@ -4,6 +4,7 @@ import com.example.a2.products.Product;
 import org.junit.jupiter.api.*;
 
 import java.sql.*;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -15,7 +16,7 @@ public class databaseTesting {
     private Connection connection = null;
 
     @BeforeAll
-    static void setUp(){
+    static void setUp() {
         database = new DBManage("test.sqlite");
         database.createDB();
         System.out.println("DONE!");
@@ -23,7 +24,8 @@ public class databaseTesting {
 
     @Test
     // test if users are being added
-    void addUserTest() {
+    void addRemoveUserTest() {
+        // add user first
         try {
             connection = DriverManager.getConnection(url);
 
@@ -32,20 +34,49 @@ public class databaseTesting {
             database.addUser("user3", "password3", "User");
 
             String insertStatement = "SELECT count(*) as total FROM Users";
-            PreparedStatement preparedStatement =
-                    connection.prepareStatement(insertStatement);
+            PreparedStatement preparedStatement = connection.prepareStatement(insertStatement);
             ResultSet productList = preparedStatement.executeQuery();
             int size = productList.getInt("total");
             preparedStatement.close();
 
             assertEquals(4, size);
 
-
-        } catch (Exception e){
+        } catch (Exception e) {
             // assume can connect as db was created
             System.out.println(e);
             assertNotNull(e);
-        }  finally {
+        } finally {
+            try {
+                if (connection != null) {
+                    connection.close();
+                }
+            } catch (SQLException e) {
+                // connection close failed.
+                java.lang.System.err.println(e.getMessage());
+            }
+        }
+
+        // remove user
+        try {
+            connection = DriverManager.getConnection(url);
+
+            database.removeUser(database.getUserID("user1"));
+            database.removeUser(database.getUserID("user2"));
+            database.removeUser(database.getUserID("user3"));
+
+            String insertStatement = "SELECT count(*) as total FROM Users";
+            PreparedStatement preparedStatement = connection.prepareStatement(insertStatement);
+            ResultSet productList = preparedStatement.executeQuery();
+            int size = productList.getInt("total");
+            preparedStatement.close();
+
+            assertEquals(1, size);
+
+        } catch (Exception e) {
+            // assume can connect as db was created
+            System.out.println(e);
+            assertNotNull(e);
+        } finally {
             try {
                 if (connection != null) {
                     connection.close();
@@ -57,27 +88,97 @@ public class databaseTesting {
         }
     }
 
+
     @Test
-        // test if transactions are being added
-    void addTransactionTest() {
+    // test if transactions are being added (also cancelled transactions added)
+    void addgetTransactionTest() {
 
         database.addTransaction(1, true, 0, 1, 10, 0.50);
-        database.addTransaction(2, true, 0, 1,11, 0.50);
-        database.addTransaction(3, true, 0, 1,12, 0.50);
+        database.addTransaction(2, true, 0, 1, 11, 0.50);
+        database.addTransaction(3, true, 0, 1, 12, 0.50);
+
+        database.addCancelledTransaction("user cancelled");
+        database.addCancelledTransaction("timeout");
 
         try {
             connection = DriverManager.getConnection(url);
 
             String insertStatement = "SELECT count(*) as total FROM Transactions";
-            PreparedStatement preparedStatement =
-                    connection.prepareStatement(insertStatement);
+            String insertStatement2 = "SELECT count(*) as total2 FROM Transactions WHERE success = 0";
+
+            PreparedStatement preparedStatement = connection.prepareStatement(insertStatement);
+            PreparedStatement preparedStatement2 = connection.prepareStatement(insertStatement2);
             ResultSet productList = preparedStatement.executeQuery();
+            ResultSet productList2 = preparedStatement2.executeQuery();
+            
             int size = productList.getInt("total");
+            int sizeCancelled = productList2.getInt("total2");
+
+            preparedStatement.close();
+            preparedStatement2.close();
+
+            assertEquals(5, size);
+            assertEquals(2, sizeCancelled);
+
+        } catch (Exception e) {
+            // assume can connect as db was created
+            System.out.println(e);
+            assertNotNull(e);
+        } finally {
+            try {
+                if (connection != null) {
+                    connection.close();
+                }
+            } catch (SQLException e) {
+                // connection close failed.
+                java.lang.System.err.println(e.getMessage());
+            }
+        }
+
+        // TODO: report does not print userID now, need to change this text when fixed
+        // also test getCancelledTransaction here
+
+        Timestamp timestamp = new Timestamp(java.lang.System.currentTimeMillis()); // should work if tests don't run too long
+
+        Date date = new Date(timestamp.getTime());
+        String formattedDate = new SimpleDateFormat("dd/MM/yyyy, hh:mm").format(date);
+        
+        String expectedReport = String.format("%s | null | user cancelled\n", formattedDate) + 
+                                String.format("%s | null | timeout\n", formattedDate);
+        assertEquals(expectedReport, database.getCancelledTransactions());
+
+    }
+
+    @Test
+    // test if correct number of products has been initialised
+    void productInitTest() {
+        ArrayList<Product> products = database.getProducts();
+        assertEquals(16, products.size());
+    }
+
+    @Test
+    void addRemoveProductTest() {
+        // initially 16 products 
+        assertTrue(database.addProduct(0, "pringles", "Chips").contains("already"));
+        assertTrue(database.addProduct(0, "test", "Drinks").contains("added"));
+
+        database.removeProduct(17);
+
+        try {
+            connection = DriverManager.getConnection(url);
+
+            String insertStatement = "SELECT count(*) as total FROM Products";
+
+            PreparedStatement preparedStatement = connection.prepareStatement(insertStatement);
+            ResultSet productList = preparedStatement.executeQuery();
+            
+            int size = productList.getInt("total");
+
             preparedStatement.close();
 
-            assertEquals(3, size);
+            assertEquals(16, size);
 
-        } catch (Exception e){
+        } catch (Exception e) {
             // assume can connect as db was created
             System.out.println(e);
             assertNotNull(e);
@@ -95,13 +196,6 @@ public class databaseTesting {
     }
 
     @Test
-        // test if correct number of products has been initialised
-    void productInitTest() {
-        ArrayList<Product> products = database.getProducts();
-        assertEquals(16, products.size());
-    }
-
-    @Test
     void getCurrencyTest() {
         // every currency gets instantiated as 5
         int quantity = database.getCurrencyQuantity(5.0);
@@ -109,7 +203,7 @@ public class databaseTesting {
     }
 
     @Test
-    void getPasswordTest(){
+    void getPasswordTest() {
         DBManage tempDB = new DBManage("test3.sqlite");
         tempDB.createDB();
         tempDB.addUser("user4", "password4", "User");
@@ -119,7 +213,7 @@ public class databaseTesting {
     }
 
     @Test
-    void getUserIDTest(){
+    void getUserIDTest() {
         DBManage tempDB = new DBManage("test3.sqlite");
         tempDB.createDB();
         tempDB.addUser("user4", "password4", "User");
@@ -128,22 +222,22 @@ public class databaseTesting {
     }
 
     @Test
-    void transactionHistoryTest(){
+    void transactionHistoryTest() {
         DBManage tempDB = new DBManage("test3.sqlite");
         tempDB.createDB();
-        tempDB.addTransaction(1,true,0,1,1,1);
+        tempDB.addTransaction(1, true, 0, 1, 1, 1);
         String history = tempDB.getTransactionHistory().substring(18);
         assertEquals("| 1 | 1.00 | 1.00 | CASH\n", history);
         tempDB.deleteDB();
     }
 
     @Test
-    void getLastFiveTransactions(){
+    void getLastFiveTransactions() {
         DBManage tempDB = new DBManage("test3.sqlite");
         tempDB.createDB();
-        tempDB.addTransaction(1,true,0,1,1,1);
-        tempDB.addTransaction(3,true,0,1,1,1);
-        tempDB.addTransaction(2,true,0,1,1,1);
+        tempDB.addTransaction(1, true, 0, 1, 1, 1);
+        tempDB.addTransaction(3, true, 0, 1, 1, 1);
+        tempDB.addTransaction(2, true, 0, 1, 1, 1);
 
         ArrayList<Transaction> transactions = tempDB.getLastFiveTransactionsByUserID(0);
 
@@ -151,6 +245,111 @@ public class databaseTesting {
         assertEquals(3, transactions.get(1).getProdID());
         assertEquals(2, transactions.get(0).getProdID());
         tempDB.deleteDB();
+    }
+
+    @Test
+    void updateSoldTest() {
+        try {
+            connection = DriverManager.getConnection(url);
+
+            database.updateSold(1, 5); // sold
+
+            String insertStatement = "SELECT sold FROM Products where prodID = 1";
+            PreparedStatement preparedStatement = connection.prepareStatement(insertStatement);
+            ResultSet productList = preparedStatement.executeQuery();
+            int qty = productList.getInt("sold");
+
+            assertEquals(5, qty);
+
+            preparedStatement.close();
+
+            database.updateSold(1, 2); // sold again (concatenate)
+
+            String insertStatement2 = "SELECT sold FROM Products where prodID = 1";
+            PreparedStatement preparedStatement2 = connection.prepareStatement(insertStatement2);
+            ResultSet productList2 = preparedStatement2.executeQuery();
+            int newQty = productList2.getInt("sold");
+
+            assertEquals(7, newQty);
+
+            preparedStatement2.close();   
+
+        } catch (Exception e) {
+            // assume can connect as db was created
+            System.out.println(e);
+            assertNotNull(e);
+        } finally {
+            try {
+                if (connection != null) {
+                    connection.close();
+                }
+            } catch (SQLException e) {
+                // connection close failed.
+                java.lang.System.err.println(e.getMessage());
+            }
+        }
+    }
+
+    @Test
+    void savegetCCInfoTest() {
+        // test admin (0)
+        assertTrue(database.saveCreditCardInfo("test", 111, 0).contains("added"));
+        ArrayList<String> result = database.getCCInfo("admin");
+        assertEquals("test", result.get(0));
+        assertEquals("111", result.get(1));
+    }
+
+    @Test
+    void testValidCredit() {
+        database.loadCreditConfig();
+        
+        // invalid
+        assertFalse(database.creditCardIsValid("test", 0));
+        // valid
+        assertTrue(database.creditCardIsValid("Charles", 40691));
+        assertTrue(database.creditCardIsValid("Sergio", 42689));
+        assertTrue(database.creditCardIsValid("Kasey", 60146));
+    }
+
+    @Test
+    void updateCurrencyAndReportTest() {
+        database.updateCurrency(0.05, 100);
+        assertEquals(100, database.getCurrencyQuantity(0.05));
+
+        database.updateCurrency(0.05, 5); // reset back
+        String[] denominations = new String[]{"100", "50", "20", "10", "5", "2", "1", "0.5", "0.2", "0.1", "0.05"};
+
+        // also test getCurrencyReport here
+        String expectedReport = "";
+        for (int i = 0; i < 11; i++) {
+            expectedReport += denominations[i] + " | 5\n";
+        }
+        assertEquals(expectedReport, database.getCurrencyReport());
+    }
+
+    @Test
+    void getItemDetailsTest() {
+        // we use this test file because products haven't been touched
+        DBManage tempDB = new DBManage("test3.sqlite");
+        tempDB.createDB();
+
+        String[] categories = { "Chips", "Candies", "Drinks", "Chocolates" };
+        String[] products = { "smiths", "pringles", "kettles", "thins", 
+            "mentos", "sourpatch", "skittles", 
+            "water", "sprite", "coke", "pepsi", "juice",
+            "mars", "m&m", "bounty", "snicker"};
+        String expectedReport = "";
+        for (int i = 1; i < 17; i++) {
+            String category = "";
+            if (i >= 1 && i <= 4) { category = categories[0]; }
+            else if (i >= 5 && i <= 7) { category = categories[1]; }
+            else if (i >= 8 && i <= 12) { category = categories[2]; }
+            else if (i >= 13 && i <= 16) { category = categories[3]; }
+            expectedReport += products[i-1] + " | " + i + " | " + 7  + " | " +
+                                 "0.00" + " | " + category + "\n";
+        }
+        assertEquals(expectedReport, tempDB.getItemDetails());
+
     }
 
     @AfterAll
