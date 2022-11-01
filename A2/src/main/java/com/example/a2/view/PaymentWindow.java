@@ -51,6 +51,7 @@ public class PaymentWindow implements Window {
     private TextField cardHolder;
     private PasswordField cardNumber;
     private ScrollPane scrollPane;
+    private Button cancelButton;
     private Button saveInfoButton;
     private Button quitButton;
     private Text saveMsg;
@@ -86,6 +87,10 @@ public class PaymentWindow implements Window {
         methodBox.setPromptText("Select payment method");
         pane.getChildren().add(methodBox);
         controlHandler.methodBoxHandle(methodBox);
+
+        // cancel Transaction
+        cfgCancelButton();
+        pane.getChildren().add(cancelButton);
     }
 
     @Override
@@ -315,6 +320,31 @@ public class PaymentWindow implements Window {
                 }
             }
         });
+    }
+
+    public void cfgCancelButton() {
+        cancelButton = new Button("Cancel");
+        cancelButton.setTranslateX(280);
+        cancelButton.setTranslateY(20);
+        cancelButton.setMinWidth(70);
+
+        cancelButton.setOnAction(new EventHandler<ActionEvent>() {
+            @Override
+            public void handle(ActionEvent event) {
+                controlHandler.cancelTransactionHandle();
+                confirmCancelled();
+            }
+        });
+    }
+
+    public void confirmCancelled() {
+        // we only put through cancelled transactions if not empty cart
+        if (system.getVendingMachine().getCart().size() > 0) {
+            system.getDatabase().addCancelledTransaction("user cancelled");
+        }   
+        system.getVendingMachine().clearCart();
+        system.setCurrentUser(null);
+        system.setScene(app.getloginWindow().scene);
     }
 
     @Override

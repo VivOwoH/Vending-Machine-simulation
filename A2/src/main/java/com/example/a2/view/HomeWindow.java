@@ -370,7 +370,12 @@ public class HomeWindow implements Window {
         // }
         //
         // cancelled.setVisible(true);
-        sys.getDatabase().addCancelledTransaction("user cancelled");
+
+        // we only put through cancelled transactions if not empty cart
+        if (sys.getVendingMachine().getCart().size() > 0) {
+            sys.getDatabase().addCancelledTransaction("user cancelled");
+        }   
+        sys.getVendingMachine().clearCart();
         sys.setCurrentUser(null);
         sys.setScene(app.getloginWindow().scene);
     }
