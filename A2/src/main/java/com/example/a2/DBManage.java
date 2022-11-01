@@ -528,6 +528,42 @@ public class DBManage {
         return null;
     }
 
+    public String updateProduct(int newID, int prodID) {
+        try {
+            connection = DriverManager.getConnection(url);
+            Statement statement = connection.createStatement();
+            statement.setQueryTimeout(30);
+
+            String insertStatement = "UPDATE Products SET prodID=? WHERE prodID=?";
+            PreparedStatement preparedStatement =
+                    connection.prepareStatement(insertStatement);
+            preparedStatement.setInt(1, newID);
+            preparedStatement.setInt(2, prodID);
+            preparedStatement.executeUpdate();
+ 
+            return "Product updated";
+
+        } catch (Exception e) {
+            if (e.getMessage().contains("UNIQUE")) {
+                String err = "Product violates UNIQUE constraint.";
+                System.out.println(err);
+                return err;
+            }
+            java.lang.System.out.println("_________________________ERROR at addProduct_________________________");
+            java.lang.System.err.println(e.getMessage());
+        } finally {
+            try {
+                if (connection != null) {
+                    connection.close();
+                }
+            } catch (SQLException e) {
+                // connection close failed.
+                java.lang.System.err.println(e.getMessage());
+            }
+        }
+        return null;
+    }
+
     public String updateProduct(double cost, String name, int qty, String category, int prodID) {
         try {
             connection = DriverManager.getConnection(url);

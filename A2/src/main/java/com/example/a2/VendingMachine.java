@@ -166,8 +166,8 @@ public class VendingMachine {
                     selectedProduct.setName(newValue);
                     break;
                 case "Code":
-                    selectedProduct.setCode(Integer.parseInt(newValue));
-                    break;
+                    database.updateProduct(Integer.parseInt(newValue), prodID);
+                    return String.format("Product %d updated.", prodID);
                 case "Category":
                     selectedProduct.setCategoryStr(newValue);
                     break;
