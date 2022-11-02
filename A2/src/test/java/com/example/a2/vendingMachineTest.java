@@ -25,7 +25,7 @@ public class vendingMachineTest {
 
     @BeforeAll
     static void setUp() {
-        database = new DBManage("test2.sqlite");
+        database = new DBManage("test.sqlite");
         database.createDB();
         database.loadCreditConfig();
         userbase = new Userbase(database, "admin", "admin", 0);
@@ -129,8 +129,8 @@ public class vendingMachineTest {
        assertEquals(model.getDatabase().getCurrencyQuantity(50.0), 4);
        assertEquals(model.getDatabase().getCurrencyQuantity(20.0), 3);
        assertEquals(model.getDatabase().getCurrencyQuantity(5.0), 4);
-
-       model.makeCashPurchase(0.50, 10.0);
+ 
+        model.makeCashPurchase(0.50, 10.0);
 
         assertEquals(model.getDatabase().getCurrencyQuantity(0.50), 4);
         assertEquals(model.getDatabase().getCurrencyQuantity(2.0), 3);
