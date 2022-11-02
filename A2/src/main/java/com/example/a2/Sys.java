@@ -1,13 +1,11 @@
 package com.example.a2;
 
-import com.example.a2.view.AdminWindow;
-import com.example.a2.view.CashierWindow;
-import com.example.a2.view.HomeWindow;
-import com.example.a2.view.LoginWindow;
-import com.example.a2.view.PaymentWindow;
-import com.example.a2.view.SellerWindow;
+import com.example.a2.view.*;
 
 import javafx.scene.Scene;
+
+import java.io.File;
+import java.io.FileWriter;
 
 public class Sys{
 
@@ -96,7 +94,12 @@ public class Sys{
     
     public CashierWindow getCashierWindow() {return app.getCashierWindow();}
 
-    public LoginWindow getLoginWindow() {return app.getloginWindow();}
+    public LoginWindow getLoginWindow() {
+        // clear report whenever login window is called (log out)
+        ControlHandler.clearReportFile();
+
+        return app.getloginWindow();
+    }
 
     public HomeWindow getHomeWindow() { return app.getHomeWindow(); }
 }

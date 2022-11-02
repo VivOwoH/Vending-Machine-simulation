@@ -3,6 +3,8 @@ package com.example.a2.view;
 import com.example.a2.Sys;
 
 import javafx.collections.FXCollections;
+import javafx.event.ActionEvent;
+import javafx.event.EventHandler;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.ComboBox;
@@ -33,6 +35,9 @@ public class SellerWindow implements Window {
     private ScrollPane reportPane;
     private ComboBox reportType;
     private String reportOptionsSeller[] = {"Item details", "Item summary"};
+    private Button refreshButton;
+    private VBox box;
+    private Text reportGeneratedText;
 
     public SellerWindow(Sys system, ControlHandler controlHandler) {
         pane = new Pane();
@@ -105,7 +110,6 @@ public class SellerWindow implements Window {
         reportPane = new ScrollPane();
         reportPane.setPrefSize(300, 200);
         reportPane.relocate(10, 330);
-        VBox box = new VBox();
 
         //TODO drawReport in controlHandler
         controlHandler.drawReport(reportType, box);
@@ -113,7 +117,30 @@ public class SellerWindow implements Window {
         reportPane.setContent(box);
         
         pane.getChildren().addAll(reportPane, reportType);
+
+        cfgRefreshButton();
+        pane.getChildren().add(refreshButton);
         
+    }
+
+    public void cfgRefreshButton() {
+        refreshButton = new Button("Generate Report");
+        refreshButton.setTranslateX(200);
+        refreshButton.setTranslateY(300);
+
+        reportGeneratedText = new Text("Report Generated!");
+        reportGeneratedText.setVisible(false);
+        reportGeneratedText.setTranslateX(320);
+        reportGeneratedText.setTranslateY(315);
+        pane.getChildren().add(reportGeneratedText);
+
+        refreshButton.setOnAction(new EventHandler<ActionEvent>() {
+            @Override
+            public void handle(ActionEvent event) {
+                controlHandler.writeReportToFile();
+                reportGeneratedText.setVisible(true);
+            }
+        });
     }
 
     @Override

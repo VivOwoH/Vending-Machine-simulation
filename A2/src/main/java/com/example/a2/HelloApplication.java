@@ -71,7 +71,8 @@ public class HelloApplication extends Application {
         adminWindow = new AdminWindow(system, controlHandler);
     }
 
-    public LoginWindow getloginWindow() { 
+    public LoginWindow getloginWindow() {
+        ControlHandler.clearReportFile();
         reset();
         return loginWindow; 
     }
