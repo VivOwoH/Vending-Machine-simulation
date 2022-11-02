@@ -47,3 +47,4 @@ bin/
 /src/main/data/test.sqlite
 /src/main/data/test2.sqlite
 /src/main/data/test3.sqlite
+/src/main/data/report.txt
