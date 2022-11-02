@@ -23,6 +23,17 @@ public class databaseTesting {
     }
 
     @Test
+    void getCostTest() {
+        // we use this test file because no update
+        DBManage tempDB = new DBManage("test3.sqlite");
+        tempDB.createDB();
+
+        for (int i = 1; i < 17; i++) {
+            assertEquals(2.0, tempDB.getCost(i));
+        }
+    }
+
+    @Test
     // test if users are being added
     void addRemoveUserTest() {
         // add user first
