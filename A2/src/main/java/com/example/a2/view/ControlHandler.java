@@ -23,7 +23,7 @@ public class ControlHandler {
     private boolean purchaseCashFlag = false;
     private boolean purchaseCardFlag = false;
     private Sys system;
-
+    private ArrayList<Double> queue = new ArrayList<Double>();
     private double cashGiven;
     private double change;
 
@@ -62,6 +62,11 @@ public class ControlHandler {
                 database.addTransaction(prodID, true, userID, quantity, cashGiven, change);
                 // success
                 vendingMachine.cancelTimer();
+
+                for(Double denom : queue){
+                    int current = database.getCurrencyQuantity(denom);
+                    database.updateCurrency(denom, current + 1);
+                }
 
                 purchaseCashFlag = false;
                 return true;
@@ -287,6 +292,10 @@ public class ControlHandler {
                 if (!vendingMachine.checkInput(input)) {
                     show.setText("Invalid input.");
                     return;
+                }
+                else{
+                    //add input to SQL
+                    queue.add(input);
                 }
 
                 double inputTotal = system.getPaymentWindow().addInputCash(input);
