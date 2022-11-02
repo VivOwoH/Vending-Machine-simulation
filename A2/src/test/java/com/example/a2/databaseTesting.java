@@ -376,7 +376,7 @@ public class databaseTesting {
                 category = categories[3];
             }
             expectedReport += products[i - 1] + " | " + i + " | " + 7 + " | " +
-                    "0.00" + " | " + category + "\n";
+                    "2.00" + " | " + category + "\n";
         }
         assertEquals(expectedReport, tempDB.getItemDetails());
     }
