@@ -119,7 +119,8 @@ public class HomeWindow implements Window {
 
     // whatever that needs to be updated upon scene change goes here
     public void reconfiguration() {
-        this.cfgRoleButton();
+        cfgRoleButton();
+        cfgProductPane(sys.getVendingMachine().getProductInventroy());
     }
 
     public void cfgRoleButton() {
@@ -368,7 +369,12 @@ public class HomeWindow implements Window {
         // }
         //
         // cancelled.setVisible(true);
-        sys.getDatabase().addCancelledTransaction("user cancelled");
+
+        // we only put through cancelled transactions if not empty cart
+        if (sys.getVendingMachine().getCart().size() > 0) {
+            sys.getDatabase().addCancelledTransaction("user cancelled");
+        }   
+        sys.getVendingMachine().clearCart();
         sys.setCurrentUser(null);
         sys.setScene(app.getloginWindow().scene);
     }
@@ -404,6 +410,7 @@ public class HomeWindow implements Window {
 
     @Override
     public Scene getScene() {
+        this.reconfiguration();
         return scene;
     }
 

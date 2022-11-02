@@ -1,5 +1,7 @@
 package com.example.a2.view;
 
+import java.io.File;
+import java.io.FileWriter;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map.Entry;
@@ -106,7 +108,7 @@ public class ControlHandler {
                         System.out.println("Something went wrong when switching admin window.");
                 }
                 system.setScene(window.getScene());
-                vendingMachine.triggerTimer();
+                vendingMachine.cancelTimer();
             }
         });
     }
@@ -249,7 +251,6 @@ public class ControlHandler {
 
     public void cancelTransactionHandle() {
         vendingMachine.cancelTimer();
-        vendingMachine.clearCart();
     }
 
     public void checkoutHandle(Button checkoutButton) {
@@ -274,6 +275,7 @@ public class ControlHandler {
         b.setOnAction(new EventHandler<ActionEvent>() {
             @Override
             public void handle(ActionEvent event) {
+                vendingMachine.triggerTimer();
                 HomeWindow home = system.getHomeWindow();
                 system.setScene(home.getScene());
             }
@@ -397,5 +399,39 @@ public class ControlHandler {
                 }
             }
         });
+    }
+
+    public void writeReportToFile(){
+        try {
+            FileWriter fw = new FileWriter(new File("src/main/data/report.txt"));
+            fw.write("----------------------Available Change----------------------\n");
+            fw.write("Denomination | Quantity\n");
+            fw.write(system.getCurrencyReport());
+
+            fw.write("----------------------Accounts----------------------\n");
+            fw.write("Username | Role\n");
+            fw.write(system.getUsersReport());
+
+            fw.write("----------------------Transactions----------------------\n");
+            fw.write("DateTime | ProductID | Paid | Change | Method\n");
+            fw.write(system.getTransactionHistory());
+
+            fw.write("----------------------Cancelled transactions----------------------\n");
+            fw.write("DateTime | User | Reason\n");
+            fw.write(system.getCancelledTransactions());
+
+            fw.write("----------------------Item details----------------------\n");
+            fw.write("Product | Code | Quantity | Price | Category\n");
+            fw.write(system.getItemDetails());
+
+            fw.write("----------------------Item summary----------------------\n");
+            fw.write("Product | Code | Quantity Sold\n");
+            fw.write(system.getItemSummary());
+
+            fw.close();
+            System.out.println("Report Generated");
+        } catch (Exception e){
+            System.out.println(e);
+        }
     }
 }

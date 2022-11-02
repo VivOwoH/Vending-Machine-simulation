@@ -1,7 +1,9 @@
 package com.example.a2;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
@@ -16,23 +18,23 @@ import com.example.a2.products.Product;
 
 public class vendingMachineTest {
 
-    private VendingMachine model;
-    private DBManage database;
-    private Userbase userbase;
-    private Sys system;
+    private static VendingMachine model;
+    private static DBManage database;
+    private static Userbase userbase;
+    private static Sys system;
 
-    @BeforeEach
-    public void setUp() {
+    @BeforeAll
+    static void setUp() {
         database = new DBManage("test2.sqlite");
         database.createDB();
         database.loadCreditConfig();
-
-        model = new VendingMachine(database);
         userbase = new Userbase(database, "admin", "admin", 0);
 
         system = new Sys(new HelloApplication());
         system.setDatabase(database);
         system.setUserbase(userbase);
+
+        model = new VendingMachine(database, system);
         system.setVendingMachine(model);
     }
 
@@ -83,12 +85,58 @@ public class vendingMachineTest {
     }
 
     @Test
-    void testPayByCash() {
+    void testGetTotalCost() {
+        assertTrue(model.updateProduct(1, "4.4", "Price")
+                .contains("updated"));
+        assertTrue(model.updateProduct(2, "3.3", "Price")
+                .contains("updated"));
+        model.addToCart(1, 5);
+        model.addToCart(2, 5);
+        assertEquals("38.50", String.format("%.2f", model.getTotalCost()));
 
+        // clear cart
+        model.clearCart();
+        assertTrue(model.getCart().size() == 0);
+
+        // reset update back
+        model.findProductByID(1).setQty(7); // restore stock
+        model.findProductByID(2).setQty(7);
+        assertTrue(model.updateProduct(1, "0.0", "Price")
+                .contains("updated"));
+        assertTrue(model.updateProduct(2, "0.0", "Price")
+                .contains("updated"));
     }
 
     @Test
-    void testPayByCard() {
+    void testCheckInput() {
+        // invalid negative input
+        assertFalse(model.checkInput(-1));
+
+        // invalid denomination
+        assertFalse(model.checkInput(3.0));
+
+        // valid & some alternative input check
+        assertTrue(model.checkInput(1.0000)); // integer or double
+        assertTrue(model.checkInput(1));
+
+        assertTrue(model.checkInput(0.500000)); // many decimal places
+    }
+
+    @Test
+    void testMakeCashPurcase() {
+        // // i have no idea how the implementation works
+        // // not enough money
+        // assertNull(model.makeCashPurchase(20.00, 5));
+        
+        // // enough money
+        // model.makeCashPurchase(23.10, 100);
+        // model.makeCashPurchase(36.50, 100);
+        // model.makeCashPurchase(49.70, 100);
+        // model.makeCashPurchase(98.75, 100);
+    }
+
+    @Test
+    void testPayByCash() {
 
     }
 
@@ -142,8 +190,15 @@ public class vendingMachineTest {
 
         assertTrue(model.updateProduct(1, "lemonade", "Name")
                 .contains("updated"));
-        assertTrue(model.updateProduct(1, "4.4", "Price")
+        assertTrue(model.updateProduct(1, "4.4129389", "Price")
                 .contains("updated"));
+
+        // we want to round price to nearest 0.05, so cash feature do not malfunction
+        assertEquals("4.40", String.format("%.2f", model.findProductByID(1).getCost()));
+        assertTrue(model.updateProduct(1, "9.763789", "Price")
+                .contains("updated"));
+        assertEquals("9.75", String.format("%.2f", model.findProductByID(1).getCost()));
+
         assertTrue(model.updateProduct(1, "smiths", "Name")
                 .contains("updated")); // reset back
         assertTrue(model.updateProduct(1, "0.0", "Price")
@@ -178,14 +233,15 @@ public class vendingMachineTest {
         assertTrue(owner.modifyRole(system, 0, "Owner").contains("New role Owner")); // reset
     }
 
-    // handled at UI level
-    // @Test
-    // void testUpdateCurrencies() {
-    // // input of wrong format (currencies, qty)
+    @Test
+    void testShowProductCategorized() {
+        // invalid category
+        assertEquals(0, model.ShowProductCategorized("test").size());
 
-    // // invalid currencies not in list (currencies)
-
-    // // 0 or negative input (qty)
-    // }
-
+        // valid category
+        assertEquals(4, model.ShowProductCategorized("Chips").size());
+        assertEquals(3, model.ShowProductCategorized("Candies").size());
+        assertEquals(5, model.ShowProductCategorized("Drinks").size());
+        assertEquals(4, model.ShowProductCategorized("Chocolates").size());
+    }
 }

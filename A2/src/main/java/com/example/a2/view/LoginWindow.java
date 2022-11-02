@@ -129,6 +129,7 @@ public class LoginWindow implements Window {
                         sys.setCurrentUser(currentUser);
                         app.setScene(app.getHomeWindow().getScene());
                         app.makeAdminWindow();
+                        app.getAdminWindow().draw();
                     } else {
                         text.setText("Wrong password");
                     }

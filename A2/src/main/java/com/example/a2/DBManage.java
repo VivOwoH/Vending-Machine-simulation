@@ -74,7 +74,6 @@ public class DBManage {
             statement.executeUpdate("CREATE TABLE IF NOT EXISTS Credit_Card " +
                     "(name STRING, " +
                     "number INTEGER DEFAULT (5))");
-            java.lang.System.out.println("------------DB created------------");
 
             //populate currecies
             for(String denomination : VendingMachine.denominations){
@@ -112,11 +111,30 @@ public class DBManage {
     }
 
     public void deleteDB() {
-        File myObj = new File("src/main/data/" + fileName);
-        if (myObj.delete()) {
-            System.out.println("Deleted the file: " + myObj.getName());
-        } else {
-            System.out.println("Failed to delete the file.");
+        try {
+            connection = DriverManager.getConnection(url);
+            Statement statement = connection.createStatement();
+            statement.setQueryTimeout(30);
+
+            // clear all tables
+            statement.executeUpdate("DELETE FROM credit_card");
+            statement.executeUpdate("DELETE FROM currencies");
+            statement.executeUpdate("DELETE FROM Products");
+            statement.executeUpdate("DELETE FROM transactions");
+            statement.executeUpdate("DELETE FROM users");
+
+        } catch (Exception e) {
+            java.lang.System.out.println("_________________________ERROR at addUser_________________________");
+            java.lang.System.err.println(e.getMessage());
+        } finally {
+            try {
+                if (connection != null) {
+                    connection.close();
+                }
+            } catch (SQLException e) {
+                // connection close failed.
+                java.lang.System.err.println(e.getMessage());
+            }
         }
     }
 
@@ -493,6 +511,42 @@ public class DBManage {
         } catch (Exception e) {
             if (e.getMessage().contains("UNIQUE")) {
                 return "Product already in DB.";
+            }
+            java.lang.System.out.println("_________________________ERROR at addProduct_________________________");
+            java.lang.System.err.println(e.getMessage());
+        } finally {
+            try {
+                if (connection != null) {
+                    connection.close();
+                }
+            } catch (SQLException e) {
+                // connection close failed.
+                java.lang.System.err.println(e.getMessage());
+            }
+        }
+        return null;
+    }
+
+    public String updateProduct(int newID, int prodID) {
+        try {
+            connection = DriverManager.getConnection(url);
+            Statement statement = connection.createStatement();
+            statement.setQueryTimeout(30);
+
+            String insertStatement = "UPDATE Products SET prodID=? WHERE prodID=?";
+            PreparedStatement preparedStatement =
+                    connection.prepareStatement(insertStatement);
+            preparedStatement.setInt(1, newID);
+            preparedStatement.setInt(2, prodID);
+            preparedStatement.executeUpdate();
+ 
+            return "Product updated";
+
+        } catch (Exception e) {
+            if (e.getMessage().contains("UNIQUE")) {
+                String err = "Product violates UNIQUE constraint.";
+                System.out.println(err);
+                return err;
             }
             java.lang.System.out.println("_________________________ERROR at addProduct_________________________");
             java.lang.System.err.println(e.getMessage());
@@ -898,8 +952,7 @@ public class DBManage {
                 String password = userList.getString("password");
                 int userID = userList.getInt("userID");
 
-                // Don't remove this -> this populates product inventory that shows on UI
-                // all category cases to create different subclasses of Product
+                // Don't remove this -> this updates Users that shows on UI
                 switch (userList.getString("role")) {
                     case "User":
                         users.add(new User(username, password, userID));
@@ -1055,7 +1108,7 @@ public class DBManage {
         return false;
     }
 
-    public void saveCreditCardInfo(String cardName, int cardNumber, int userID) {
+    public String saveCreditCardInfo(String cardName, int cardNumber, int userID) {
         try {
             connection = DriverManager.getConnection(url);
             Statement statement = connection.createStatement();
@@ -1071,6 +1124,8 @@ public class DBManage {
             preparedStatement.setInt(3, userID);
             preparedStatement.executeUpdate();
 
+            return "CC added.";
+
         } catch (Exception e) {
             java.lang.System.out.println("_________________________ERROR at saveCreditCardInfo_________________");
             java.lang.System.err.println(e.getMessage());
@@ -1084,6 +1139,7 @@ public class DBManage {
                 java.lang.System.err.println(e.getMessage());
             }
         }
+        return null;
     }
 
     // return array where first position is cc name and second is cc num

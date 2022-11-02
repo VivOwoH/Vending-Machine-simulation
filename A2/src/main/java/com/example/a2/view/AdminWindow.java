@@ -6,6 +6,8 @@ import com.example.a2.Owner;
 import com.example.a2.Cashier;
 
 import javafx.collections.FXCollections;
+import javafx.event.ActionEvent;
+import javafx.event.EventHandler;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.ComboBox;
@@ -49,6 +51,10 @@ public class AdminWindow implements Window{
     private ComboBox reportType;
     private String reportOptionsOwner[] = {"Available change", "Transactions", "Accounts", "Cancelled transactions", "Item details", "Item summary"};
     private String reportOptionsCashier[] = {"Available change", "Transactions"};
+    private String reportOptionsSeller[] = {"Item details", "Item summary"};
+    private Button refreshButton;
+    private VBox box;
+    private Text reportGeneratedText;
 
     public AdminWindow(Sys system, ControlHandler controlHandler) {
         pane = new Pane();
@@ -123,61 +129,55 @@ public class AdminWindow implements Window{
         pane.getChildren().addAll(cashText, denomination, cashQty, submitCashChange, cashMsg);
 
         //update roles
-        if (system.getCurrentUser() != null) {
-            if (system.getCurrentUser().getRole() instanceof Owner) {
-                roleText = new Text("Update user roles");
-                roleText.setTranslateX(10);
-                roleText.setTranslateY(550);
+        roleText = new Text("Update user roles");
+        roleText.setTranslateX(10);
+        roleText.setTranslateY(550);
 
-                userID = new TextField();
-                userID.setTranslateX(10);
-                userID.setTranslateY(570);
-                userID.setPromptText("Username");
+        userID = new TextField();
+        userID.setTranslateX(10);
+        userID.setTranslateY(570);
+        userID.setPromptText("Username");
 
-                roleComboBox = new ComboBox(FXCollections.observableArrayList(roleOptions));
-                roleComboBox.setTranslateX(180);
-                roleComboBox.setTranslateY(570);
-                roleComboBox.setPromptText("Available roles");
+        roleComboBox = new ComboBox(FXCollections.observableArrayList(roleOptions));
+        roleComboBox.setTranslateX(180);
+        roleComboBox.setTranslateY(570);
+        roleComboBox.setPromptText("Available roles");
 
-                submitRoleChange = new Button("Submit");
-                submitRoleChange.setTranslateX(10);
-                submitRoleChange.setTranslateY(600);
+        submitRoleChange = new Button("Submit");
+        submitRoleChange.setTranslateX(10);
+        submitRoleChange.setTranslateY(600);
 
-                roleMsg = new Text();
-                roleMsg.setTranslateX(10);
-                roleMsg.setTranslateY(640);
+        roleMsg = new Text();
+        roleMsg.setTranslateX(10);
+        roleMsg.setTranslateY(640);
 
-                controlHandler.updateRoleHandler(userID, submitRoleChange, roleComboBox, roleMsg);
+        controlHandler.updateRoleHandler(userID, submitRoleChange, roleComboBox, roleMsg);
 
-                pane.getChildren().addAll(roleText, userID, roleMsg, roleComboBox, submitRoleChange);
-            }
-        }
+        pane.getChildren().addAll(roleText, userID, roleMsg, roleComboBox, submitRoleChange);
+
+
         //report
         reportTitle = new Text("Report");
         reportTitle.setTranslateX(10);
         reportTitle.setTranslateY(290);
         pane.getChildren().add(reportTitle);
 
+        // report box
+        box = new VBox();
+
         draw();
     }
 
     @Override
     public Scene getScene() {
+        reportGeneratedText.setVisible(false);
         return this.scene;
     }
 
     @Override
     public void draw() {
         //report
-        if (system.getCurrentUser() == null) {
-            return;
-        } else if (system.getCurrentUser().getRole() instanceof Owner){
-            reportType = new ComboBox(FXCollections.observableArrayList(reportOptionsOwner));
-        } else if (system.getCurrentUser().getRole() instanceof Cashier) {
-            reportType = new ComboBox(FXCollections.observableArrayList(reportOptionsCashier));
-        } else {
-            return;
-        }
+        reportType = new ComboBox(FXCollections.observableArrayList(reportOptionsOwner));
         reportType.setTranslateX(10);
         reportType.setTranslateY(300);
         reportType.setPromptText("Report type");
@@ -185,14 +185,36 @@ public class AdminWindow implements Window{
         reportPane = new ScrollPane();
         reportPane.setPrefSize(300, 200);
         reportPane.relocate(10, 330);
-        VBox box = new VBox();
 
         controlHandler.drawReport(reportType, box);
 
         reportPane.setContent(box);
         
         pane.getChildren().addAll(reportPane, reportType);
+
+        cfgRefreshButton();
+        pane.getChildren().add(refreshButton);
         
+    }
+
+    public void cfgRefreshButton() {
+        refreshButton = new Button("Generate Report");
+        refreshButton.setTranslateX(200);
+        refreshButton.setTranslateY(300);
+
+        reportGeneratedText = new Text("Report Generated!");
+        reportGeneratedText.setVisible(false);
+        reportGeneratedText.setTranslateX(320);
+        reportGeneratedText.setTranslateY(315);
+        pane.getChildren().add(reportGeneratedText);
+
+        refreshButton.setOnAction(new EventHandler<ActionEvent>() {
+            @Override
+            public void handle(ActionEvent event) {
+                controlHandler.writeReportToFile();
+                reportGeneratedText.setVisible(true);
+            }
+        });
     }
 
     @Override
