@@ -129,7 +129,38 @@ public class vendingMachineTest {
        assertEquals(model.getDatabase().getCurrencyQuantity(50.0), 4);
        assertEquals(model.getDatabase().getCurrencyQuantity(20.0), 3);
        assertEquals(model.getDatabase().getCurrencyQuantity(5.0), 4);
-       assertEquals(model.getDatabase().getCurrencyQuantity(100.0), 6);
+
+       model.makeCashPurchase(0.50, 10.0);
+
+        assertEquals(model.getDatabase().getCurrencyQuantity(0.50), 4);
+        assertEquals(model.getDatabase().getCurrencyQuantity(2.0), 3);
+        assertEquals(model.getDatabase().getCurrencyQuantity(5.0), 3);
+
+        model.makeCashPurchase(0.50, 10.0);
+
+        assertEquals(model.getDatabase().getCurrencyQuantity(0.50), 3);
+        assertEquals(model.getDatabase().getCurrencyQuantity(2.0), 1);
+        assertEquals(model.getDatabase().getCurrencyQuantity(5.0), 2);
+
+        model.makeCashPurchase(0.50, 5.0);
+
+        assertEquals(model.getDatabase().getCurrencyQuantity(0.50), 2);
+        assertEquals(model.getDatabase().getCurrencyQuantity(2.0), 0);
+        assertEquals(model.getDatabase().getCurrencyQuantity(1.0), 3);
+
+        model.makeCashPurchase(0.50, 5.0);
+
+        assertEquals(model.getDatabase().getCurrencyQuantity(0.50), 0);
+        assertEquals(model.getDatabase().getCurrencyQuantity(2.0), 0);
+        assertEquals(model.getDatabase().getCurrencyQuantity(1.0), 0);
+        assertEquals(model.getDatabase().getCurrencyQuantity(0.20), 3);
+
+        model.makeCashPurchase(0.50, 5.0);
+
+        //doesn't change bc it can't be done
+        assertEquals(model.getDatabase().getCurrencyQuantity(0.20), 3);
+
+        model.getDatabase().deleteDB();
     }
 
     // ------------------------------------------
