@@ -74,7 +74,6 @@ public class DBManage {
             statement.executeUpdate("CREATE TABLE IF NOT EXISTS Credit_Card " +
                     "(name STRING, " +
                     "number INTEGER DEFAULT (5))");
-            java.lang.System.out.println("------------DB created------------");
 
             //populate currecies
             for(String denomination : VendingMachine.denominations){
@@ -86,7 +85,7 @@ public class DBManage {
             for(String key : VendingMachine.productMap.keySet()){
                ArrayList<String> products = VendingMachine.productMap.get(key);
                for(String product : products){
-                   this.addProduct(0, product, key);
+                   this.addProduct(2.0, product, key);
                }
             }
             //populate users
@@ -721,11 +720,12 @@ public class DBManage {
 
             String insertStatement = null;
             PreparedStatement preparedStatement = null;
-            if (cash == -1) {
-                insertStatement = "INSERT INTO Transactions (userID, prodID, success, date, quantity) VALUES(?,?,?,?,?)";
+            if (change == -1) {
+                insertStatement = "INSERT INTO Transactions (userID, prodID, success, date, cash, quantity) VALUES(?,?,?,?,?, ?)";
                 preparedStatement =
                         connection.prepareStatement(insertStatement);
-                preparedStatement.setInt(5, quantity);
+                preparedStatement.setDouble(5, (float) cash);
+                preparedStatement.setInt(6, quantity);
             } else {
                 insertStatement = "INSERT INTO Transactions (userID, prodID, success, date, cash, change, quantity) VALUES(?,?,?,?,?,?,?)";
                 preparedStatement =
@@ -878,6 +878,43 @@ public class DBManage {
             }
         }
         return transactions;
+    }
+
+    public double getCost(int prodID){
+        double resultAmount = 0;
+
+        try {
+            connection = DriverManager.getConnection(url);
+            Statement statement = connection.createStatement();
+            statement.setQueryTimeout(30);
+
+            String insertStatement = "SELECT cost FROM Products WHERE (? = Products.prodID)";
+            PreparedStatement preparedStatement =
+                    connection.prepareStatement(insertStatement);
+            preparedStatement.setInt(1, prodID);
+            ResultSet result = preparedStatement.executeQuery();
+
+            if(result.isClosed()){
+                return 0;
+            }
+
+            resultAmount = result.getInt("cost");
+
+        } catch (Exception e) {
+            java.lang.System.out.println("_________________________ERROR at addUser_________________________");
+            java.lang.System.err.println(e.getMessage());
+        } finally {
+            try {
+                if (connection != null) {
+                    connection.close();
+                }
+            } catch (SQLException e) {
+                // connection close failed.
+                java.lang.System.err.println(e.getMessage());
+            }
+        }
+
+        return resultAmount;
     }
 
 

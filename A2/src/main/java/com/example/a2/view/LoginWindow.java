@@ -113,6 +113,11 @@ public class LoginWindow implements Window {
                     User currentUser = sys.getUserbase().getUserByID(sys.getDatabase().getUserID("Anonymous"));
                     app.getHomeWindow().loadUserAfterLogin(currentUser);
                     sys.setCurrentUser(currentUser);
+
+                    // generate report upon log in
+                    ControlHandler tempHandler = new ControlHandler(sys);
+                    tempHandler.writeReportToFile();
+
                     app.setScene(app.getHomeWindow().getScene());
                     return;
                 }
@@ -127,6 +132,11 @@ public class LoginWindow implements Window {
                         // System.out.println(currentUser);
                         app.getHomeWindow().loadUserAfterLogin(currentUser);
                         sys.setCurrentUser(currentUser);
+
+                        // generate report upon log in
+                        ControlHandler tempHandler = new ControlHandler(sys);
+                        tempHandler.writeReportToFile();
+
                         app.setScene(app.getHomeWindow().getScene());
                         app.makeAdminWindow();
                         app.getAdminWindow().draw();

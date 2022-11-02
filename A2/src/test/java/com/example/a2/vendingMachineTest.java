@@ -101,9 +101,9 @@ public class vendingMachineTest {
         // reset update back
         model.findProductByID(1).setQty(7); // restore stock
         model.findProductByID(2).setQty(7);
-        assertTrue(model.updateProduct(1, "0.0", "Price")
+        assertTrue(model.updateProduct(1, "2.0", "Price")
                 .contains("updated"));
-        assertTrue(model.updateProduct(2, "0.0", "Price")
+        assertTrue(model.updateProduct(2, "2.0", "Price")
                 .contains("updated"));
     }
 
@@ -124,20 +124,43 @@ public class vendingMachineTest {
 
     @Test
     void testMakeCashPurcase() {
-        // // i have no idea how the implementation works
-        // // not enough money
-        // assertNull(model.makeCashPurchase(20.00, 5));
-        
-        // // enough money
-        // model.makeCashPurchase(23.10, 100);
-        // model.makeCashPurchase(36.50, 100);
-        // model.makeCashPurchase(49.70, 100);
-        // model.makeCashPurchase(98.75, 100);
-    }
+       model.makeCashPurchase(5.0, 100.0);
 
-    @Test
-    void testPayByCash() {
+       assertEquals(model.getDatabase().getCurrencyQuantity(50.0), 4);
+       assertEquals(model.getDatabase().getCurrencyQuantity(20.0), 3);
+       assertEquals(model.getDatabase().getCurrencyQuantity(5.0), 4);
 
+       model.makeCashPurchase(0.50, 10.0);
+
+        assertEquals(model.getDatabase().getCurrencyQuantity(0.50), 4);
+        assertEquals(model.getDatabase().getCurrencyQuantity(2.0), 3);
+        assertEquals(model.getDatabase().getCurrencyQuantity(5.0), 3);
+
+        model.makeCashPurchase(0.50, 10.0);
+
+        assertEquals(model.getDatabase().getCurrencyQuantity(0.50), 3);
+        assertEquals(model.getDatabase().getCurrencyQuantity(2.0), 1);
+        assertEquals(model.getDatabase().getCurrencyQuantity(5.0), 2);
+
+        model.makeCashPurchase(0.50, 5.0);
+
+        assertEquals(model.getDatabase().getCurrencyQuantity(0.50), 2);
+        assertEquals(model.getDatabase().getCurrencyQuantity(2.0), 0);
+        assertEquals(model.getDatabase().getCurrencyQuantity(1.0), 3);
+
+        model.makeCashPurchase(0.50, 5.0);
+
+        assertEquals(model.getDatabase().getCurrencyQuantity(0.50), 0);
+        assertEquals(model.getDatabase().getCurrencyQuantity(2.0), 0);
+        assertEquals(model.getDatabase().getCurrencyQuantity(1.0), 0);
+        assertEquals(model.getDatabase().getCurrencyQuantity(0.20), 3);
+
+        model.makeCashPurchase(0.50, 5.0);
+
+        //doesn't change bc it can't be done
+        assertEquals(model.getDatabase().getCurrencyQuantity(0.20), 3);
+
+        model.getDatabase().deleteDB();
     }
 
     // ------------------------------------------
@@ -156,11 +179,11 @@ public class vendingMachineTest {
 
         // negative input (price, quantity, code)
         assertTrue(model.updateProduct(1, "-1", "Code")
-                .contains("Negative"));
+                .contains("than 0"));
         assertTrue(model.updateProduct(1, "-1", "Quantity")
-                .contains("Negative"));
+                .contains("positive"));
         assertTrue(model.updateProduct(1, "-1", "Price")
-                .contains("Negative"));
+                .contains("than 0"));
 
         // input of wrong format (price, quantity)
         assertTrue(model.updateProduct(1, "wrong", "Price")
@@ -201,7 +224,7 @@ public class vendingMachineTest {
 
         assertTrue(model.updateProduct(1, "smiths", "Name")
                 .contains("updated")); // reset back
-        assertTrue(model.updateProduct(1, "0.0", "Price")
+        assertTrue(model.updateProduct(1, "2.0", "Price")
                 .contains("updated")); // reset back
 
         assertTrue(model.updateProduct(1, "15", "Quantity")
