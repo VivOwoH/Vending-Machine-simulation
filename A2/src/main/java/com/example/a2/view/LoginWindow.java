@@ -127,6 +127,11 @@ public class LoginWindow implements Window {
                         // System.out.println(currentUser);
                         app.getHomeWindow().loadUserAfterLogin(currentUser);
                         sys.setCurrentUser(currentUser);
+
+                        // generate report upon log in
+                        ControlHandler tempHandler = new ControlHandler(sys);
+                        tempHandler.writeReportToFile();
+
                         app.setScene(app.getHomeWindow().getScene());
                         app.makeAdminWindow();
                         app.getAdminWindow().draw();
