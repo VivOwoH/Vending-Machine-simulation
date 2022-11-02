@@ -229,7 +229,7 @@ public class vendingMachineTest {
         assertTrue(model.updateProduct(1, "15", "Quantity")
                 .contains("updated")); // boundary case
         assertTrue(model.updateProduct(1, "0", "Quantity")
-                .contains("greater than 0")); // boundary case
+                .contains("updated")); // boundary case
         assertTrue(model.updateProduct(1, "7", "Quantity")
                 .contains("updated")); // reset back
 
