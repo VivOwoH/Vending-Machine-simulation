@@ -74,7 +74,7 @@ public class ControlHandler {
                 return true;
             }
             if (purchaseCardFlag) {
-                database.addTransaction(prodID, true, userID, quantity, -1, -1);
+                database.addTransaction(prodID, true, userID, quantity, quantity * database.getCost(prodID), -1);
                 // success
                 vendingMachine.cancelTimer();
 
