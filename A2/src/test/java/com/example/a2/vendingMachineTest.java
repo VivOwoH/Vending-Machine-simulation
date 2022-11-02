@@ -159,7 +159,6 @@ public class vendingMachineTest {
 
         //doesn't change bc it can't be done
         assertEquals(model.getDatabase().getCurrencyQuantity(0.20), 3);
-
         model.getDatabase().deleteDB();
     }
 

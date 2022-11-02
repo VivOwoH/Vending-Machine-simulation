@@ -19,7 +19,8 @@ public class VendingMachine {
     private HashMap<Integer, Integer> cart = new HashMap<>(); // Map<prodID,qty>
     public final static String[] categories = { "Drinks", "Chocolates", "Chips", "Candies" }; // pre-defined; can't be
                                                                                               // modified
-    public final static String[] denominations = { "100.0", "50.0", "20.0", "10.0", "5.0", "2.0", "1.0", "0.50", "0.20", "0.10", "0.05"};
+    public final static String[] denominations = { "100.0", "50.0", "20.0", "10.0", "5.0", "2.0", "1.0", "0.50", "0.20",
+            "0.10", "0.05" };
     public final static String[] products = { "water", "sprite", "coke", "pepsi", "juice",
             "mars", "m&m", "bounty", "snicker",
             "smiths", "pringles", "kettles", "thins",
@@ -81,8 +82,8 @@ public class VendingMachine {
                 icon = new ImageIcon(icon.getImage().getScaledInstance(50, 50, java.awt.Image.SCALE_SMOOTH));
                 JOptionPane.showMessageDialog(null, "No activity for too long. Transaction cancelled.", "Alert",
                         JOptionPane.INFORMATION_MESSAGE, icon);
-                
-                //logout
+
+                // logout
                 timeout = true;
             }
         };
@@ -91,7 +92,7 @@ public class VendingMachine {
     public void run() {
         try {
             Timeline timeline = new Timeline(new KeyFrame(Duration.millis(1000),
-                t -> this.checkTimeout()));
+                    t -> this.checkTimeout()));
             timeline.setCycleCount(Timeline.INDEFINITE);
             timeline.play();
         } catch (Exception e) {
@@ -156,9 +157,11 @@ public class VendingMachine {
             if ((field.equals("Code") ||
                     field.equals("Price")) && Double.parseDouble(newValue) <= 0)
                 throw new IllegalArgumentException("Input must be greater than 0.");
-            if((field.equals("Quantity")) && Double.parseDouble(newValue) < 0){
+
+            if ((field.equals("Quantity")) && Double.parseDouble(newValue) < 0) {
                 throw new IllegalArgumentException("Input must be positive.");
             }
+
             if (field.equals("Quantity") && Integer.parseInt(newValue) > 15)
                 throw new IllegalArgumentException("Maximum 15 for each product.");
 
@@ -167,7 +170,7 @@ public class VendingMachine {
 
             if (field.equals("Name") && listAllProductName().contains(newValue))
                 throw new IllegalArgumentException("Conflicting name.");
-            
+
             if (field.equals("Category") && !Arrays.asList(categories).contains(newValue))
                 throw new IllegalArgumentException("Unavailable category.");
 
@@ -245,17 +248,17 @@ public class VendingMachine {
         try {
             // ------------------ Defense ---------------------------
             // 0 or negative input (code, quantity)
-            if (prodID <= 0 || qty <= 0) 
+            if (prodID <= 0 || qty <= 0)
                 throw new IllegalArgumentException("Invalid input.");
 
             // invalid code (not found)
-            if (this.findProductByID(prodID) == null) 
+            if (this.findProductByID(prodID) == null)
                 throw new IllegalArgumentException("Invalid code, product not found.");
 
             // invalid quantity (>current stock)
             if (this.findProductByID(prodID).getQty() < qty)
                 throw new IllegalArgumentException("Stock not available.");
-            
+
             // ------------------ Add to cart -----------------------
             // add to cart multiple times, and quantity does not exceed -> add up
             if (this.cart.containsKey(prodID)) {
@@ -266,9 +269,9 @@ public class VendingMachine {
 
             int newQty = this.findProductByID(prodID).getQty() - qty;
             this.findProductByID(prodID).setQty(newQty);
-            
+
             return String.format("Item add to cart! Stock: %d", newQty);
-            
+
         } catch (IllegalArgumentException e) {
             return e.getMessage();
         }
@@ -459,9 +462,9 @@ public class VendingMachine {
 
         double num_remaining = (result.get(0).get(0.05)) * 0.05;
 
-        if(num_remaining != 0){
-            //put the given back in!
-            for(Double denomination : given.keySet()){
+        if (num_remaining != 0) {
+            // put the given back in!
+            for (Double denomination : given.keySet()) {
                 database.updateCurrency(denomination, given.get(denomination)
                         + database.getCurrencyQuantity(denomination));
             }
@@ -471,10 +474,11 @@ public class VendingMachine {
     }
 
     public boolean checkInput(double d) {
-        double valid[] = {0.05, 0.1, 0.2, 0.5, 1, 2, 5, 10, 20, 50, 100};
+        double valid[] = { 0.05, 0.1, 0.2, 0.5, 1, 2, 5, 10, 20, 50, 100 };
 
         for (double v : valid) {
-            if (v == d) return true;
+            if (v == d)
+                return true;
         }
 
         return false;
@@ -499,7 +503,7 @@ public class VendingMachine {
     public double getTotalCost() {
         double val = 0;
 
-        for (Entry<Integer, Integer> entry: this.cart.entrySet()) {
+        for (Entry<Integer, Integer> entry : this.cart.entrySet()) {
             Integer prodID = entry.getKey();
             Integer qty = entry.getValue();
 
