@@ -85,7 +85,7 @@ public class DBManage {
             for(String key : VendingMachine.productMap.keySet()){
                ArrayList<String> products = VendingMachine.productMap.get(key);
                for(String product : products){
-                   this.addProduct(0, product, key);
+                   this.addProduct(2.0, product, key);
                }
             }
             //populate users
