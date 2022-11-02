@@ -101,9 +101,9 @@ public class vendingMachineTest {
         // reset update back
         model.findProductByID(1).setQty(7); // restore stock
         model.findProductByID(2).setQty(7);
-        assertTrue(model.updateProduct(1, "0.0", "Price")
+        assertTrue(model.updateProduct(1, "2.0", "Price")
                 .contains("updated"));
-        assertTrue(model.updateProduct(2, "0.0", "Price")
+        assertTrue(model.updateProduct(2, "2.0", "Price")
                 .contains("updated"));
     }
 
@@ -159,7 +159,6 @@ public class vendingMachineTest {
 
         //doesn't change bc it can't be done
         assertEquals(model.getDatabase().getCurrencyQuantity(0.20), 3);
-
         model.getDatabase().deleteDB();
     }
 
@@ -179,11 +178,11 @@ public class vendingMachineTest {
 
         // negative input (price, quantity, code)
         assertTrue(model.updateProduct(1, "-1", "Code")
-                .contains("Negative"));
+                .contains("greater than 0"));
         assertTrue(model.updateProduct(1, "-1", "Quantity")
-                .contains("Negative"));
+                .contains("greater than 0"));
         assertTrue(model.updateProduct(1, "-1", "Price")
-                .contains("Negative"));
+                .contains("greater than 0"));
 
         // input of wrong format (price, quantity)
         assertTrue(model.updateProduct(1, "wrong", "Price")
@@ -224,13 +223,13 @@ public class vendingMachineTest {
 
         assertTrue(model.updateProduct(1, "smiths", "Name")
                 .contains("updated")); // reset back
-        assertTrue(model.updateProduct(1, "0.0", "Price")
+        assertTrue(model.updateProduct(1, "2.0", "Price")
                 .contains("updated")); // reset back
 
         assertTrue(model.updateProduct(1, "15", "Quantity")
                 .contains("updated")); // boundary case
         assertTrue(model.updateProduct(1, "0", "Quantity")
-                .contains("updated")); // boundary case
+                .contains("greater than 0")); // boundary case
         assertTrue(model.updateProduct(1, "7", "Quantity")
                 .contains("updated")); // reset back
 

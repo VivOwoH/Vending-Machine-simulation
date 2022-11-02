@@ -375,8 +375,9 @@ public class databaseTesting {
             } else if (i >= 13 && i <= 16) {
                 category = categories[3];
             }
+            // initial price is 2.00
             expectedReport += products[i - 1] + " | " + i + " | " + 7 + " | " +
-                    "0.00" + " | " + category + "\n";
+                    "2.00" + " | " + category + "\n";
         }
         assertEquals(expectedReport, tempDB.getItemDetails());
     }
