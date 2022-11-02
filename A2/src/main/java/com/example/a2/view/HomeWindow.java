@@ -121,6 +121,7 @@ public class HomeWindow implements Window {
     public void reconfiguration() {
         cfgRoleButton();
         cfgProductPane(sys.getVendingMachine().getProductInventroy());
+        loadHistory();
     }
 
     public void cfgRoleButton() {
