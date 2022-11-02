@@ -67,6 +67,10 @@ public class VendingMachine {
         idleTimer = new Timer("idle timer");
     }
 
+    public DBManage getDatabase() {
+        return database;
+    }
+
     private void makeTimerTask() {
         cancelTransactionTask = new TimerTask() {
             public void run() {

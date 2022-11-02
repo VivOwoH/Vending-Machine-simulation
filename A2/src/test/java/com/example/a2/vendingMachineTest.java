@@ -124,20 +124,12 @@ public class vendingMachineTest {
 
     @Test
     void testMakeCashPurcase() {
-        // // i have no idea how the implementation works
-        // // not enough money
-        // assertNull(model.makeCashPurchase(20.00, 5));
-        
-        // // enough money
-        // model.makeCashPurchase(23.10, 100);
-        // model.makeCashPurchase(36.50, 100);
-        // model.makeCashPurchase(49.70, 100);
-        // model.makeCashPurchase(98.75, 100);
-    }
+       model.makeCashPurchase(5.0, 100.0);
 
-    @Test
-    void testPayByCash() {
-
+       assertEquals(model.getDatabase().getCurrencyQuantity(50.0), 4);
+       assertEquals(model.getDatabase().getCurrencyQuantity(20.0), 3);
+       assertEquals(model.getDatabase().getCurrencyQuantity(5.0), 4);
+       assertEquals(model.getDatabase().getCurrencyQuantity(100.0), 6);
     }
 
     // ------------------------------------------
