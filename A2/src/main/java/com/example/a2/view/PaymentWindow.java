@@ -303,7 +303,7 @@ public class PaymentWindow implements Window {
 
                         system.getVendingMachine().updateProductInventory(); // refresh inventory
 
-                        if (methodBox.getValue() == "Card") {
+                        if (methodBox.getValue() == "Card" && !system.getCurrentUser().getUsername().equals("Anonymous")) {
                             continueShopping.setVisible(false);
                             methodBox.setVisible(false);
                             confirmTransactionButton.setVisible(false);
