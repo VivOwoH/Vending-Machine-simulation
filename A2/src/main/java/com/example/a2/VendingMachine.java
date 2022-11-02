@@ -152,10 +152,12 @@ public class VendingMachine {
             if (newValue == null || field == null) // null input
                 throw new IllegalArgumentException("Invalid input.");
 
-            if ((field.equals("Code") || field.equals("Quantity") ||
+            if ((field.equals("Code") ||
                     field.equals("Price")) && Double.parseDouble(newValue) <= 0)
                 throw new IllegalArgumentException("Input must be greater than 0.");
-
+            if((field.equals("Quantity")) && Double.parseDouble(newValue) < 0){
+                throw new IllegalArgumentException("Input must be positive.");
+            }
             if (field.equals("Quantity") && Integer.parseInt(newValue) > 15)
                 throw new IllegalArgumentException("Maximum 15 for each product.");
 

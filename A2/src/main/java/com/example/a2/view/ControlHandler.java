@@ -65,7 +65,7 @@ public class ControlHandler {
                 // success
                 vendingMachine.cancelTimer();
 
-                for(Double denom : queue){
+                for (Double denom : queue) {
                     int current = database.getCurrencyQuantity(denom);
                     database.updateCurrency(denom, current + 1);
                 }
@@ -74,7 +74,7 @@ public class ControlHandler {
                 return true;
             }
             if (purchaseCardFlag) {
-                database.addTransaction(prodID, true, userID, quantity, -1, -1);
+                database.addTransaction(prodID, true, userID, quantity, quantity * database.getCost(prodID), -1);
                 // success
                 vendingMachine.cancelTimer();
 
@@ -114,7 +114,7 @@ public class ControlHandler {
     }
 
     public void updateProductHandler(Window admin, Button submitButton, TextField pid, TextField val,
-            ComboBox field, Text productMsg) {
+                                     ComboBox field, Text productMsg) {
         submitButton.setOnAction(new EventHandler<ActionEvent>() {
             @Override
             public void handle(ActionEvent event) {
@@ -177,7 +177,7 @@ public class ControlHandler {
     /**
      * Function changes the amount of cash associated with some specific
      * denomination
-     * 
+     *
      * @param adminWindow      - window input so that output text can be displayed
      * @param submitCashChange - button for submission
      * @param denomination     - denomination input (should be in
@@ -185,7 +185,7 @@ public class ControlHandler {
      * @param cashQty          - quantity input (should be integer)
      */
     public void updateCashHandler(Window adminWindow, Button submitCashChange, TextField denomination,
-            TextField cashQty, Text cashMsg) {
+                                  TextField cashQty, Text cashMsg) {
         submitCashChange.setOnAction(new EventHandler<ActionEvent>() {
             @Override
             public void handle(ActionEvent event) {
@@ -294,8 +294,7 @@ public class ControlHandler {
                 if (!vendingMachine.checkInput(input)) {
                     show.setText("Invalid input.");
                     return;
-                }
-                else{
+                } else {
                     //add input to SQL
                     queue.add(input);
                 }
@@ -384,14 +383,12 @@ public class ControlHandler {
                     Text header = new Text("DateTime | User | Reason");
                     Text report = new Text(system.getCancelledTransactions());
                     box.getChildren().addAll(header, report);
-                }
-                else if (type.equals("Item details")){
+                } else if (type.equals("Item details")) {
                     box.getChildren().clear();
                     Text header = new Text("Product | Code | Quantity | Price | Category");
                     Text report = new Text(system.getItemDetails());
                     box.getChildren().addAll(header, report);
-                }
-                else if(type.equals("Item summary")){
+                } else if (type.equals("Item summary")) {
                     box.getChildren().clear();
                     Text header = new Text("Product | Code | Quantity Sold");
                     Text report = new Text(system.getItemSummary());
@@ -401,7 +398,7 @@ public class ControlHandler {
         });
     }
 
-    public void writeReportToFile(){
+    public void writeReportToFile() {
         try {
 
             Class<? extends Role> userClass = system.getCurrentUser().getRole().getClass();
@@ -448,12 +445,25 @@ public class ControlHandler {
                 generated = true;
             }
 
-            if (generated){
+            // user
+            if (system.getCurrentUser().getRole().getClass() == null) {
+                fw.write(" ");
+            }
+
+            if (generated) {
                 System.out.println("Report Generated");
             }
 
             fw.close();
-        } catch (Exception e){
+        } catch (NullPointerException e) {
+            try {
+                FileWriter fw = new FileWriter(new File("src/main/data/report.txt"));
+                fw.write(" ");
+                fw.close();
+            } catch (Exception c) {
+                System.out.println(c);
+            }
+        } catch (Exception e) {
             System.out.println(e);
         }
     }

@@ -178,11 +178,11 @@ public class vendingMachineTest {
 
         // negative input (price, quantity, code)
         assertTrue(model.updateProduct(1, "-1", "Code")
-                .contains("greater than 0"));
+                .contains("than 0"));
         assertTrue(model.updateProduct(1, "-1", "Quantity")
-                .contains("greater than 0"));
+                .contains("positive"));
         assertTrue(model.updateProduct(1, "-1", "Price")
-                .contains("greater than 0"));
+                .contains("than 0"));
 
         // input of wrong format (price, quantity)
         assertTrue(model.updateProduct(1, "wrong", "Price")
