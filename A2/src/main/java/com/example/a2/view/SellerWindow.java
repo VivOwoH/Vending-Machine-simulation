@@ -91,6 +91,8 @@ public class SellerWindow implements Window {
         reportTitle.setTranslateY(290);
         pane.getChildren().add(reportTitle);
 
+        box = new VBox();
+
         draw();
     }
 

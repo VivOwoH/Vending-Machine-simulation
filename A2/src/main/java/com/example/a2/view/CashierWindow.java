@@ -83,6 +83,8 @@ public class CashierWindow implements Window {
         reportTitle.setTranslateY(290);
         pane.getChildren().add(reportTitle);
 
+        box = new VBox();
+
         draw();
     }
 
