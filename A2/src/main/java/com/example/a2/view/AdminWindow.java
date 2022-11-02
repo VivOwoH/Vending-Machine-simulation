@@ -192,6 +192,7 @@ public class AdminWindow implements Window{
         
         pane.getChildren().addAll(reportPane, reportType);
 
+
         cfgRefreshButton();
         pane.getChildren().add(refreshButton);
         

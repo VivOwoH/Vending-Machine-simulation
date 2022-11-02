@@ -107,8 +107,8 @@ public class ControlHandler {
                     default:
                         System.out.println("Something went wrong when switching admin window.");
                 }
-                system.setScene(window.getScene());
                 vendingMachine.cancelTimer();
+                system.setScene(window.getScene());
             }
         });
     }
