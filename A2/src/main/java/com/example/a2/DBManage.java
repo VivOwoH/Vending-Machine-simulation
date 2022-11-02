@@ -74,7 +74,6 @@ public class DBManage {
             statement.executeUpdate("CREATE TABLE IF NOT EXISTS Credit_Card " +
                     "(name STRING, " +
                     "number INTEGER DEFAULT (5))");
-            java.lang.System.out.println("------------DB created------------");
 
             //populate currecies
             for(String denomination : VendingMachine.denominations){
