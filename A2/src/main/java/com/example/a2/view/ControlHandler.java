@@ -61,7 +61,7 @@ public class ControlHandler {
         try {
             // adds transaction into database
             if (purchaseCashFlag) {
-                database.addTransaction(prodID, true, userID, quantity, cashGiven, change);
+                database.addTransaction(prodID, true, userID, quantity, cashGiven, change, "CASH");
                 // success
                 vendingMachine.cancelTimer();
 
@@ -74,7 +74,7 @@ public class ControlHandler {
                 return true;
             }
             if (purchaseCardFlag) {
-                database.addTransaction(prodID, true, userID, quantity, quantity * database.getCost(prodID), -1);
+                database.addTransaction(prodID, true, userID, quantity, quantity * database.getCost(prodID), -1, "CARD");
                 // success
                 vendingMachine.cancelTimer();
 
@@ -465,6 +465,16 @@ public class ControlHandler {
             }
         } catch (Exception e) {
             System.out.println(e);
+        }
+    }
+
+    public static void clearReportFile(){
+        try {
+            FileWriter fw = new FileWriter(new File("src/main/data/report.txt"));
+            fw.write(" ");
+            fw.close();
+        } catch (Exception c) {
+            System.out.println(c);
         }
     }
 }

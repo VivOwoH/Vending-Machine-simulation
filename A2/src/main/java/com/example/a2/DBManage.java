@@ -69,7 +69,8 @@ public class DBManage {
                     "cash FLOAT," +
                     "change FLOAT," +
                     "quantity INTEGER DEFAULT (7)," +
-                    "date TIMESTAMP)");
+                    "date TIMESTAMP," +
+                    "method TEXT)");
             // credit card Table
             statement.executeUpdate("CREATE TABLE IF NOT EXISTS Credit_Card " +
                     "(name STRING, " +
@@ -703,7 +704,7 @@ public class DBManage {
     }
 
     // add purchase history (customer has account)(the time of transaction will be recorded when this function is called)
-    public void addTransaction(int prodID, boolean success, int userID, int quantity, double cash, double change){
+    public void addTransaction(int prodID, boolean success, int userID, int quantity, double cash, double change, String method){
         try {
             connection = DriverManager.getConnection(url);
             Statement statement = connection.createStatement();
@@ -721,18 +722,20 @@ public class DBManage {
             String insertStatement = null;
             PreparedStatement preparedStatement = null;
             if (change == -1) {
-                insertStatement = "INSERT INTO Transactions (userID, prodID, success, date, cash, quantity) VALUES(?,?,?,?,?, ?)";
+                insertStatement = "INSERT INTO Transactions (userID, prodID, success, date, cash, quantity, method) VALUES(?,?,?,?,?,?,?)";
                 preparedStatement =
                         connection.prepareStatement(insertStatement);
                 preparedStatement.setDouble(5, (float) cash);
                 preparedStatement.setInt(6, quantity);
+                preparedStatement.setString(7, method);
             } else {
-                insertStatement = "INSERT INTO Transactions (userID, prodID, success, date, cash, change, quantity) VALUES(?,?,?,?,?,?,?)";
+                insertStatement = "INSERT INTO Transactions (userID, prodID, success, date, cash, change, quantity, method) VALUES(?,?,?,?,?,?,?,?)";
                 preparedStatement =
                     connection.prepareStatement(insertStatement);
                 preparedStatement.setFloat(5, (float)cash);
                 preparedStatement.setFloat(6, (float)change);
                 preparedStatement.setInt(7, quantity);
+                preparedStatement.setString(8, method);
             }
             preparedStatement.setInt(1, userID);
             preparedStatement.setInt(2, prodID);
@@ -816,11 +819,12 @@ public class DBManage {
                 }
                 String prodID = list.getString("prodID");
                 float cash = list.getFloat("cash");
+                String method = list.getString("method");
                 if (!list.wasNull()) { 
                     float change = list.getFloat("change");
-                    history += String.format("%s | %s | %.2f | %.2f | CASH\n", formattedDate, prodID, cash, change);
+                    history += String.format("%s | %s | %.2f | %.2f | %s\n", formattedDate, prodID, cash, change, method);
                 } else {
-                    history += String.format("%s | %s | N/A | N/A | CARD\n", formattedDate, prodID);
+                    history += String.format("%s | %s | N/A | N/A | %s\n", formattedDate, prodID, method);
                 }
             }
         } catch (Exception e) {

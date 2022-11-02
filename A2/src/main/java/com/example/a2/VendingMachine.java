@@ -5,6 +5,7 @@ import java.util.Map.Entry;
 
 import com.example.a2.products.Product;
 
+import com.example.a2.view.ControlHandler;
 import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
 import javafx.util.Duration;
