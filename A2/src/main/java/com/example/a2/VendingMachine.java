@@ -28,8 +28,8 @@ public class VendingMachine {
 
     private Timer idleTimer;
     private TimerTask cancelTransactionTask;
-    // private long idleLimit = 120000;
-    private long idleLimit = 12000;
+    private long idleLimit = 120000;
+    // private long idleLimit = 12000;
     private boolean timerRunning = false;
     private boolean timeout = false;
     // private Alert alert;
@@ -100,6 +100,7 @@ public class VendingMachine {
             logout();
             timeout = false;
             database.addCancelledTransaction("timeout");
+            cancelTimer();
         }
     }
 

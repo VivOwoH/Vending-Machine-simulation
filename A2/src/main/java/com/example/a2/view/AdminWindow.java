@@ -183,7 +183,6 @@ public class AdminWindow implements Window{
         reportPane.setContent(box);
         
         pane.getChildren().addAll(reportPane, reportType);
-        
     }
 
     @Override
