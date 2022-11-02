@@ -107,9 +107,9 @@ public class databaseTesting {
     // test if transactions are being added (also cancelled transactions added)
     void addgetTransactionTest() {
 
-        database.addTransaction(1, true, 0, 1, 10, 0.50);
-        database.addTransaction(2, true, 0, 1, 11, 0.50);
-        database.addTransaction(3, true, 0, 1, 12, 0.50);
+        database.addTransaction(1, true, 0, 1, 10, 0.50, "CASH");
+        database.addTransaction(2, true, 0, 1, 11, 0.50, "CASH");
+        database.addTransaction(3, true, 0, 1, 12, 0.50, "CASH");
 
         database.addCancelledTransaction("user cancelled");
         database.addCancelledTransaction("timeout");
@@ -240,7 +240,7 @@ public class databaseTesting {
     void transactionHistoryTest() {
         DBManage tempDB = new DBManage("test3.sqlite");
         tempDB.createDB();
-        tempDB.addTransaction(1, true, 0, 1, 1, 1);
+        tempDB.addTransaction(1, true, 0, 1, 1, 1, "CASH");
         tempDB.addCancelledTransaction("user cancelled");
 
         Timestamp timestamp = new Timestamp(java.lang.System.currentTimeMillis()); // should work if tests don't run too
@@ -260,9 +260,9 @@ public class databaseTesting {
     void getLastFiveTransactions() {
         DBManage tempDB = new DBManage("test3.sqlite");
         tempDB.createDB();
-        tempDB.addTransaction(1, true, 0, 1, 1, 1);
-        tempDB.addTransaction(3, true, 0, 1, 1, 1);
-        tempDB.addTransaction(2, true, 0, 1, 1, 1);
+        tempDB.addTransaction(1, true, 0, 1, 1, 1, "CASH");
+        tempDB.addTransaction(3, true, 0, 1, 1, 1, "CASH");
+        tempDB.addTransaction(2, true, 0, 1, 1, 1, "CASH");
 
         ArrayList<Transaction> transactions = tempDB.getLastFiveTransactionsByUserID(0);
 
