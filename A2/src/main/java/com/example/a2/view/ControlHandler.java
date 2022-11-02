@@ -403,33 +403,56 @@ public class ControlHandler {
 
     public void writeReportToFile(){
         try {
+
+            Class<? extends Role> userClass = system.getCurrentUser().getRole().getClass();
             FileWriter fw = new FileWriter(new File("src/main/data/report.txt"));
-            fw.write("----------------------Available Change----------------------\n");
-            fw.write("Denomination | Quantity\n");
-            fw.write(system.getCurrencyReport());
 
-            fw.write("----------------------Accounts----------------------\n");
-            fw.write("Username | Role\n");
-            fw.write(system.getUsersReport());
+            boolean generated = false;
 
-            fw.write("----------------------Transactions----------------------\n");
-            fw.write("DateTime | ProductID | Paid | Change | Method\n");
-            fw.write(system.getTransactionHistory());
+            // seller
+            if (userClass == Owner.class || userClass == Seller.class) {
+                fw.write("----------------------Item details----------------------\n");
+                fw.write("Product | Code | Quantity | Price | Category\n");
+                fw.write(system.getItemDetails());
 
-            fw.write("----------------------Cancelled transactions----------------------\n");
-            fw.write("DateTime | User | Reason\n");
-            fw.write(system.getCancelledTransactions());
+                fw.write("----------------------Item summary----------------------\n");
+                fw.write("Product | Code | Quantity Sold\n");
+                fw.write(system.getItemSummary());
 
-            fw.write("----------------------Item details----------------------\n");
-            fw.write("Product | Code | Quantity | Price | Category\n");
-            fw.write(system.getItemDetails());
+                generated = true;
+            }
 
-            fw.write("----------------------Item summary----------------------\n");
-            fw.write("Product | Code | Quantity Sold\n");
-            fw.write(system.getItemSummary());
+            // Cashier
+            if (userClass == Owner.class || userClass == Cashier.class) {
+                fw.write("----------------------Available Change----------------------\n");
+                fw.write("Denomination | Quantity\n");
+                fw.write(system.getCurrencyReport());
+
+                fw.write("----------------------Transactions----------------------\n");
+                fw.write("DateTime | ProductID | Paid | Change | Method\n");
+                fw.write(system.getTransactionHistory());
+
+                generated = true;
+            }
+
+            // Owner
+            if (userClass == Owner.class) {
+                fw.write("----------------------Accounts----------------------\n");
+                fw.write("Username | Role\n");
+                fw.write(system.getUsersReport());
+
+                fw.write("----------------------Cancelled transactions----------------------\n");
+                fw.write("DateTime | User | Reason\n");
+                fw.write(system.getCancelledTransactions());
+
+                generated = true;
+            }
+
+            if (generated){
+                System.out.println("Report Generated");
+            }
 
             fw.close();
-            System.out.println("Report Generated");
         } catch (Exception e){
             System.out.println(e);
         }
